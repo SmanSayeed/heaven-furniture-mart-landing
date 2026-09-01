@@ -6,6 +6,23 @@
 > sections, geometry, 3d rendering. Make it three or six grid, each section should contain
 > shapes with mathematically calculated layers."*
 >
+> Revised same day on Saadman's second directive: *"remove other colors, just keep black
+> and white only with neon effect (lighting, shadowing, glowing). No golden color. Objects
+> and images can be colorful, logo stays as it is. Images need to be hooky, animated,
+> creative with gorgeous dynamic effects. On scroll we can make images animated way black
+> and white to colorful."* — SS2.8 (monochrome palette) and SS5.5 (the image motion
+> system) are the result; every accent-colour rule elsewhere in this file is dead.
+>
+> Third directive, same day: *"keep a focus point at center mathematically; on scroll a
+> partial % area black and white and another partial % colorful (focused, bright). It will
+> seem like there was loadshedding, suddenly light comes."* -> SS5.6, THE LOADSHEDDING CUT.
+>
+> Fourth directive, same day: *"the website should have a story; it will feel like the
+> user is getting into an adventure, directed to the story points."* -> SS0.5, THE STORY.
+>
+> Fifth directive: *"plan flood light effect within black white shadow and light
+> effects."* -> SS5.7, THE FLOODLIGHT + the One Light Law.
+>
 > This document is the single authority for LAYOUT. PLAN.md remains the authority for
 > content, copy, business logic and the asset pipeline. Where they conflict on layout,
 > this file wins.
@@ -33,6 +50,47 @@ out a page.
 
 One sentence for the README and the judges: **"A bespoke piece starts as a drawing; this
 page is drawn the same way — to measure."**
+
+---
+
+## 0.5 THE STORY -- "ONE PIECE, DRAWN FOR YOU" (the eight-beat adventure)
+
+The mathematics is the SET; this is the PLOT. The visitor is not reading a company page,
+they are walking through the making of their own piece -- second person, present tense,
+from a dark studio window at night to the order sheet with their name on it. Every sheet
+is one beat, and every beat ends by pulling toward the next.
+
+| # | BEAT (specimen caption on the sheet) | What happens to the visitor | The pull forward |
+|---|---|---|---|
+| 01 | **THE WINDOW** -- "A piece waits, lit." | Night. Through the studio window one piece stands in a pool of light. They can reach in: grab it, spin it; it changes as they linger (the turntable pin). | SCROLL cue + the plot line starts drawing downward. |
+| 02 | **THE STUDIO** -- "The lights come on." | The LOADSHEDDING CUT (SS5.6): current returns, the room blooms from grey to colour. They are inside now; the placard says who works here. | The ticker mantra slides past: Designed. Crafted. Customized. |
+| 03 | **THE DRAFTING TABLE** -- "Yours is drawn." | The adventure's centre. A blueprint draws itself, the craft-plane sweeps it real, and THEY pick the fabric (swatches). Dimension lines read real mm: built to your size. | "NEXT: WALK THE RANGE" cue by the title block. |
+| 04 | **THE RANGE** -- "Walk the collections." | The rail pin literally WALKS them sideways along the five collections (desktop); mobile strolls down the rack. Cards print (SS5.5). | The rail ends at a lit doorway edge: Sheet 05's aperture is already opening. |
+| 05 | **THE SHOWROOM** -- "Step through. Agrabad." | The aperture opens like a door; inside, the loadshedding cut lights the real showroom. Directions link = the real-world door. | "TAKE IT HOME FIRST" line points down. |
+| 06 | **YOUR ROOM** -- "See it in your place." | The piece leaves the studio with them: AR places it at real size in their own room. The adventure crosses INTO their house. | The maker's signature beat is promised: who builds this? |
+| 07 | **THE MAKER** -- "The man who signs it." | Quiet sheet. The MD's words, his portrait (grayscale until touched), the history drawn as one vertical measured line 2020->2026. Trust lands here. | The final ask is one scroll away. |
+| 08 | **THE ORDER** -- "Have yours drawn." | The order sheet: the one CTA, contact, the colophon title block `SHEET 08/08 -- END`. WhatsApp message is pre-written: signing the commission. | (End. The plot line ties off in a triangle.) |
+
+### Wayfinding -- how the visitor is DIRECTED through the beats
+
+1. **The plot line IS the storyline.** The continuous 1px white filament (SS2.8) draws
+   itself forward as they scroll, sheet to sheet, and ties off at the footer triangle.
+   It is the route on the adventure map, always faintly ahead of them.
+2. **Beat captions.** Each sheet opens with its beat in specimen type:
+   `02 -- THE STUDIO -- "The lights come on."` These ARE the story points; three or four
+   words each, never a paragraph (the placard rule holds).
+3. **NEXT cues.** Each sheet's title block carries the next beat's name in text-lo:
+   `NEXT -- THE DRAFTING TABLE`. Quiet, consistent place, reads as a drawing's
+   continuation note ("continued on sheet 4").
+4. **The Index nav becomes the MAP.** The overlay lists the eight beats (not just
+   categories): number, beat name, one-word status of where you are. Jumping is allowed
+   -- an adventure map, not a corridor.
+5. **The preloader is the story's first line.** The S0 curtain becomes: a dark frame, one
+   line drawn to measure, the words "ONE PIECE, DRAWN FOR YOU." then the window fades in.
+   Two seconds, skippable, sets the second-person voice before the first pixel of UI.
+
+Copy implication: `copy.ts` gains a `story` object (beat names, captions, NEXT strings)
+and the sheets render from it, so the plot is one editable list.
 
 ---
 
@@ -131,7 +189,8 @@ quote           28 / 40  italic           Fraunces
 ### 2.7 The annotation layer (what makes the math VISIBLE)
 
 1. **Title block** (every sheet, bottom-right on desktop, full-width strip on mobile):
-   `SHEET 03 · BESPOKE   ·   HEAVEN FURNITURE MART · AGRABAD   ·   03/08`
+   `SHEET 03 · THE DRAFTING TABLE · 03/08 · NEXT: THE RANGE` -- the sheet number, the
+   story beat, and the pull to the next one (SS0.5) in a single drawn block.
 2. **Dimension lines** around 3D stages: `|◄────── 2286 MM ──────►|` — values computed
    from the model's real bounding box at load (stage-state already measures it). When the
    Meshy scans of Heaven's real pieces land, the numbers update themselves.
@@ -140,6 +199,40 @@ quote           28 / 40  italic           Fraunces
    (Subtle. If it ever competes with content, it goes.)
 
 Budget: **max 3 annotation kinds visible per viewport** — restraint is the luxury.
+
+### 2.8 THE PALETTE — monochrome, lit by neon (REPLACES every earlier colour rule)
+
+The page itself owns NO hue. All warmth and colour on screen comes from the furniture —
+the photographs and the 3D pieces — which is exactly the right hierarchy for a furniture
+studio: the product is the only colourful thing in the room.
+
+```
+GROUND     --ink        #070809      near-black page ground
+           --ink-2      #101214      raised dark panel
+           --paper      #F2F3F4      near-white ground (NEUTRAL: the old warm ivory
+                                     #F4F0E8 was a colour cast, and it goes)
+LINES      --line       white @ 12% on ink - black @ 14% on paper (1px hairlines)
+TEXT       --text-hi    #F5F6F7 on ink - #0B0C0D on paper
+           --text-lo    the same at 62% opacity (existing WCAG floors re-checked)
+NEON       --glow       white @ 4-8%, huge-radius shadows and radial pools
+           --filament   white @ 55% for 1px lit lines (the plot line, dimension
+                        lines, the plotter sweep) with a soft white bloom shadow
+```
+
+- **DEAD: every gold/brass token, the per-section accent scrub, the per-piece accent.**
+  `--accent` collapses to white; its consumers (CTA border, index numerals, tri glyphs,
+  focus ring, swatch ring) all become white-on-ink / black-on-paper.
+- "Neon" here means LIGHT, not colour: glow is white with at most an imperceptible cool
+  cast (<= 6% saturation) where pure white bloom would grey out; that cast reads as
+  temperature, never as a hue.
+- **The three exceptions, exactly:** (1) the logo — the wordmark's triangle keeps its
+  brand colour, untouched; (2) photographs; (3) the 3D pieces and the fabric swatch
+  chips, because the chips ARE material samples. Nothing else on the page may carry hue.
+- The statement's `grad-word` ("Crafted") is no longer a gold gradient: it is **the one
+  lit word** — white core with a soft neon bloom (text-shadow), a neon sign in a dark
+  studio window.
+- The golden thread motif is renamed and re-lit: **the plot line** — the same continuous
+  1px filament travelling the page, now white, drawn like the pen-line of a plotter.
 
 ---
 
@@ -185,7 +278,9 @@ DESKTOP (6 col)                              MOBILE (3 col)
 - Stage panel: A-LAND spanning cols 4–6 → width = 3col+2gut, height = width/√2.
   Deterministic aspect means the 3D camera framing is now a constant, not a guess.
 - **Kept from backup branch:** drag-to-spin with inertia, piece swap on scroll during the
-  pin (3 pieces), per-piece accent, defocused real-photo backdrop, idle+interaction mount.
+  pin (3 pieces, the caption changes with each), defocused real-photo backdrop,
+  idle+interaction mount. The old per-piece ACCENT change is dead (SS2.8): what changes
+  with the piece is the piece.
 - **New:** drawn dimension line under the stage (real mm from the model), crop marks,
   title block. Statement snaps to 88/88.
 
@@ -294,20 +389,144 @@ DESKTOP                                      MOBILE
 4. Everything else (single canvas + two drei Views, tier ladder, interaction/idle mount,
    swap choreography, inspect mode) carries over from the backup branch unchanged.
 
+### 5.5 THE IMAGE SYSTEM — "THE PLOTTER PRINT" (hooky, dynamic, on-concept)
+
+The page is a technical drawing, so **images do not fade in — they PRINT.** And because
+the page is monochrome while the furniture is not, the print has a second act that
+Saadman asked for in exactly these words: **on scroll, black and white becomes colour.**
+One signature entrance used everywhere (a signature repeated is a style; five different
+effects is a template), plus small per-sheet variations:
+
+1. **The print reveal** (every photograph, on scroll-in, once):
+   grayscale sheet -> a 1px white filament sweeps down the panel (the plotter head, with
+   a soft bloom) revealing the image -> then colour blooms in from grayscale.
+   Implementation: `clip-path: inset()` + `filter: grayscale(1) -> none`, both driven by
+   a ScrollTrigger class toggle with CSS transitions doing the easing; the filament is
+   one absolutely positioned child div. No per-frame JS on any image.
+2. **Living at rest:** inside its panel every photo runs a barely-there Ken Burns
+   (scale 1.0 -> 1.06 across the sheet's scroll life, translate at 0.9x) so no image is
+   ever a dead rectangle. Transform-only, scrubbed.
+3. **Hover (pointer devices):** colour deepens (saturate 1 -> 1.08), scale +0.02, and
+   the panel's crop marks light up filament-white. 300ms, expo.out.
+4. **Per-sheet variations of MOTION (never of colour):**
+   - Sheet 02 studio photo: prints top-to-bottom as the paper ground arrives — the
+     "lights on" beat of the whole page.
+   - Sheet 04 cards: each card prints as it enters the rail; mobile stagger 80ms.
+   - Sheet 05 showroom: the aperture reveal STAYS, and the print sweep runs inside it —
+     the doorway opens, the room prints, then colours.
+   - Sheet 07 MD portrait (when delivered): stays grayscale duotone AT REST beside his
+     words; colour arrives only on hover/tap — the one deliberately monochrome image.
+5. **Reduced motion / no-JS:** full-colour static images, no sweep, no Ken Burns — the
+   finished page, as always.
+
+---
+
+### 5.6 THE FOCUS LIGHT -- "THE LOADSHEDDING CUT" (Saadman's concept)
+
+The most Chattogram-true lighting effect there is: the current goes, the room sits grey,
+and then the light COMES BACK -- first a pool around the bulb, then the whole room. Every
+visitor Heaven's ads reach knows that exact moment in their body. We stage it, and we
+stage it mathematically.
+
+**The geometry.** Each participating panel declares one FOCUS POINT on the grid -- not an
+arbitrary spot: the intersection of a column line and a baseline multiple (default: the
+panel's centre column at 1/3 height, the same rule-of-thirds anchor the 3D horizon uses).
+From that point a circle of radius R divides the panel into its two zones:
+
+```
+      inside r < R:   FULL COLOUR, brightness 1.06, the lit zone
+      feather band:   R -> 1.18R, colour and light fall off smoothly
+      outside:        grayscale(1) brightness(0.68), the loadshedding zone
+
+      R is scrubbed by scroll:  R = R0 + (R1 - R0) x progress
+      R0 = 12% of the panel diagonal (a bulb's pool) -> R1 = 120% (fully lit)
+```
+
+**The flicker.** The moment R starts growing, the lit zone flickers once -- two 60ms dips
+(colour layer opacity 1 -> .35 -> 1 -> .55 -> 1), exactly like a fluorescent tube
+catching. One-shot, never repeated, killed under reduced motion. The flicker is what makes
+people FEEL the loadshedding rather than read a gradient.
+
+**Implementation.** Two stacked copies of the same image (one network fetch; the browser
+caches the file): base layer grayscale + dim, colour layer on top clipped by
+`clip-path: circle(var(--focus-r) at var(--focus-x) var(--focus-y))` -- clip-path circles
+interpolate natively and stay compositor-friendly; the scrub writes ONE custom property.
+A soft white bloom (the filament glow, SS2.8) rides the circle's edge during the reveal,
+so the light has a rim like a real bulb's.
+
+**Where it plays (and where it must not).** Two signature moves must never fight, so the
+page splits them:
+
+| Sheets | Effect |
+|---|---|
+| Sheet 02 studio photo + Sheet 05 showroom | **LOADSHEDDING CUT** -- the two room-scale photographs, the two "lights come on" beats. Sheet 05 keeps its aperture doorway; the cut plays inside it. |
+| Sheet 04 cards, Sheet 06 AR poster, Sheet 07 portrait | **PLOTTER PRINT** (SS5.5) -- object-scale images print, then colour. |
+| Sheet 01 hero backdrop | Neither: it stays the defocused room; its light already belongs to the 3D piece. |
+
+**Reduced motion / no-JS:** fully lit, full colour, no flicker -- the finished room.
+
+### 5.7 THE FLOODLIGHT -- one beam, one law (black-and-white light and shadow)
+
+**THE ONE LIGHT LAW.** Every sheet has exactly ONE light source, always from the
+top-left at 45 degrees. Every glow, beam, pool and shadow on the page obeys it: glows
+bloom toward bottom-right, shadows fall bottom-right, beams enter from top-left. One
+consistent light direction is what makes a monochrome page read as a LIT SPACE instead
+of a collection of effects. (45 degrees is already the page's only allowed angle.)
+
+**The beam.** A soft-edged shaft of white light (the floodlight) that lives on dark
+sheets:
+
+```
+   what   a 45-degree band of white, 6% -> 0 alpha across its width,
+          feathered by a mask, mix-blend-mode: screen over the sheet
+   moves  GSAP scrub: the beam PANS across the sheet as it crosses the
+          viewport (transform only -- translate/rotate, compositor-cheap)
+   size   beam width = 2 columns exactly (the grid holds even the light)
+```
+
+**THE LIGHT SCRIPT -- the beam changes BEHAVIOUR on scroll, never DIRECTION.**
+(Saadman asked whether the floodlight should come from left/right/top/bottom per
+section. Decision: no -- swapping the source direction per sheet breaks the One Light
+Law and reads as a gimmick. What varies per sheet is the beam's motion, speed and
+presence along the SAME 45-degree axis, plus a "switchover" at sheet boundaries, which
+delivers the scroll-driven life he wants while the page keeps feeling like one lit
+space.)
+
+| Sheet | Beam behaviour (one beam max, same 45 axis always) |
+|---|---|
+| 01 THE WINDOW | Pans slowly left -> right with scroll, following the turntable; in 3D the key light dips 250ms and snaps back at every piece swap (a floodlight being switched). SplitText chars brighten 0.72 -> 1 with a 40ms stagger as the beam crosses the headline once at load. |
+| SWITCHOVER (every entry into a dark sheet) | The sheet's light arrives 120ms AFTER the sheet does: beam+glow opacity dips to .4 and snaps to 1, one-shot -- a breaker being flipped room to room. Scroll-triggered toggle, never scrubbed (a scrubbed flicker judders). |
+| 02 THE STUDIO | NO beam: the loadshedding cut owns light on this sheet. |
+| 03 THE DRAFTING TABLE | Pans right -> left (reverse travel, same axis) scrubbed by the pin's progress; blueprint edge brightness glints as the beam's x crosses the stage. |
+| 04 THE RANGE | Paper sheet: no beam; the 135-degree long shadows carry the light story. |
+| 05 THE SHOWROOM | After the cut completes, one slow watchman's pass, then still. |
+| 07 THE MAKER | Static shaft, never pans: the quote sits inside it; the portrait stands half in light, half in shadow along the 45. |
+
+**Shadows (the other half of black-and-white).** Panels on dark sheets cast one long
+soft shadow at 135 degrees (bottom-right), 24u long, 8% black on paper / deeper ink on
+ink; the 3D contact shadows already obey the same direction via the key light position.
+No ambient drop-shadows anywhere else -- if it has a shadow, the One Light made it.
+
+**Reduced motion:** the beam exists but never pans; the statement is simply lit.
+
 ---
 
 ## 6. INTEGRATION PLAN (file by file, in order)
 
 | # | File | Change |
 |---|---|---|
-| 1 | `globals.css` | New token block: `--u, --cols, --gutter, --margin, --col, --content-max`; type roles re-snapped (§2.6); panel classes `.panel-land/.panel-port/.panel-sq` (aspect-ratio, radius 0, hairline); structural grid derived from the SAME tokens (§2.5); remove 34px decorative grid tokens. |
+| 1 | `globals.css` | New token block: `--u, --cols, --gutter, --margin, --col, --content-max`; **the SS2.8 monochrome purge** (gold/brass tokens deleted, `--accent` collapsed to white, neutral paper, glow/filament tokens); type roles re-snapped (§2.6); panel classes `.panel-land/.panel-port/.panel-sq` (aspect-ratio, radius 0, hairline); structural grid derived from the SAME tokens (§2.5); remove 34px decorative grid tokens. |
 | 2 | `sections.module.css` | Every section becomes `display:grid; grid-template-columns: repeat(6, 1fr)` (3 on mobile) with explicit `grid-column` spans from §4. Delete per-section ad-hoc widths. |
-| 3 | NEW `ui/SheetBlock.tsx` | The title block. Server component, props: sheet no, title. Rendered by every section. |
+| 3 | NEW `ui/SheetBlock.tsx` | The title block AND the wayfinding (SS0.5): sheet no, beat name, `NEXT:` cue, all read from `copy.ts story`. Server component, rendered by every section. |
+| 3b | `content/copy.ts` | New `story` object: eight beats (name, caption, next). Beat captions rendered at each sheet's head; the Index nav overlay re-labelled as the map of beats. |
 | 4 | NEW `ui/DimensionLine.tsx` | Client island: horizontal/vertical drawn dimension with ticks; subscribes to stage-state's measured size for 3D stages; static values allowed for photos. |
+| 4b | `ui/Photo.tsx` + `PageMotion.tsx` | **The plotter print** (SS5.5): Photo renders the filament child + a data-print hook; PageMotion owns the one reusable reveal (class toggle, CSS eases) and the Ken Burns scrub. |
+| 4c | NEW `ui/FocusLight.tsx` + `PageMotion.tsx` | **The loadshedding cut** (SS5.6): dual-layer image with a clip-path circle at a grid-anchored focus point; scroll scrubs `--focus-r`; one-shot flicker on first reveal. Sheets 02 and 05 only. |
+| 4d | NEW `ui/FloodBeam.tsx` + `StageCanvas.tsx` | **The floodlight** (SS5.7): the 2-column 45-degree beam (screen-blend div, transform-only pan) on sheets 01/03/05/07; 3D key light gets visible falloff + swap-dip; all shadows re-aimed to the One Light Law (135 degrees). |
 | 5 | `Hero.tsx` + `Turntable.tsx` | Re-lay on the grid per Sheet 01; stage becomes `.panel-land`; dimension line + crop marks mounted on L5. |
 | 6 | `Bespoke.tsx` | Steps to [1–2], stage `.panel-land` [3–6]; dimension text OUT of the panel (bug fix); mobile pinned order per §4. |
 | 7 | `Brand.tsx`, `Collections.tsx`, `Showroom.tsx`, `Ar.tsx`, `Proof.tsx`, `Footer.tsx` | Per §4 maps. Collections cards → strict 2-col A-PORT; Proof timeline → dimension-line form. |
-| 8 | `PageMotion.tsx` | Selectors follow markup changes; choreography itself unchanged (pins, swaps, dims, marquee, thread). Statement SplitText sizes re-checked at 88/88. |
+| 8 | `PageMotion.tsx` | Selectors follow markup changes; **accent scrub deleted** (SS2.8); the thread re-lit as the white plot line; choreography otherwise unchanged (pins, swaps, dims, marquee). Statement SplitText sizes re-checked at 88/88. |
 | 9 | NEW dev overlay | `?grid=1` draws the true 6/3-col grid + 8u baseline as an overlay so every sheet can be AUDITED against the math (screenshot per sheet, desktop+mobile, before calling it done). |
 | 10 | Docs | PROGRESS.md entries per step; ASSETS.md untouched; README gets the one-liner (§0). |
 
@@ -338,5 +557,8 @@ tier ladder, watchdog, licences. This is a re-LAYOUT, not a rebuild.
 - [ ] All panels report aspect within 0.5% of √2 or 1 (script reads getBoundingClientRect).
 - [ ] Only spacing values that are multiples of u appear in computed section styles.
 - [ ] Lighthouse mobile ≥ 90 / a11y 100 re-run after re-layout (contrast floors preserved).
+- [ ] **Monochrome audit:** a script walks every rendered element's computed color /
+      border-color / background and FAILS on any saturated value outside a photo, the 3D
+      canvas, a swatch chip or the logo triangle (SS2.8's three exceptions).
 - [ ] Real-phone pass by Saadman (the headless raster artifact makes his eyes the only
       trustworthy check for the pinned sheets).

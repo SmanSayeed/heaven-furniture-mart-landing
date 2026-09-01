@@ -243,3 +243,19 @@ All tokens live in :root (--grid-cell, --grid-major, --grid-neon, --grid-core, -
 - Verified: bespoke 3D genuinely renders (canvas pixel read: 12% opaque, maxA 255).
   Deep-scroll black screenshots are a headless raster artifact, NOT a page bug.
 - Next: Saadman reviews BLUEPRINT.md → implement §6 order 1→10.
+
+## 2026-09-01 (late evening · plan locked, handoff written)
+- BLUEPRINT.md finalized with all five directives: the math (u=8, 6/3 col, sqrt2
+  panels), THE STORY (8 beats, wayfinding), monochrome palette (SS2.8), plotter print
+  (SS5.5), loadshedding cut (SS5.6), floodlight + One Light Law + LIGHT SCRIPT (SS5.7:
+  behaviour varies per sheet, direction never; switchover dip at dark-sheet entries).
+- Wrote BUILD-GUIDE.md: execution handoff for the implementing model. State of the
+  world (verified inventories), 16 hard-won traps, 10-step build order with per-step
+  gates, verification recipes (dpr 0.75 math, reduced-motion raster workaround, canvas
+  pixel read, monochrome + grid audits), do-not-touch list.
+- Rewrote SAADMAN-TASKS.md v2: WhatsApp/deadline first, all-10 Gemini cleans (colour
+  fidelity now critical: photos carry ALL the site's colour), Meshy + USDZ (iPhone AR),
+  video spec, people photos; pen-and-paper task dropped (fights the precise-drawing
+  concept; MD signature stays).
+- All three docs uncommitted on redesign/drawn-to-measure pending Saadman's git nod.
+- Next: implement BUILD-GUIDE SS5 steps 1-10 in order.
