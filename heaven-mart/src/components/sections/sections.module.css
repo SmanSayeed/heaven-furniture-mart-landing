@@ -1,0 +1,1334 @@
+/* Shared layout styles for the eight sections + sticky CTA.
+   Text roles and primitives come from globals.css; this file is layout only. */
+
+/* ============ S1 · HERO ============ */
+.hero {
+  position: relative;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  padding: 1.1rem var(--pad-x) 1.25rem;
+  overflow: hidden; /* the photo is scaled 1.12 and parallaxes inside this */
+  isolation: isolate; /* the hero's layers stack against each other only */
+}
+
+/* ---- S1b layer 0: the room ---- */
+.heroPhotoWrap {
+  position: absolute;
+  inset: -6% 0; /* headroom so the parallax never exposes an edge */
+  z-index: 0;
+}
+
+.heroPhoto {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* scaled per PLAN S1b so the parallax has somewhere to travel */
+  transform: scale(1.12);
+}
+
+/* text contrast at the top, clearing at the bottom so the vitrine glow reads
+   against the room. This is the full-strength (no-JS) state; PageMotion only
+   ever animates it between 0.82 and 1. */
+.heroScrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--ink) 94%, transparent) 0%,
+      color-mix(in srgb, var(--ink) 78%, transparent) 42%,
+      color-mix(in srgb, var(--ink) 62%, transparent) 70%,
+      color-mix(in srgb, var(--ink) 92%, transparent) 100%
+    );
+}
+
+/* every hero layer above the photo shares this stacking context */
+.heroTop,
+.heroMain,
+.heroBottom,
+.vitrine {
+  position: relative;
+  z-index: 2;
+}
+
+/* The Index pill is fixed in the top-RIGHT corner at every breakpoint, so
+   this row owns the left only and reserves the rest. The wordmark block is
+   two lines tall, hence a real flex row with a gap rather than trusting
+   whatever space happens to be left over. */
+.heroTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 1rem;
+  /* clearance for the fixed nav pill: its width plus breathing room */
+  padding-right: 7.5rem;
+  min-height: 3rem;
+}
+
+/* THE LOGO BLOCK (PLAN v3): the wordmark sits in a solid --brand rectangle,
+   the one saturated block on an otherwise monochrome page. */
+.wordmark {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  padding: 0.5rem 0.75rem 0.55rem;
+  border-radius: 10px;
+  background: var(--brand);
+  color: var(--paper);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+  line-height: 1;
+  letter-spacing: 0.14em;
+}
+
+.wordmarkSub {
+  display: block;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.45rem;
+  letter-spacing: 0.3em;
+  opacity: 0.72;
+  margin-top: 0.2rem;
+}
+
+/* Tuned against a real 390 x 844 viewport: at the old rhythm the CTA wrapped,
+   the sticky pill sat on top of it and the AR hook fell below the fold. The
+   gaps are deliberately tight here and relax at 700px up. */
+.heroMain {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.85rem;
+  padding-top: 1rem;
+}
+
+@media (min-width: 700px) {
+  .heroMain {
+    gap: 1.4rem;
+    padding-top: 3rem;
+  }
+}
+
+.heroSub {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  /* sized to stay ONE line at 390px: at 0.9rem/0.24em it wrapped */
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  white-space: nowrap;
+}
+
+@media (min-width: 480px) {
+  .heroSub {
+    font-size: 0.9rem;
+    letter-spacing: 0.24em;
+  }
+}
+
+.heroCtaRow {
+  margin-top: 0.35rem;
+}
+
+/* the hero pill never wraps: the short label plus tighter tracking keeps it
+   to one line at 390px */
+.heroCtaRow .btn {
+  white-space: nowrap;
+}
+
+@media (max-width: 479px) {
+  .heroCtaRow .btn {
+    padding: 0.95rem 1.35rem;
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+  }
+}
+
+@media (min-width: 700px) {
+  .heroCtaRow {
+    margin-top: 0.6rem;
+  }
+}
+
+/* ---- S1 layer 1: THE TURNTABLE ----
+   The piece stands in a pool of light on a floor line. Deliberately NOT a
+   framed panel: a bordered box with nothing in it reads as a broken image
+   for as long as the 3D takes to arrive, while light and a floor line read
+   as a composition the whole time. */
+.turntable {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  justify-items: center;
+  gap: 0.55rem;
+  margin-top: 0.25rem;
+}
+
+.stage {
+  position: relative;
+  width: min(100%, 30rem);
+  /* the object owns a quarter of the fold on a phone: enough to read as the
+     subject, little enough that the statement and both pills stay above it */
+  height: min(27dvh, 220px);
+  /*
+    The whole mobile gesture story in one line: the browser keeps vertical
+    panning (the page scrolls normally under a finger) and hands us only the
+    horizontal component, which is what spins the piece. Without this, a
+    finger on the sofa would trap the visitor in the hero.
+  */
+  touch-action: pan-y;
+}
+
+/* the grab affordance appears only once the 3D is genuinely up */
+.stageLive {
+  cursor: grab;
+}
+
+.stageLive:active {
+  cursor: grabbing;
+}
+
+@media (min-height: 900px) {
+  .stage {
+    height: min(30dvh, 270px);
+  }
+}
+
+/* the light the piece stands in */
+.stagePool {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(42% 38% at 50% 58%, var(--glow-cool), transparent 72%);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* the soft contact shadow that seats the object on the floor line: this is
+   what stops a floating cutout from looking pasted on, and it survives on
+   low tier where the real shadow-mapped one never renders */
+.stageShadow {
+  position: absolute;
+  left: 22%;
+  right: 22%;
+  bottom: 15%;
+  height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(50% 50% at 50% 50%, rgba(0, 0, 0, 0.55), transparent 70%);
+  filter: blur(6px);
+  pointer-events: none;
+}
+
+.stageFloor {
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  bottom: 16%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--line-on-ink) 28%, var(--line-on-ink) 72%, transparent);
+  pointer-events: none;
+}
+
+/* the brand triangle at the centre of the plinth: the still, intentional
+   state before (and, on low tier, instead of) the piece. Fades out the
+   moment real geometry is on screen. */
+.stageMark {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 12px;
+  height: 11px;
+  transform: translate(-50%, -50%);
+  background: var(--accent);
+  clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+  opacity: 0.5;
+  transition: opacity 0.6s ease;
+  pointer-events: none;
+}
+
+.stageLive .stageMark {
+  opacity: 0;
+}
+
+/* The drawn floor and the drawn shadow are the NO-3D composition. Once real
+   geometry is on the plinth it brings its own contact shadow, and the two
+   sitting at different heights is exactly what makes a render look pasted
+   on, so the drawn pair retires. */
+.stageLive .stageFloor,
+.stageLive .stageShadow {
+  opacity: 0;
+}
+
+.stageFloor,
+.stageShadow {
+  transition: opacity 0.6s ease;
+}
+
+/* ---- the caption: what the piece IS ---- */
+.stageCaption {
+  display: grid;
+  justify-items: center;
+  gap: 0.3rem;
+  text-align: center;
+  min-height: 2.6rem; /* reserved: the hint appearing must not shift the type */
+}
+
+.pieceName {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  letter-spacing: -0.01em;
+  color: var(--ivory);
+}
+
+.pieceName .specimen {
+  opacity: 0.62;
+}
+
+.dragHint {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--accent);
+  animation: hintIn 0.6s ease both;
+}
+
+@keyframes hintIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+/* two chevrons facing out: "this turns", without a word of instruction */
+.dragGlyph {
+  width: 20px;
+  height: 8px;
+  background:
+    linear-gradient(45deg, transparent 46%, currentColor 46%, currentColor 60%, transparent 60%) left / 9px 8px no-repeat,
+    linear-gradient(-45deg, transparent 46%, currentColor 46%, currentColor 60%, transparent 60%) right / 9px 8px no-repeat;
+  opacity: 0.8;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dragHint {
+    animation: none;
+  }
+}
+
+.heroBottom {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.scrollHint {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+/* on phones the sticky pill owns the bottom-right corner; the specimen row
+   would collide with it, so it appears only from tablet width up */
+.heroSpecimens {
+  display: none;
+}
+
+@media (min-width: 700px) {
+  .heroSpecimens {
+    display: flex;
+  }
+}
+
+@media (min-width: 900px) {
+  .hero {
+    padding-top: 2rem;
+  }
+  /* From 900px the hero is two columns: type left, piece right. The old
+     absolute vitrine overlapped the headline at 1280px (verified); a real
+     column cannot, at any width. */
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: auto 1fr auto;
+    column-gap: 3rem;
+    align-items: center;
+  }
+  .heroTop {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+  .heroMain {
+    grid-column: 1;
+    grid-row: 2;
+    padding-top: 0;
+  }
+  .turntable {
+    grid-column: 2;
+    grid-row: 2;
+    align-self: center;
+    margin-top: 0;
+    gap: 1rem;
+  }
+  .heroBottom {
+    grid-column: 1 / -1;
+    grid-row: 3;
+  }
+  .stage {
+    width: 100%;
+    height: min(46dvh, 420px);
+  }
+  .pieceName {
+    font-size: 1.05rem;
+  }
+  /*
+    The statement now lives in HALF the width, so the full-bleed size (up to
+    9rem) ran to four lines and pushed the CTA and the specimen row below the
+    fold at 1280x800 (measured). Sized to the column, and additionally capped
+    against viewport HEIGHT so a short laptop screen cannot be overrun by a
+    wide one's type.
+  */
+  .heroMain :global(.statement) {
+    font-size: min(clamp(2.6rem, 5vw, 4.4rem), 13dvh);
+  }
+}
+
+/* ============ S2 · BRAND PLACARD ============ */
+.brand {
+  display: grid;
+  gap: 2.25rem;
+  /* the ivory curtain (PLAN 2.5): S2 must paint ABOVE the fixed 3D canvas
+     (z-index 4) so the pinned hero and its chair are covered as the curtain
+     slides up. Static CSS, harmless without JS. */
+  z-index: 5;
+}
+
+.placard {
+  display: grid;
+  gap: 0.9rem;
+}
+
+/* The photograph BREAKS THE MARGIN. A picture that stops politely at the
+   same gutter as the paragraph beside it reads as a document; one that runs
+   off the edge of the page reads as a magazine spread, and this section is
+   the page's first real look at Heaven's work. Edge to edge on a phone,
+   bleeding off the right on desktop. */
+.brandPhoto {
+  position: relative;
+  aspect-ratio: 5 / 4;
+  margin-inline: calc(var(--pad-x) * -1);
+  overflow: hidden;
+}
+
+.brandPhotoCaption {
+  position: absolute;
+  left: var(--pad-x);
+  bottom: 0.85rem;
+  color: var(--paper);
+  /* the photographs are bright: the caption needs its own shadow, not a
+     scrim over the whole picture */
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.75);
+}
+
+@media (min-width: 900px) {
+  .brand {
+    grid-template-columns: 5fr 7fr;
+    align-items: center;
+    gap: 4.5rem;
+  }
+  .brandPhoto {
+    /* off the right edge of the viewport, and taller than it is wide: the
+       eye goes to the picture, the reading happens in the quiet column */
+    aspect-ratio: 4 / 5;
+    max-height: 80dvh;
+    margin-inline: 0 calc(var(--pad-x) * -1);
+    border-radius: 20px 0 0 20px;
+    /* max-height makes the box narrower than its column; without this it
+       would sit at the column's LEFT edge and the bleed would not reach the
+       viewport at all (measured: 127px short at 1280) */
+    justify-self: end;
+  }
+  .brandPhotoCaption {
+    left: 1.5rem;
+    bottom: 1.25rem;
+  }
+  /* the placard sits low and wide-spaced against all that picture */
+  .brand .placard {
+    gap: 1.15rem;
+  }
+}
+
+/* ============ TICKER ============ */
+.ticker {
+  /* follows S2 up the curtain: same layer, above the canvas */
+  position: relative;
+  z-index: 5;
+  overflow: hidden;
+  border-top: 1px solid var(--line-on-ink);
+  border-bottom: 1px solid var(--line-on-ink);
+  padding: 1.1rem 0;
+  white-space: nowrap;
+}
+
+.tickerInner {
+  /* PageMotion loops this on x every frame; promote it once, permanently */
+  will-change: transform;
+  display: inline-flex;
+  align-items: center;
+  gap: 2.2rem;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 1.35rem;
+  letter-spacing: -0.03em;
+  padding-left: var(--pad-x);
+}
+
+.tickerInner i {
+  font-style: normal;
+  color: var(--accent);
+  font-size: 0.7rem;
+}
+
+/* ============ S3 · BESPOKE ============ */
+.bespoke {
+  display: grid;
+  gap: 3rem;
+}
+
+.bespokeStage {
+  border-radius: 18px;
+  aspect-ratio: 1 / 1;
+  max-height: 52dvh;
+  background:
+    radial-gradient(70% 60% at 50% 45%, rgba(200, 169, 106, 0.1), transparent 70%),
+    var(--ink-soft);
+  border: 1px solid var(--line-on-ink);
+  display: grid;
+  place-items: center;
+}
+
+.steps {
+  display: grid;
+}
+
+.step {
+  display: grid;
+  gap: 0.55rem;
+  padding: 1.6rem 0;
+  border-top: 1px solid var(--line-on-ink);
+}
+
+.stepWord {
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  font-size: clamp(1.9rem, 7vw, 3.2rem);
+  line-height: 1;
+}
+
+.swatchDock {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.swatch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 1.1rem;
+  border: 1px solid var(--graphite);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ink-2) 55%, transparent);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: var(--text-specimen);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  /* real <button> now (SwatchDock): strip the UA chrome, keep the chip look */
+  color: inherit;
+  cursor: pointer;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* selected fabric: accent ring (aria-pressed doubles as the style hook, so
+   the visual state can never drift from the announced state) */
+.swatch[aria-pressed='true'] {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+.swatchDot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1px solid rgba(244, 240, 232, 0.35);
+}
+
+.bespokeCta {
+  margin-top: 0.5rem;
+}
+
+@media (min-width: 900px) {
+  .bespoke {
+    grid-template-columns: 6fr 5fr;
+    align-items: center;
+    gap: 4.5rem;
+  }
+}
+
+/* ============ S4 · COLLECTIONS ============ */
+.collections {
+  display: grid;
+  /* minmax(0, 1fr), not the implicit auto track: auto sizes to max-content,
+     so the desktop rail (isRail, non-wrapping flex child) would silently
+     stretch this column to the full track width and the horizontal pin would
+     measure zero travel. Identical rendering in the normal grid state. */
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2.5rem;
+}
+
+.cards {
+  display: grid;
+  gap: 2.25rem;
+}
+
+.card {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.cardMedia {
+  aspect-ratio: 4 / 5;
+  position: relative;
+}
+
+.cardImg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cardHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.cardName {
+  font-family: var(--font-display), system-ui, sans-serif;
+  letter-spacing: -0.03em;
+  font-size: 1.6rem;
+  font-weight: 600;
+}
+
+.collectionsFoot {
+  display: flex;
+  justify-content: flex-end;
+}
+
+@media (min-width: 900px) {
+  .cards {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 3rem 2.5rem;
+  }
+}
+
+/* ============ S5 · SHOWROOM ============ */
+.showroom {
+  display: grid;
+  gap: 2rem;
+}
+
+.showroomMedia {
+  aspect-ratio: 16 / 10;
+}
+
+.showroomFoot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+}
+
+/* ============ S6 · AR ============ */
+.ar {
+  display: grid;
+  gap: 2rem;
+}
+
+.arMedia {
+  aspect-ratio: 1 / 1;
+  max-width: 30rem;
+}
+
+@media (min-width: 900px) {
+  .ar {
+    grid-template-columns: 5fr 6fr;
+    align-items: center;
+    gap: 4rem;
+  }
+}
+
+/* ============ S7 · PROOF ============ */
+.proof {
+  display: grid;
+  gap: 3.5rem;
+}
+
+.quote {
+  /* the only serif left on the page, so the brief's "elegant serif" intent
+     still has a real home (PLAN v3) */
+  font-family: var(--font-quote), Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(1.35rem, 4.6vw, 2.2rem);
+  line-height: 1.35;
+  max-width: 24ch;
+  text-wrap: balance;
+}
+
+.quoteMark {
+  color: var(--accent);
+  font-size: 1.4em;
+}
+
+.quoteBy {
+  margin-top: 1.4rem;
+  display: grid;
+  gap: 0.2rem;
+}
+
+.timeline {
+  display: grid;
+  border-left: 1px solid var(--line-on-ink);
+}
+
+.timeRow {
+  display: grid;
+  grid-template-columns: 4.5rem 1fr;
+  gap: 1rem;
+  padding: 0.85rem 0 0.85rem 1.25rem;
+  align-items: baseline;
+}
+
+.timeYear {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+}
+
+.trust {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+@media (min-width: 900px) {
+  .proof {
+    grid-template-columns: 6fr 5fr;
+    gap: 4rem;
+  }
+  .proofSide {
+    display: grid;
+    gap: 2.5rem;
+    align-content: start;
+  }
+}
+
+/* ============ S8 · FOOTER ============ */
+.footer {
+  display: grid;
+  gap: 2.75rem;
+  padding-bottom: 6.5rem; /* clearance for the sticky pill */
+}
+
+.footerContact {
+  display: grid;
+  gap: 1.6rem;
+}
+
+.contactBlock {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.contactBig {
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  font-size: 1.25rem;
+}
+
+.socials {
+  display: flex;
+  gap: 1.1rem;
+}
+
+.socials a {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid var(--line-on-ink);
+  transition: border-color 0.3s ease, color 0.3s ease;
+}
+
+.socials a:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.socials svg {
+  width: 17px;
+  height: 17px;
+}
+
+.footerBottom {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+@media (min-width: 900px) {
+  .footerContact {
+    grid-template-columns: repeat(3, auto);
+    justify-content: space-between;
+    align-items: start;
+  }
+}
+
+/* ============ STICKY MOBILE CTA ============ */
+/* while the Index overlay is open the pill would collide with the overlay's
+   own WhatsApp CTA (verified at 390px), and two CTAs on one screen breaks
+   the single-CTA rule. IndexNav sets the flag on <html>. */
+:global(html[data-nav-open='1']) .sticky,
+/* while the hero is on screen its own CTA is the call to action; the pill
+   would otherwise sit on top of it at 390px (verified) */
+:global(html[data-hero-view='1']) .sticky {
+  display: none;
+}
+
+.sticky {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 90;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.85rem 1.3rem;
+  border: 1px solid var(--brass);
+  color: var(--ivory);
+  font-family: var(--font-sans), sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  border-radius: 999px;
+  /* frosted glass over content (Midnight Studio rule 3) */
+  background: color-mix(in srgb, var(--ink-2) 72%, transparent);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 6px 30px rgba(0, 0, 0, 0.45);
+}
+
+.sticky svg {
+  width: 16px;
+  height: 16px;
+  color: var(--brass);
+}
+
+@media (min-width: 900px) {
+  .sticky {
+    display: none;
+  }
+}
+
+/* the golden thread's start: short brass rule under the h1. Fully drawn by
+   default (no-JS / reduced motion); PageMotion draws it left-to-right. */
+.heroRule {
+  display: block;
+  width: clamp(3.5rem, 9vw, 6rem);
+  height: 1px;
+  background: var(--brass);
+  transform-origin: left center;
+}
+
+/* ============ S4 · DESKTOP RAIL (JS-applied, >= 900px) ============
+   PageMotion adds isRail to .cards only when pinning horizontally; without
+   JS (or under 900px / reduced motion) the grid above remains the layout. */
+.cards.isRail {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 3rem;
+  overflow: visible;
+  will-change: transform;
+}
+
+.cards.isRail > * {
+  flex: 0 0 44vw;
+}
+
+/* rail mode only: the 4/5 media at 44vw is taller than most desktop
+   viewports, which would hide the card's name and detail for the whole pin.
+   Cap the media to what the pinned viewport can actually show (viewport
+   minus section padding, title and the card's own text). */
+.cards.isRail .cardMedia {
+  aspect-ratio: auto;
+  height: clamp(18rem, 100dvh - 27rem, 34rem);
+}
+
+/* ============ THE ONE 3D CANVAS (Sprint 3 hero, Sprint 4 shared) ============
+   Fixed full-viewport wrapper for the single WebGL context; drei Views
+   scissor-render into the stage divs' rects, so only those areas ever show
+   pixels. pointer-events: none keeps every link and button under it live.
+   z-index 4: over section backgrounds, under the thread (10), grain (80)
+   and sticky pill (90). Fades in once the GLB resolves; until then, and
+   forever on low tier / no JS, the CSS stages are the finished look. */
+.stageCanvas {
+  position: fixed;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+
+/* R3F sets pointer-events back on its own canvas/wrapper, which would let a
+   fixed full-viewport canvas swallow every click on the page under it; the
+   whole subtree must stay inert (verified: Playwright click interception) */
+.stageCanvas * {
+  pointer-events: none !important;
+}
+
+.stageCanvasReady {
+  opacity: 1;
+}
+
+/* ============ S3 · PINNED STATE (JS-applied, Sprint 4) ============
+   Only while the S3 pin exists (mid/high tier, motion OK): compress the
+   section so stage AND steps share one viewport. The default spacious
+   layout above remains the static / no-JS / low-tier truth. */
+.bespoke.isPinned {
+  min-height: 100dvh;
+  align-content: center;
+  padding-top: 4rem;
+  padding-bottom: 1.25rem;
+  gap: 1rem;
+}
+
+.bespoke.isPinned .bespokeStage {
+  order: -1; /* stage on top on mobile: the object is the story */
+  aspect-ratio: auto;
+  height: 34dvh;
+  max-height: none;
+}
+
+.bespoke.isPinned .step {
+  padding: 0.65rem 0;
+}
+
+.bespoke.isPinned .bespokeCta {
+  margin-top: 0.75rem !important;
+}
+
+@media (min-width: 900px) {
+  .bespoke.isPinned {
+    padding-top: 5rem;
+    gap: 3rem;
+  }
+  .bespoke.isPinned .bespokeStage {
+    order: 0; /* two-column layout again: text left, stage right */
+    height: min(60dvh, 34rem);
+  }
+  .bespoke.isPinned .step {
+    padding: 1rem 0;
+  }
+}
+
+
+/* ============ S1c · THE AR HOOK ============
+   Frosted viewfinder pill under the CTA. Pure CSS animation, no JS: the
+   global reduced-motion rule already flattens these durations. */
+.arHook {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+  padding: 0.7rem 1.1rem 0.7rem 0.85rem;
+  border: 1px solid var(--graphite);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ink-2) 62%, transparent);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  transition: border-color 0.35s ease, transform 0.35s ease;
+}
+
+.arHook:hover {
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.arHookGlyph {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  color: var(--accent);
+  flex: none;
+}
+
+.arHookGlyph svg {
+  width: 26px;
+  height: 26px;
+}
+
+/* the four corner brackets breathe, like a live viewfinder */
+.arBracket {
+  animation: arBreathe 3.2s ease-in-out infinite;
+  transform-origin: center;
+}
+
+.arPulse {
+  animation: arPulse 3.2s ease-in-out infinite;
+  transform-origin: center;
+}
+
+@keyframes arBreathe {
+  0%, 100% { transform: scale(1); opacity: 0.85; }
+  50% { transform: scale(1.08); opacity: 1; }
+}
+
+@keyframes arPulse {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 0.9; }
+}
+
+.arHookText {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.arHookLabel {
+  font-family: var(--font-sans), sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+}
+
+/* ============ S1d · THE INDEX (chrome + overlay) ============ */
+.indexBtn {
+  position: fixed;
+  top: 1.15rem;
+  right: var(--pad-x);
+  z-index: 95; /* over the canvas (4) and pill (90), under the preloader */
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 1.05rem;
+  border: 1px solid var(--graphite);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ink-2) 62%, transparent);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  color: var(--paper);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  cursor: pointer;
+  transition: transform 0.45s ease, opacity 0.45s ease, border-color 0.3s ease;
+}
+
+.indexBtn:hover {
+  border-color: var(--accent);
+}
+
+/* hides on scroll down, returns on scroll up */
+.indexBtnHidden {
+  transform: translateY(-150%);
+  opacity: 0;
+}
+
+.indexGlyph {
+  display: grid;
+  gap: 4px;
+  width: 16px;
+}
+
+.indexGlyph span {
+  display: block;
+  height: 1px;
+  background: currentColor;
+}
+
+.indexGlyph span:last-child {
+  width: 60%;
+  background: var(--accent);
+}
+
+.indexOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 94;
+  /* Opaque, and deliberately NOT backdrop-filtered: PLAN Part 1.5's
+     performance guard caps blur to small panels and forbids a full-screen
+     one, and at 97% the hero type still ghosted through behind the list.
+     The glass cue lives on the nav pill and the vitrine instead. */
+  background: var(--ink);
+  color: var(--ivory);
+  display: grid;
+  grid-template-rows: 1fr auto;
+  padding: 5.5rem var(--pad-x) 2rem;
+  overflow-y: auto;
+}
+
+.indexOverlayInner {
+  position: relative;
+  display: grid;
+  align-content: center;
+  gap: 2rem;
+}
+
+.indexList {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  gap: 0.15rem;
+}
+
+.indexRow {
+  border-top: 1px solid var(--line-on-ink);
+}
+
+.indexRow:last-child {
+  border-bottom: 1px solid var(--line-on-ink);
+}
+
+.indexLink {
+  width: 100%;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.7rem 0;
+  background: none;
+  border: 0;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+/* the mask is what makes the name RISE instead of merely fading */
+.indexMask {
+  display: block;
+  overflow: hidden;
+}
+
+.indexName {
+  display: block;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: clamp(1.9rem, 8vw, 4rem);
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  transition: color 0.3s ease;
+}
+
+.indexLink:hover .indexName,
+.indexLink:focus-visible .indexName {
+  color: var(--accent);
+}
+
+/* behind the type on mobile, a real column on desktop */
+.indexMedia {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  opacity: 0.2;
+  pointer-events: none;
+}
+
+.indexMediaPanel {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.indexMediaOn {
+  opacity: 1;
+}
+
+.indexFoot {
+  display: grid;
+  gap: 1.25rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--line-on-ink);
+}
+
+.indexFootCol {
+  display: grid;
+  gap: 0.3rem;
+}
+
+@media (min-width: 900px) {
+  .indexOverlayInner {
+    grid-template-columns: 7fr 5fr;
+    align-items: center;
+    gap: 4rem;
+  }
+  .indexMedia {
+    position: relative;
+    inset: auto;
+    z-index: 2;
+    opacity: 1;
+    aspect-ratio: 4 / 5;
+    border-radius: 18px;
+    overflow: hidden;
+  }
+  .indexFoot {
+    grid-template-columns: repeat(3, auto);
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
+/* ============ FOOTER · the no-JS category index ============ */
+.footerIndex {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.footerIndexList {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.footerIndexLink {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.7rem;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  font-size: 1.15rem;
+  transition: color 0.3s ease;
+}
+
+.footerIndexLink:hover {
+  color: var(--accent);
+}
+
+@media (min-width: 900px) {
+  .footerIndexList {
+    grid-template-columns: repeat(5, auto);
+    justify-content: start;
+    gap: 2rem;
+  }
+}
+
+
+.bespokeStageCol {
+  display: grid;
+  align-content: center;
+}
+
+/* while 360 mode is armed the stage takes the pointer, but touch-action
+   pan-y keeps a vertical swipe scrolling the page: never trap the visitor
+   inside the canvas (PLAN S3b) */
+.bespokeStage {
+  touch-action: pan-y;
+}
+
+/* ============ S3b · 360 INSPECT AFFORDANCE ============
+   Fades in under the vitrine once the pinned story resolves. PageMotion sets
+   its initial state from JS, so with JS off it is simply absent. */
+.inspectHint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  margin-top: 0.85rem;
+  color: var(--accent);
+}
+
+.inspectHint svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ============ PHOTOGRAPHY ============
+   One rule for every photograph on the page. The LQIP rides as the element's
+   own background (see Photo.tsx), so `cover` has to apply to both.
+
+   The grade is CSS, not baked into the files: these are the client's real
+   photographs and they must stay editable, honest and re-gradable. A little
+   saturation comes out and a little contrast goes in, which is what settles
+   a warm showroom photo into a near-monochrome page without ever making the
+   furniture look like a different colour than it is. */
+.photo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background-size: cover;
+  background-position: center;
+  filter: saturate(0.86) contrast(1.06);
+}
+
+/* ============ S6 · AR PANEL ============ */
+.arPanel {
+  display: grid;
+  gap: 0.9rem;
+  justify-items: start;
+}
+
+.arPoster {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+/* the live viewer takes the poster's exact box, so pressing the button
+   swaps content without moving a single pixel of the layout */
+.arModel {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  border-radius: 18px;
+  overflow: hidden;
+  background: transparent;
+  /* the page keeps vertical gestures; the viewer gets horizontal ones */
+  touch-action: pan-y;
+}
+
+.arButton {
+  margin-top: 0.15rem;
+}

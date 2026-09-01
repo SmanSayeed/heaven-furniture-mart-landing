@@ -101,6 +101,248 @@ the safety net, and it is why the static skeleton ships before any 3D.
 
 ---
 
+# PART 1.5 — DESIGN LANGUAGE: "MIDNIGHT STUDIO" (locked 2026-09-01, per Saadman's direction)
+
+Saadman asked for: black/white + neon light effects + glossy/glassy + artistic premium creative-studio
+with a few colour moments. Researched Awwwards-grade references (screenshots taken 2026-09-01);
+the direction below is the synthesis — **light as material, not decoration**. It deliberately
+refines "neon" into warm glow so the page stays luxury-first (the #1 judging criterion).
+
+## The three reference archetypes and what we take from each
+
+| Reference | What it proves | What we borrow |
+|---|---|---|
+| **Æbele Interiors** (aebeleinteriors.com) — luxury interior, Awwwards | Ivory + giant brass serif overlapping real photography = instant luxury | Our ivory sections (S2/S4/S6): oversized serif that overlaps photos, brass on ivory |
+| **Igloo Inc** (igloo.inc) — Awwwards SOTY-tier | A monochrome object **glowing from within** + engineering dimension lines feels premium, not gimmicky | S3 blueprint state: sofa edges glowing brass from inside, glowing measurement lines; hero light pools |
+| **Lusion** (lusion.co) — creative studio | Dark glossy 3D stage framed by a light page + ONE electric accent colour | Glossy PBR materials (sheen/clearcoat), dark canvas "stage" framed in ivory, one saturated accent moment |
+
+## v3 REVISION — "MONOLITH" (2026-09-01 evening, per Saadman, SUPERSEDES the palette/type below)
+
+Saadman's verdict on v2: the Fraunces/Archivo warm-brass treatment read "old model", not premium.
+New direction, his words: black and white, neon light, glass, glow, gloom, a neon grid, premium
+Apple-grade type, brand colour only in a few places, and the logo as a solid colour block.
+
+**Stated risk, accepted and mitigated.** The client brief asks for "an elegant serif for headlines"
+and a warm ivory/brass palette. Monochrome + neon-grid moves away from both. Saadman has asked for
+this direction twice; proceeding. Mitigations: the serif survives as the MD quote's voice (so the
+brief's serif intent still appears), brand gold remains the accent, and the grid stays at low
+opacity so the page reads as a lit gallery rather than a tech dashboard.
+
+### Type (all Google Fonts, self-hosted via next/font)
+Apple's own face is **SF Pro Display**, which is licensed to Apple platforms and cannot be used on
+the web. Closest legal relative, and the correct pick for this look:
+
+| Slot | Font | Setting |
+|---|---|---|
+| Display / statements | **Inter Tight** | 600, `letter-spacing: -0.035em`, `line-height: 0.95`, huge |
+| UI / body / buttons | **Inter** | 400 and 600, `-0.011em` |
+| Specimen / data | **Geist Mono** | 400, uppercase, `+0.16em` |
+| The one serif | **Fraunces** italic | MD quote only, so the brief's serif intent survives |
+
+The premium comes from the *setting*, not from an exotic face: enormous display sizes, negative
+tracking, tight leading, and a single gradient word. That is exactly what Apple does.
+
+### Palette (monochrome, brand colour rationed)
+```
+--ink        #070809   near black, the page ground
+--ink-2      #0E1113   raised panels / glass base
+--paper      #F2F3F4   cool white for light sections (no more warm ivory)
+--paper-2    #E6E8E9
+--graphite   #17191C   grid lines, hairline borders
+--text-dim   rgba(242,243,244,.62)
+--brand      #0C1312   the logo's own ground, used ONLY as the logo block
+--gold       #C8A96A   THE accent. Rationed: max 3 uses per viewport
+--marigold   #F0A62B   logo gold, micro doses only (triangle, hairline tips, glow cores)
+--glow-cool  rgba(214,232,255,.55)   the "neon" white light
+```
+Rule: a viewport is **black, white, and one gold thing**. Colour arrives only from the real
+furniture photography and from the S3 fabric swatches.
+
+### The neon grid
+A fixed, full-page 1px grid (`repeating-linear-gradient`, 72px cells) at ~3% opacity on dark
+sections, radially masked so it fades at the edges and never tiles visibly. It is the same visual
+language as the S3 blueprint, which makes the bespoke sequence feel inevitable rather than bolted
+on. Light sections get the inverted version at ~4%. Zero images, zero JS, negligible cost.
+
+### Glass and glow
+- **Glass:** frosted panels (`backdrop-filter: blur(14px)`, 1px `--graphite` border, inner
+  top highlight `inset 0 1px 0 rgba(255,255,255,.06)`) for the nav pill, index overlay, vitrine,
+  swatch dock, sticky CTA. Max 3 glass surfaces per viewport.
+- **Glow:** never a coloured haze over everything. Two only: a cool white pool where light falls
+  (hero vitrine, stage), and a gold halo on the CTA hover and the thread's tip.
+
+### The logo block
+Per Saadman: the wordmark sits inside a solid `--brand` block (the logo's own dark teal), padded,
+slightly rounded. One saturated rectangle in an otherwise monochrome page reads as a real
+identity mark rather than styled text.
+
+---
+
+## Brand alignment (2026-09-01, from their real logo + product albums) — palette superseded by v3 above
+
+Their logo: white wordmark, a MARIGOLD-GOLD triangle "A", on a **deep charcoal-teal** ground.
+Their bestselling product look (all over their albums): **royal blue velvet** with champagne and
+silver-gold frames, plus cream/ivory sets and some emerald velvet. Adjustments:
+
+1. **"Heaven Ink"** replaces pure black: the page dark is `#0C1312`, a near-black with the
+   logo's teal undertone. Reads black, feels theirs. Ivory `#F4F0E8` unchanged.
+2. **Two golds, two jobs.** Logo marigold `#F0A62B` appears ONLY in micro doses (the logo, the
+   triangle motif, one hairline). Muted brass `#C8A96A` stays the working accent for larger
+   surfaces. Big areas muted, tiny pops bright: that split is what keeps it premium.
+3. **The triangle motif.** The gold "A" caret from the logo becomes the page's recurring mark:
+   preloader glyph (triangle fills with gold), scroll-down indicator in the hero, list markers
+   on specimen chips, the map pin. Brand DNA without pasting the logo everywhere.
+4. **Royal blue is the electric moment.** The S3 swatches become fabrics they demonstrably
+   sell: `Ivory Bouclé` (default, matches the hero sofa), `Royal Blue Velvet` (their signature,
+   THE saturated glow moment), `Emerald Velvet` (seen across their green sofa range).
+   The old walnut/teal swatch set is retired as off-brand.
+
+## The rules of Midnight Studio
+
+1. **Base stays black + ivory.** Neon never becomes the base; it is applied light ON the base.
+2. **"Neon" = glow, two temperatures.** Warm brass glow (default: hero spotlight pools, blueprint
+   edges, CTA hover halo) + ONE cool electric moment: tapping **Deep Teal Velvet** makes the page
+   glow teal — the customization IS the colour moment. No rainbow, max one saturated hue on screen.
+3. **"Glassy" = frosted panels, used sparingly.** `backdrop-filter: blur` panels (nav chip, swatch
+   dock, sticky CTA pill) with 1px light borders — only ever ON TOP of the 3D/photo layers, never
+   as decoration on empty background. This consciously overrides the earlier "no glassmorphism"
+   rule at Saadman's request — controlled, ≤ 3 elements per viewport.
+4. **"Glossy" lives in the 3D materials**, not in CSS: clearcoat/sheen on fabric and lacquer,
+   glossy dark floor reflection under the sofa. CSS gloss is limited to subtle specular gradients
+   on buttons.
+5. Everything else from the brief holds: huge whitespace, ≤ 3 lines of copy, real photography,
+   one CTA. Restraint is still the luxury signal — glow is the seasoning, not the dish.
+6. Performance guard: glow = pre-blurred radial gradients / box-shadows, `backdrop-filter` capped
+   to small panels, **no full-screen blur, no bloom post-processing on mid/low tier**.
+
+---
+
+# PART 1.6 — CONTENT UI/UX: "PLACARDS, NOT PARAGRAPHS" (locked 2026-09-01)
+
+Saadman's rule: no typical big description blocks. Descriptions exist, but presented another
+way. Observed pattern across the reference sites (Æbele, Igloo, Lusion): award-level pages carry
+almost no paragraphs; text appears as huge display type, tiny technical labels, or one-line
+statements. Our system:
+
+## 1. Every piece of text is one of five roles (nothing else exists)
+
+| Role | Looks like | Rules |
+|---|---|---|
+| **STATEMENT** | Huge display serif, 1 idea | Max 6 words. The H1 and section openers. |
+| **PLACARD** | A museum label: index number + small-caps title + ONE line | Max 14 words per line. This replaces every "description paragraph" on the page. |
+| **SPECIMEN** | Mono microtext, uppercase, letterspaced | Data fragments: `EST. 2020` · `AGRABAD, CTG` · `2400 MM` · `05 COLLECTIONS`. Descriptions become data. |
+| **TICKER** | A slow marquee strip | Only one on the page: `DESIGNED · CRAFTED · CUSTOMIZED ·` between S2 and S3. |
+| **QUOTE** | Large serif italic, line-by-line reveal | The MD quote is the ONLY long text on the page, staged as artwork, not a paragraph. |
+
+Concretely: the S2 brand intro is NOT a paragraph any more. It becomes a placard cluster:
+index `01` + small-caps `BESPOKE FURNITURE STUDIO` + one line `Built to your space, your size,
+your taste.` + specimen row `EST. 2020 · AGRABAD, CHATTOGRAM · HUNDREDS OF HOMES`.
+Trust points render as seven short specimen chips, not a bulleted list.
+
+## 2. Type system (all free, all self-hosted via next/font, no typical choices)
+
+| Slot | Font (Google Fonts, free) | Why premium |
+|---|---|---|
+| Display serif | **Fraunces** (variable, optical sizing, soft warm serifs) | Editorial warmth that suits wood and fabric; distinctive, not the overused Playfair/Inter look |
+| UI sans | **Archivo** (narrow grotesque) | Quiet, precise; disappears behind the serif |
+| Specimen mono | **IBM Plex Mono** | The technical/engineering voice for measurements and data chips (the Igloo move) |
+
+Hierarchy is scale-driven: display goes to `clamp(2.75rem, 12vw, 8rem)`; placard lines stay
+0.9375rem; specimen 0.6875rem uppercase +0.18em tracking. Contrast in size, never in decoration.
+
+## 3. Icons
+Minimal 1.5px-stroke line icons, **Phosphor (MIT, free) light weight**, copied as inline SVG for
+only the glyphs we need (WhatsApp, arrow, plus, map pin, FB/IG/YT). No icon font, no npm package,
+monochrome only, currentColor so they inherit the accent.
+
+## 4. Punctuation rule (hard)
+**No em or en dashes anywhere in user-facing copy, titles or labels.** Use a period, comma, or
+the middot `·` separator instead. (Middots and ampersands are allowed.) `copy.ts` is the single
+place to enforce it.
+
+---
+
+# PART 1.8 — THE HUMAN LAYER: "THE ATELIER MARKS" (locked 2026-09-01)
+
+Saadman's requirement: the page must carry work a human visibly did by hand, something AI cannot
+easily fake. The answer is literal: **his own hand.** Bespoke furniture is hand-made; the page
+about it carries hand-made marks. This is also the strongest possible differentiator in an
+AI-allowed hackathon: every other entry will be 100% machine output.
+
+## What Saadman physically makes (pen on white paper, ~30 minutes)
+
+| Artifact | What he draws / writes | Where it lands |
+|---|---|---|
+| Sofa sketch | Rough pen outline of the hero sofa, traced loosely from the photo. Imperfect lines wanted. | S3 "Designed" phase: the sketch draws itself before the blueprint glow |
+| Measurement scribbles | Arrows + rough "2400", "430" figures, like a carpenter's margin notes | S3 dimension layer, alongside the clean mono specimens |
+| 6 short handwritten phrases | `your size` · `solid wood` · `hand stitched` · `for your home` · `আপনার জন্য` · a squiggly underline | Margin annotations: one per key section, slightly rotated (0.6–1.6°) |
+| The Bangla word | `আপনার জন্য` ("for you") in his handwriting | Next to the S3 CTA. Local, warm, unfakeable; judges are Bangladeshi |
+| Initial mark | A small squiggle/underline stroke | Under the hero's gradient word "Crafted" |
+
+Capture: photograph each on plain paper in daylight → `assets-raw/handmade/`. Gemini removes
+the paper background (transparent PNG, strokes only). Claude animates each with a CSS
+mask-wipe reveal (reads as being drawn live); tiny rotations and off-grid placement are
+deliberate. On ivory sections the strokes render in deep brown ink, on dark sections in brass.
+
+## Ask the client (WhatsApp group)
+The MD's real signature (photo of it on paper) to sit under his quote in S7. If it never
+arrives, the quote stands without it; never fake a signature.
+
+## Code-side humanity (Claude)
+- Slight irregular rotations on annotation marks and taped photo corners; nothing perfectly
+  aligned in the atelier layer (the grid stays clean; only the marks are loose).
+- Subtle paper-fiber texture on ivory sections (distinct from the dark sections' film grain).
+- The rule that keeps it premium: **marks are seasoning.** Max one handwritten mark per
+  viewport; they annotate real content, never decorate empty space.
+
+---
+
+# PART 1.7 — BUSINESS LAYER (locked 2026-09-01)
+
+## What Heaven actually sells (from their real Facebook content, 2026-09-01)
+Their product is **royal / palace-style classic luxury**: carved wood, gold-leaf frames, velvet
+and bouclé, premium king beds, king dining sets, full golden-room ensembles. NOT minimal
+Scandinavian. This is a feature for us: ornate gold pieces photographed against our near-black
+editorial stage look like museum artifacts. The monochrome page is the frame; their maximal
+furniture is the art. Never flatten their identity into minimalism; frame it.
+
+## Category strategy on ONE page (no catalog, no second CTA)
+The brief's taxonomy stays the law: Living / Bedroom / Dining / Office & Study / Bespoke.
+Every premium range Saadman found maps INTO those five as specimen chips on the S4 cards:
+
+| Card | Signature photo | Specimen chips (their real ranges) |
+|---|---|---|
+| Living Room | beige or blue royal sofa set | `SOFA SETS · COFFEE TABLES · TV UNITS` |
+| Bedroom | royal king bed | `PREMIUM KING BEDS · WARDROBES · DRESSERS` |
+| Dining | cream marble dining set | `KING DINING SETS · CHAIRS · CABINETS` |
+| Office & Study | black brass cabinet | `EXECUTIVE DESKS · BOOKSHELVES` |
+| Bespoke | the most extravagant palace/golden-room shot available | `FULL ROOMS · YOUR SIZE · YOUR TASTE` |
+
+The Bespoke card IS the answer to "they sell so much more": a full golden room proves
+"we build anything around you". The catalog lives on their Facebook; this page's job is not to
+list products, it is to convert interest into a WhatsApp conversation. One CTA, unchanged.
+
+## The Facebook-marketing funnel (they will run ads INTO this page)
+```
+FB/IG ad (their existing creatives) → tap → THIS PAGE inside the FB IN-APP BROWSER
+  → understands the brand in 5s (poster hero, no JS needed)
+  → scrolls the bespoke moment → taps WhatsApp with prefilled context
+```
+Consequences we build for:
+1. **The FB in-app browser is the primary browser.** It is a limited WebView: treat it as
+   mid/low tier by default, poster-first hero, WebGL only after capability check. Our fallback
+   matrix is not an edge case; for ad traffic it is the MAIN path.
+2. **Speed = ad money.** Every 100ms of LCP costs conversions; the static-first architecture is
+   a business feature, not just a Lighthouse score.
+3. **UTM-ready:** the page must not break with `?utm_*` query params; the WhatsApp prefill can
+   append the campaign name later if their team wants attribution. Optional Day 9: a
+   `NEXT_PUBLIC_META_PIXEL_ID` env hook (documented in README, disabled by default) so their
+   team can plug their pixel without touching code. Zero weight until enabled.
+4. **README sells this understanding to the tech team** in a short "Built for your ad funnel"
+   paragraph: in-app browser strategy, speed, UTM/pixel readiness, WhatsApp-first conversion.
+
+---
+
 # PART 2 — THE EXPERIENCE, SECTION BY SECTION (mobile-first, 390px)
 
 8 sections, roughly 6–7 viewport heights on mobile. Every section: **one idea, ≤ 3 lines of
@@ -121,6 +363,94 @@ if assets are slow, fade out anyway and let the hero poster carry it.
 - **Poster:** a pre-rendered WebP of the exact same frame is the `<img>` LCP element; the canvas
   fades over it when ready.
 - **Copy:** `Bespoke furniture & interior styling · Chattogram` / `Furniture, Crafted Around You.` / `Designed. Crafted. Customized.`
+
+### S1b — HERO v2: "THE VITRINE" (revised 2026-09-01 evening, per Saadman)
+
+The v1 hero was type on black with a small 3D stage: correct but reserved, and it reads empty
+until real photography lands. v2 makes the hero the hook, full-bleed, and gives it a real
+photograph so it is never boring even before 3D loads.
+
+**Structure (mobile-first, full viewport):**
+1. **Layer 0, the room:** the graded hero sofa photograph, full-bleed, scaled 1.12 and darkened
+   by a Heaven-Ink gradient scrim (opaque at the top for text contrast, clearing at the bottom).
+   This is the LCP element: `next/image` with `priority` + `blurDataURL`, so the hero is
+   photographic within one paint on any device, forever.
+2. **Layer 1, the vitrine:** a centred rounded "display case" panel (frosted 1px brass border,
+   inner glow) sitting over the photo. The 3D sofa renders INSIDE this panel. The panel makes
+   the canvas edges intentional (a museum vitrine, not a floating cutout) and gives the hero a
+   focal object even while the model streams in.
+3. **Layer 2, type:** eyebrow / statement / italic tagline / one CTA, left aligned, over the
+   scrim; the golden thread starts under the statement as it already does.
+4. **Layer 3, the AR/VR hook** (see below).
+
+**Hero scroll choreography (Saadman: "must have onscroll animation"):**
+- Photo layer parallaxes at 0.82x and its scrim deepens as the hero leaves.
+- Vitrine panel lifts 8% and its glow fades; the 3D sofa yaws ~20 degrees and recedes.
+- Statement drifts up at 0.6x; the whole hero cross-dissolves into the S2 ivory curtain.
+- All scrubbed, all inside the reduced-motion gate.
+
+**The poster / cached-3D rule (Saadman: "fallback image and cached 3d image"):**
+Lab 12 renders the settled 3D frame to a WebP (`/img/hero-sofa-poster.webp`) at build time.
+That poster lives inside the vitrine from the first paint; the live canvas fades over it only
+once loaded, and on low tier or no-WebGL it simply stays. Same code path, so it can never rot.
+
+### S3b — 360 INSPECT MODE (added 2026-09-01, per Saadman)
+
+After the pinned sequence resolves (phase C, sofa fully material, swatches live), the vitrine
+becomes **grabbable**: the visitor can drag to orbit the piece a full 360 degrees.
+
+- **Where:** only here, and only after the scroll story has finished. Making the hero draggable
+  would fight scrolling on a phone; making it draggable before the story lands would let people
+  skip the point of the page.
+- **Affordance:** a specimen line fades in under the vitrine, `DRAG TO INSPECT · 360`, plus a
+  brief one-time nudge (the piece rotates ~12 degrees and eases back) so the interaction is
+  discovered without a tutorial.
+- **Implementation:** drei `<OrbitControls>` on the bespoke view, `enableZoom={false}`,
+  `enablePan={false}`, `minPolarAngle`/`maxPolarAngle` clamped near seat height so it can never
+  be viewed from underneath, `autoRotate` off, damping on. Azimuth is unrestricted (the full 360
+  is the feature). Enabled ONLY once `bespokeProgress >= 0.98`, disabled again if the visitor
+  scrolls back up, so the scroll timeline and the pointer never fight for the same object.
+- **Touch:** the canvas is pointer-inert everywhere except this view while inspect mode is armed,
+  and `touch-action` is set so a vertical swipe still scrolls the page while a horizontal drag
+  orbits. Never trap the visitor inside the canvas.
+- **Fallbacks:** low tier / reduced motion / no WebGL = no inspect mode and no affordance line;
+  the static section is unchanged. This is a bonus layer, cut first if it costs stability.
+
+### S1c — THE AR HOOK (top of page, revised per Saadman)
+
+Saadman asked for something "incredible, outstanding, hooky" at the top, AR/VR flavoured.
+Decision: **do not move the AR experience into the hero** (a permission prompt or a heavy
+`model-viewer` bundle above the fold would wreck both LCP and the ad-funnel path). Instead the
+hero carries an **AR invitation** that is pure promise and near zero weight:
+
+- A small frosted pill under the CTA: a live-looking viewfinder glyph (four animated corner
+  brackets that breathe, drawn in SVG) + `SEE IT IN YOUR ROOM` + a specimen line
+  `AR · POINT YOUR PHONE`.
+- On phones it deep-links to S6 (`#ar`) and starts the real AR session there.
+- On desktop it scrolls to S6 and reveals the QR code.
+- The brackets are the same motif as the S3 measurement marks: one visual language, "we can
+  place this in your space", stated in the first viewport without paying for it.
+
+### S1d — NAVIGATION: "THE INDEX" (added 2026-09-01, per Saadman)
+
+There was no navigation at all: correct for a pure one-pager, wrong for a brand that wants
+category browsing and Facebook ad traffic that lands mid-funnel. Added, without breaking the
+one-CTA rule:
+
+- **Closed state:** the wordmark left, and right a single frosted pill button `INDEX` with a
+  two-line glyph. That is the entire chrome. It hides on scroll-down, returns on scroll-up.
+- **Open state:** a full-screen ink overlay that is itself a piece of design, not a menu list:
+  - Left column: five oversized serif category names (Living Room / Bedroom / Dining /
+    Office & Study / Bespoke) with their index numerals, staggered in with masked line rises.
+  - Right column (desktop) or behind the type (mobile): **the category's real photograph
+    crossfades on hover/focus of each name.** Hovering "Bedroom" swaps in the royal bed. This
+    is the "menu with images" and it is the single most premium thing a nav can do.
+  - Footer of the overlay: address, phone, socials, and the one WhatsApp CTA.
+  - Each name scrolls to that card in S4 and closes the overlay.
+- Keyboard: real `<button>`s, focus trap, Escape closes, `aria-expanded`, body scroll locked
+  via Lenis `stop()`/`start()` (never by mutating overflow, which would fight Lenis).
+- No JS: the overlay markup renders as a plain, visible anchor list in the footer region so the
+  category links still work. The chrome is progressive enhancement, never a requirement.
 
 ### S2 — Brand line (½ viewport)
 Ivory background — the first colour change, "the room lights come on". Two sentences, one
@@ -146,10 +476,19 @@ If a part-split mesh does materialise (§3.4), add a fourth micro-beat: parts dr
 settle. **Optional flourish only — never a dependency.**
 
 ### S4 — Collections (editorial strip)
-Five cards: `Living · Bedroom · Dining · Office & Study · Bespoke`. Real photos, one word each,
-thin serif numeral 01–05.
+Five cards: `Living · Bedroom · Dining · Office & Study · Bespoke`. Real photos (Gemini-cleaned),
+one word each, thin serif numeral 01–05.
 - **Desktop:** pinned horizontal scroll (GSAP `xPercent` scrub).
 - **Mobile:** vertical stack with CSS `animation-timeline: view()` fade-up. **No carousel library.**
+- **3D card presence (Saadman's request, 2026-09-01):** each card enters with a perspective
+  rotation (CSS `perspective` + `rotateY` ~14° → 0, soft cast shadow deepening as it settles)
+  and the photo inside parallaxes at 0.9× with a slow scale from 1.06 → 1. Feels like physical
+  panels turning to face you. Pure CSS transforms scrubbed by ScrollTrigger: zero extra weight,
+  works in the FB in-app browser. NOT actual per-category GLB models (see v2 list: weight/credit
+  cost would break the budget).
+- Strip ends with a quiet secondary link, Awwwards-style: `View the full collection` + a bold
+  arrow-up-right icon (Phosphor bold), underlined text link → their Facebook page. Styled as a
+  text link, never as a button, so the single WhatsApp CTA stays unchallenged.
 - Each card's dominant material sets `--accent` while in view.
 
 ### S5 — "Step Into Our Showroom" (bonus, lazy)
@@ -163,14 +502,80 @@ Ivory section. `<model-viewer>` of the sofa with a soft shadow; one button, "Vie
 On desktop the button becomes a **QR code** of the current URL with an `#ar` hash (rendered as
 inline SVG — no library over 5 KB).
 
-### S7 — Proof
-MD quote in large serif, ivory on black. Milestones as a thin vertical timeline 2020 → 2026,
-revealed with CSS scroll-driven animation. Trust points as a two-column list with a brass check glyph.
+### S7 — Proof (expanded 2026-09-01: real faces)
+The people section. Order, on ink:
+1. **The MD moment:** his quote in large serif italic beside his REAL portrait, treated
+   editorially: duotone (Heaven Ink shadows, ivory highlights, a whisper of brass rim light),
+   inside a tall arch-shaped mask (an arch reads as furniture/doorway, and echoes the carved
+   frames they sell). Placard under it: `ABUL KALAM BHUIYAN · FOUNDER · EST. 2020`. If the real
+   signature arrives from WhatsApp, it overlaps the portrait's lower corner in brass.
+2. **The hands behind Heaven:** the team group photo, full-bleed strip, same duotone grade,
+   specimen caption `THE IN-HOUSE TEAM · AGRABAD WORKSHOP`. This turns the "skilled in-house
+   craftsmanship" trust point from a claim into a photograph.
+3. Milestones timeline 2020 → 2026 (the Golden Thread becomes its rule) + trust specimen chips.
+
+### Racdox (hackathon organizer) placement — decided
+A client's landing page should read as a real client page, so Racdox lives primarily in the
+**README** (credits + thanks) and the **screen recording** (opening/closing caption with
+#racdox_hackathon). On the page itself: ONE quiet specimen line in the footer bottom row,
+`BUILT FOR THE RACDOX HACKATHON 2026 · #RACDOX_HACKATHON` linking to racdox.com/hackathon.
+Tasteful credit, zero competition with the client's story.
 
 ### S8 — Footer / final CTA
 `Ready to design around you?` + CTA. Address, `tel:` link, email, monochrome social icons.
 Attribution line: *"3D model generated with Meshy AI from Heaven Furniture Mart photography."*
 Sticky mobile WhatsApp pill (brass on black) appears after S1 and **hides while S3 is pinned**.
+
+---
+
+# PART 2.5 — SCROLL CHOREOGRAPHY (locked 2026-09-01)
+
+Saadman asked for creative scroll behaviour — "glued" screens, movement in more than one
+direction. The choreography below gives every transition a distinct move while keeping ONE
+signature thread: **the sofa never leaves.** A single fixed canvas persists from S1 to S3, so as
+the visitor scrolls, the same sofa travels, turns and transforms — the page feels like one
+continuous camera move through a studio, not a stack of slides.
+
+| Beat | Move | Direction / mechanic |
+|---|---|---|
+| S0 → S1 | Preloader brass line completes → wordmark letters release upward, sofa fades in under the spotlight | vertical, SplitText masked lines |
+| S1 hero scroll-out | Headline drifts up at 0.6× scroll speed (parallax); sofa yaws ~20° and recedes slightly — it *stays on stage* | scrub |
+| S1 → S2 | **Ivory curtain**: the S2 ivory panel slides up OVER the dark stage ("the room lights come on") | vertical overlap, `clip-path` inset scrub |
+| S2 | Showroom photo parallax at 0.85×; the oversized serif word slides horizontally 10vw across it (Æbele move) | horizontal drift inside vertical scroll |
+| S2 → S3 | Curtain reverses — dark swallows the page, the sofa is still there, now centre stage | vertical overlap |
+| **S3 bespoke** | **THE GLUE.** Section pins for ~300vh. Scroll drives: blueprint glow-in → craft plane sweeps bottom→top → swatches dock slides in. The three words swap with vertical masked rolls | pinned, scrub: 1 |
+| S3 → S4 | Accent colour carries: whatever swatch is active tints the S4 entrance | colour tween |
+| **S4 collections** | **Horizontal gallery**: section pins, vertical scroll/finger-drag translates the 5 cards LEFT (deskop 70vw cards, mobile 82vw). Numerals 01–05 count in the corner. Works identically with touch — ScrollTrigger scrub converts vertical gesture to horizontal travel | pinned horizontal |
+| S4 → S5 | **Aperture**: the showroom reveals through an expanding rounded mask from centre (walking through a doorway) | `clip-path` scale scrub |
+| S5 | Inside the splat/video: slow auto-drift + drag to look. Overlay text pinned to bottom | free look |
+| S6 AR | Calm beat on ivory — simple fade-up (`animation-timeline: view()`), deliberate rest after two pinned sections | vertical, CSS-only |
+| S7 proof | Quote reveals line-by-line (masked rises); the timeline's vertical rule DRAWS itself as you pass; years tick in | scrub |
+| S8 footer | Final CTA breathes a slow brass glow halo; sticky pill morphs into the footer CTA | subtle loop |
+
+## The signature: THE GOLDEN THREAD
+
+One continuous 1px gold line travels the entire page, drawn by scroll. It is the page's soul
+and the craft metaphor (upholstery thread, stitching):
+
+```
+preloader     the thread IS the progress bar, left to right
+S1 hero       it settles as the baseline under the headline
+S1 → S3       it runs down the page edge as a scroll spine, drawing as you go
+S3 designed   it becomes the glowing measurement lines around the blueprint sofa
+S3 crafted    it traces the craft plane's edge during the sweep
+S4            it underlines each collection card as the card enters
+S7            it becomes the vertical timeline rule, 2020 to 2026
+S8            it closes the loop: underlines the final CTA, ends in the gold triangle
+```
+
+Implementation: per-section SVG paths with `stroke-dashoffset` scrubbed by ScrollTrigger,
+visually continuous across section boundaries. Cheap (no canvas), poetic, and utterly
+memorable: judges scroll twice just to watch the line travel. On reduced motion the line is
+simply fully drawn, static.
+
+**Rules:** max two pinned sections (S3, S4) — pinning is a spice, not the meal. Every pinned
+mechanic has a reduced-motion / low-tier fallback: plain vertical stack, no pin (§4.10). All
+scrub values `scrub: 1` for weight; durations inside pins follow the 0.6–1.2 s feel.
 
 ---
 
@@ -594,3 +999,16 @@ Build it in `lib/whatsapp.ts` with `encodeURIComponent` — never hand-encode.
 3. Is a slow 1–2 minute walkthrough video of the Agrabad showroom available? *(needed for the splat — gate is Day 8)*
 4. Any higher-resolution product photography than what is on Facebook / Instagram?
 5. Is there an official logo file (transparent SVG / PNG)?
+
+---
+
+# PART 13 — V2 IDEAS PARKING LOT (post-freeze; only if Day 9 has slack)
+
+Ideas noted after the design freeze. None of these block the ship.
+
+1. Per-category 3D models from Meshy (a bed, a dining set) rotating on scroll inside S4 cards.
+   Cost: Meshy credits + optimization time per model, plus ~1 MB page weight each; breaks the
+   1.5 MB budget and the FB in-app browser path. The CSS perspective cards deliver the feel for
+   free; real GLBs only if everything else ships early.
+2. Fake-3D parallax from single photos (depth-map layers) for collection cards.
+3. Extra landing sub-page (full collections gallery) linked from the S4 text link.

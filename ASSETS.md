@@ -41,7 +41,12 @@ heaven-mart/public/
 
 | Asset | Source | Tool(s) used | Licence / credit |
 |---|---|---|---|
-| _(none yet)_ | | | |
+| `originals/*.jpg` (10 photos, 1024x1024, collected 2026-09-01) | Heaven Furniture Mart Facebook page (their own marketing posts; carry baked-in logo + campaign text overlays) | pending: Gemini (Nano Banana Pro) overlay removal + upscale | © Heaven Furniture Mart; AI touch-up allowed per brief |
+| `public/models/placeholder-chair.glb` **(TEMPORARY)** | Khronos glTF-Sample-Assets, "Sheen Chair" | `@gltf-transform/cli optimize` (Draco + WebP): 4.13 MB → 570 KB | © 2020 Wayfair LLC, **CC0 1.0 Universal** (public domain). Model by Eric Chadwick. **Must be replaced by the Meshy sofa before submission**; if it ever ships, this row stays and the footer credits it. |
+| `public/hdr/potsdamer_platz_1k.hdr` | Poly Haven, via the `drei` assets mirror (self-hosted to remove the runtime CDN dependency) | none | **CC0** (Poly Haven) |
+| `public/draco/*` | Draco decoder shipped inside `three` (`examples/jsm/libs/draco/gltf/`) | copied, self-hosted | **Apache 2.0**, Google |
+| Fonts: Fraunces, Archivo, IBM Plex Mono | Google Fonts, self-hosted by `next/font` | none | **SIL Open Font License 1.1** |
+| Icons (7 glyphs, inlined SVG) | Phosphor Icons | hand-inlined, only the glyphs used | **MIT** |
 
 ## 4. Credit lines that must ship (footer + README)
 
@@ -57,3 +62,33 @@ heaven-mart/public/
   **invention** of furniture they do not sell is not.
 - Never commit anything into `assets-raw/` (it is ignored) and never commit an unoptimised
   original into `public/`.
+
+---
+
+## 3D models — turntable pieces (S1 "The Turntable")
+
+**TEMPORARY.** These are stand-ins so the hero is a real, spinnable 3D object today.
+They must be replaced by Meshy scans of Heaven's own pieces before submission
+(`SAADMAN-TASKS.md` Task 6). Nothing but the filename has to change: `copy.ts`
+`hero.pieces[].id` is the join between the caption and `public/models/<id>.glb`.
+
+| File | Source | Licence | Credit | Size |
+|---|---|---|---|---|
+| `public/models/sofa-velvet.glb` | Khronos glTF-Sample-Assets `GlamVelvetSofa` | **CC-BY-4.0** | Eric Chadwick, © 2021 Wayfair, LLC | 411 KB |
+| `public/models/chair-damask.glb` | Khronos glTF-Sample-Assets `ChairDamaskPurplegold` | **CC-BY-4.0** | Eric Chadwick, © 2021 Wayfair | 363 KB |
+| `public/models/sofa-leather.glb` | Khronos glTF-Sample-Assets `SheenWoodLeatherSofa` | **CC-BY-4.0** (improvements) + CC0-1.0 (original) | Eric Chadwick, © 2024 Darmstadt Graphics Group GmbH; original Fran Calvente, public domain | 1.04 MB |
+
+CC-BY-4.0 **requires attribution**, which is why the footer carries
+"3D placeholder models by Eric Chadwick, CC BY 4.0." That line is not decoration:
+removing it while these models ship would breach the licence. When the Meshy
+models land, swap the models AND the line together.
+
+Optimised with:
+
+```
+npx @gltf-transform/cli optimize <in>.glb <out>.glb \
+  --compress draco --texture-compress webp --texture-size 1024 --simplify false
+```
+
+`--simplify false` on purpose: decimation on upholstery produced visible faceting
+on the arms. Draco plus WebP textures already gets each piece under budget.

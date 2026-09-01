@@ -72,3 +72,126 @@ Deferred until their own lab: `@google/model-viewer` (Lab 09), `@sparkjsdev/spar
   and photo cleanup; Reve Remix for grade transfer. Claude Design canvas optional for Day 5-6
   mockups. Playwright MCP available — Claude verifies UI in the browser directly.
 - In progress: Lab 01 (code written and explained; awaiting his experiments + check answers).
+
+## 2026-09-01 (evening) — Sprint 1 static skeleton BUILT
+- Design frozen: Midnight Studio + brand alignment (Heaven Ink #0C1312, two golds, royal blue
+  moment) + placards-not-paragraphs + Golden Thread + scroll choreography + business layer.
+  All in PLAN.md Parts 1.5-1.7, 2.5, 13. TASKS.md sprint board created.
+- Built: full 8-section static page as Server Components. Fraunces/Archivo/IBM Plex Mono via
+  next/font, design tokens + text roles in globals.css, single shared sections.module.css,
+  inline Phosphor icons, WhatsApp lib, sticky frosted pill, JSON-LD FurnitureStore schema.
+  Page is complete and convertible with JS disabled. Build + eslint clean.
+- Verified on Playwright at 390x844: hero, placard section, ticker, cards all render as designed.
+  Fixed: hero specimen row hidden on phones (collided with sticky pill).
+- Assets: 10 FB photos collected by Saadman, renamed semantically, mapped to sections in
+  copy.ts. All carry baked-in ad overlays; Gemini cleanup pending (his task, prompts provided).
+- Next: his phone check + git permission answer, then Sprint 2 (Lenis, Golden Thread,
+  SplitText, accent scrub, card entrances).
+
+## 2026-09-01 (night) — Sprint 2 motion layer COMPLETE (via background agent, verified)
+- SmoothScroll (ReactLenis root + GSAP ticker sync) and PageMotion (single client orchestrator).
+- Live: SplitText hero intro, Apple-style dim-to-bright scrubs, infinite ticker marquee,
+  perspective card entrances, per-section --accent tweening, ghost numeral parallax,
+  GOLDEN THREAD v1 (hero rule -> left-edge scroll spine -> footer marigold triangle tie-off),
+  S4 desktop horizontal rail pin (>=900px, containerAnimation card triggers).
+- All motion inside gsap.matchMedia; reduced-motion and no-JS paths show the full static page.
+- Agent-verified at 1280x800 and 390x844, zero console errors; eslint + build clean.
+- Sprint 3 dispatched to the agent: single fixed Canvas + placeholder chair GLB
+  (public/models/placeholder-chair.glb, Khronos SheenChair CC0, Draco-optimized 570 KB).
+- Still uncommitted: git standing permission awaited from Saadman.
+
+## 2026-09-01 (late night) — Sprint 3 hero 3D COMPLETE (agent, verified live)
+- Hero stage now renders the placeholder chair in 3D: warm key spotlight breathing, cool rim,
+  city environment at 0.3, idle sway, PCF contact shadow on high tier, radial mask so the
+  canvas dissolves into a light pool. Fades in only after the GLB resolves.
+- lib/device.ts tier detection: low tier (or no WebGL2) never downloads three.js at all;
+  the CSS stage glow IS the fallback. Deferred mount via requestIdleCallback protects LCP.
+- Two third-party fetches flagged for the perf sprint (self-host later): gstatic Draco decoder,
+  drei-assets HDR for the Environment preset.
+- Sprint 4 dispatched: one shared Canvas + two drei Views, blueprint -> clip-plane sweep ->
+  live swatches (fabric color + accent + WhatsApp prefill), pinned 300vh.
+
+## 2026-09-02 (past midnight) — Sprint 4 bespoke centrepiece COMPLETE (agent, verified)
+- One shared transparent fixed Canvas, two drei Views (hero + bespoke), localClippingEnabled.
+- S3 pinned 300vh: brass EdgesGeometry blueprint -> world-space clip-plane craft sweep ->
+  live SwatchDock. Word spotlight follows the phases. Swatch tap tints fabric + sheenColor,
+  tweens --accent, rewrites the bespoke CTA to whatsappUrlWithSwatch. Default Ivory Boucle
+  applied at setup (hero chair no longer orange).
+- Agent caught a real bug: R3F re-enables pointer-events on its canvas; fixed with a subtree
+  rule, clicks verified. Floor is now shadowMaterial. eslint-config-next 16 react-compiler
+  rules respected without disables.
+- Verified both viewports incl. mobile pinned layout fitting in 844px; SSR HTML fallback
+  intact; console clean except R3F-internal Clock deprecation.
+- Notable: clip planes are world-space and only valid while the bespoke group sits at origin
+  rotating about Y (documented gotcha).
+
+## 2026-09-02 — parallel track (main session, while the agent handled a11y/perf)
+- README.md rewritten for the Heaven tech team: the idea in one line, stack, and six
+  architecture notes (JS-off completeness, the ssr:false gate, the progressive-enhancement
+  ladder, the Facebook in-app-browser funnel with the pixel/UTM story, SEO, perf approach).
+  This is the artefact that argues we understood their business, not just their brief.
+- Footer now carries one quiet Racdox credit specimen linking to racdox.com/hackathon.
+  Deliberately not larger: the page must read as the client's real page.
+- scripts/optimize-photos.mjs written and ready: graded photos -> three WebP widths + a 16px
+  LQIP + a generated manifest (photos.generated.ts). Needs `sharp` installed, deferred so the
+  agent's package.json edits do not collide. Runs as `npm run photos` once wired.
+- ASSETS.md licence ledger completed for everything shipped so far: placeholder chair
+  (CC0, Wayfair/Khronos, flagged TEMPORARY), Poly Haven HDR (CC0), Draco decoder (Apache 2.0),
+  fonts (OFL), Phosphor icons (MIT).
+- Verified: copy.ts still has zero em/en dashes; tsc --noEmit clean.
+
+## 2026-09-02 — v3 MONOLITH shipped + two real bugs fixed + a tooling trap found
+
+### Bugs fixed
+- **Mouse wheel was completely dead.** SmoothScroll's GSAP ticker callback captured the Lenis
+  instance once; with autoRaf off, a stale/absent instance meant Lenis kept swallowing wheel
+  events (preventDefault) and never scrolled. React 19 StrictMode's double-invoke made it
+  reproducible. Fix: resolve the instance through the ref every tick and rebind ScrollTrigger
+  on identity change. Also documented: ReactLenis's `onScroll` prop is a DOM div handler, NOT
+  Lenis's scroll event; never use it for ScrollTrigger.
+- Hero top-right location chip collided with the fixed Index nav pill. Removed (the location
+  already appears in the eyebrow, hero specimens, showroom section and footer).
+
+### TOOLING TRAP (invalidated every earlier "mobile" check)
+This Playwright browser runs at `deviceScaleFactor: 0.75` (from the user's Windows display
+scaling). `setViewportSize({390, 844})` yields a CSS viewport of **520 x 1125**, so every
+"390px verification" up to this point was actually done at tablet width.
+**Recipe: multiply by 0.75.** 390x844 CSS = `setViewportSize({293, 633})`; 1280x800 CSS =
+`{960, 600}`. Always assert `window.innerWidth === 390` before trusting a measurement. Also:
+at this dpr, `screenshot({scale:'css'})` returns a CROP; use `scale:'device'`.
+
+At true 390px, five real hero bugs surfaced and were fixed: sticky pill overlapping the main
+CTA, CTA label wrapping to 3 lines, eyebrow and tagline wrapping, and the AR hook pushed below
+the fold. Fixes: responsive short label/eyebrow variants, smaller vitrine on short viewports,
+sticky pill hidden while the hero is in view. The agent also caught that anchoring the sticky
+pill's trigger to the PINNED hero left the flag stuck forever; re-anchored to unpinned S2.
+
+### Unresolved, handed to Saadman
+Full-viewport rasters at deep scroll come back black while the DOM says otherwise. Eliminated
+so far: viewport crop (`scale:'device'` still black), `backdrop-filter` (disabled, still black),
+the WebGL canvas (display:none, still black). Direct measurement of a step word at that scroll
+position: colour rgb(242,243,244), opacity 0.58, rect top 88 left 20 331x108, no clip/mask/
+filter anywhere in the ancestor chain, `elementFromPoint` returns it as topmost. Every signal
+says it renders; only the headless raster disagrees. Almost certainly a headless compositing
+artifact with ScrollTrigger's `position: fixed` pins. Needs one human look to close.
+
+### Lighthouse (production, mobile)
+Performance 48 -> 67 (TBT 5,840ms -> 910ms, TTI 18.1s -> 4.2s, LCP 4.3s -> 3.8s, CLS 0),
+Accessibility 100, Best Practices 100, SEO 100. The lever was interaction-only 3D mount.
+Remaining levers: font-swap render delay (87% of LCP), 51 KiB unused JS, 90ms blocking CSS.
+
+## 2026-09-02 — neon grid refined (Saadman: "messy, too focused, needs glow and blur")
+Rewrote the grid in globals.css. Before: solid #17191c 1px hairlines on 72px cells, which read
+as sharp graph paper. Now:
+- **Denser:** 34px minor cells with a 136px major rhythm (every 4th line stronger), so it reads
+  as structure rather than a repeating texture.
+- **Soft, not blurred by filter:** each line is a bright 1px core PLUS a dimmer 1-2px halo band
+  in the same gradient. That reads as a blurred neon filament while costing nothing. A real CSS
+  filter was rejected: it would blur the section's content too.
+- **Neon, never white:** cool blue triplet `168, 206, 255` used via rgba(); minor core alpha
+  0.05, halo 0.018, major core 0.075. Light sections use a cool ink `28, 44, 66` at 0.032/0.05.
+- **Unfocused:** the radial wash on top now starts fading at 2% and is opaque by 78%, so the
+  grid only survives in a soft central band. Plus a new cool bloom from the top edge
+  (rgba(neon, 0.055)) so the grid sits inside a light rather than floating on flat black.
+All tokens live in :root (--grid-cell, --grid-major, --grid-neon, --grid-core, --grid-halo,
+--grid-major-core) so density and intensity are one-line changes. eslint + build clean.

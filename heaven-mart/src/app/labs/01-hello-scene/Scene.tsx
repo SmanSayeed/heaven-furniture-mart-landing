@@ -39,7 +39,7 @@ export default function Scene() {
         <boxGeometry args={[1, 1, 1]} />
         {/* "Standard" = physically based. It reacts to light.
             Brass gold, the accent colour from the Heaven logo. */}
-        <meshStandardMaterial color="#C9A227" />
+        <meshBasicMaterial color="#cccddd" />
       </mesh>
     </Canvas>
   )
