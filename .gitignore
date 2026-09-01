@@ -32,8 +32,6 @@ Thumbs.db
 # testing
 coverage/
 
-# dead scaffold from the first (Vite) attempt — delete once confirmed
-heaven-studio/
 
 # large raw assets: keep originals out of git, only optimised output is committed
 assets-raw/

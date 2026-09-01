@@ -55,8 +55,20 @@ Deferred until their own lab: `@google/model-viewer` (Lab 09), `@sparkjsdev/spar
   4. Any higher-resolution product photos than what is on Facebook / Instagram?
   5. Is there an official logo file (transparent SVG / PNG)?
 
-### Housekeeping still pending
-- `heaven-studio/` (the abandoned Vite scaffold) is git-ignored, not deleted. Awaiting Saadman's
-  go-ahead to remove it.
-- The project-level `CLAUDE.md` is injected by the environment, not stored on disk, so it is
-  **not in the repo**. Decide whether to commit a copy so a fresh clone keeps the mentor rules.
+
+## 2026-09-01 (later)
+- Done: merged the creative plan (Claude-PLAN.md) into PLAN.md — single source of truth now.
+  Key change: S3 bespoke moment is blueprint -> craft-plane -> customize on a SINGLE mesh
+  (Meshy Auto Split verified unusable for textured web GLB; correction recorded in PLAN.md 0.2).
+  Lab 06 redefined accordingly.
+- Done: CLAUDE.md now committed to the repo (was environment-injected only), with a note that
+  PLAN.md supersedes its stack sections.
+- Done: deleted heaven-studio/ (dead Vite scaffold) and Claude-PLAN.md (merged) with permission.
+- Done: installed @sparkjsdev/spark 2.1.0 and @gltf-transform/cli 4.5.0.
+  @google/model-viewer NOT installed via npm (peers on three ^0.183 vs our 0.185) — will
+  self-host its standalone bundle in Lab 09 instead.
+- Done: ASSETS.md now documents the asset hand-off workflow (assets-raw/ folder, git-ignored).
+- Tooling: Saadman has paid Gemini (Nano Banana Pro) — first choice for the 4 Meshy sofa views
+  and photo cleanup; Reve Remix for grade transfer. Claude Design canvas optional for Day 5-6
+  mockups. Playwright MCP available — Claude verifies UI in the browser directly.
+- In progress: Lab 01 (code written and explained; awaiting his experiments + check answers).
