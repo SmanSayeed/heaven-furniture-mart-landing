@@ -37,3 +37,6 @@ coverage/
 assets-raw/
 *.blend
 *.blend1
+
+# playwright artifacts
+.playwright-mcp/
