@@ -195,3 +195,51 @@ as sharp graph paper. Now:
   (rgba(neon, 0.055)) so the grid sits inside a light rather than floating on flat black.
 All tokens live in :root (--grid-cell, --grid-major, --grid-neon, --grid-core, --grid-halo,
 --grid-major-core) so density and intensity are one-line changes. eslint + build clean.
+
+## 2026-09-02 — DEADLINE AND SUBMISSION FORMAT CONFIRMED (from Saadman / WhatsApp group)
+
+**Answers to the 6 open questions:**
+1. **Deadline: 2-3 days from now** (target ship: 2026-09-04). Exact clock time still unstated.
+   The 10-day plan in PLAN.md Part 7 is DEAD. See the compressed 3-day plan below.
+2. **Submission:** publish a **live URL**, post the **video + live URL publicly on Facebook or
+   LinkedIn**, then fill in the organizer's form with that link.
+   → Vercel deploy is no longer a Day-10 task, it is a Day-1 task.
+   → The video is a public social post, not a private upload: it must carry the brand, the
+     hashtag #racdox_hackathon and the live URL in the caption.
+   → Open-Graph image + title matter now (the FB/LinkedIn post will render a link card).
+3. **No showroom walkthrough video exists.** Any moving showroom footage must be generated
+   from Heaven's own real photos (Gemini/Veo image-to-video). Constraint stands: animate a
+   REAL Heaven photo, never invent furniture. If it looks fake at all, drop it and stay on
+   stills. S5 splat is therefore cancelled.
+4. **No higher-resolution photos.** The 10 Facebook originals are all we get; the sharp/upscale
+   pass in Gemini is now load-bearing, not optional.
+5. **Official logo file IS available** — Saadman to collect it into `assets-raw/logo/`.
+6. **No MD signature image.** The MD quote ships without a signature specimen; use a typeset
+   attribution line instead (do not fake a signature).
+
+**Re-scope decisions (2-3 days, not 10):**
+- SHIP: photo cleanup + logo + real photos wired in + perf pass + Vercel deploy + video + post.
+- KEEP, time-boxed: Meshy real sofa (one attempt only; if it fails, the CC0 placeholder chair
+  ships and ASSETS.md keeps its TEMPORARY flag).
+- KEEP if time allows on Day 2: the handmade pen-and-paper layer (the one thing no other
+  entry can have).
+- CANCELLED: Gaussian splat showroom (no capture, no video source), AR / model-viewer / USDZ
+  (depends on a finished Meshy export we may not have), the remaining teaching labs.
+
+## 2026-09-01 (evening · direction change)
+- Saadman stopped work: current design "not up to the mark, looks broken", wants a
+  MATHEMATICAL redesign (3/6-col grid, geometric sections, calculated layers).
+- Git: everything committed to `backup/hero-turntable-2026-09-01` (45e2079, 95 files);
+  new working branch `redesign/drawn-to-measure` created FROM the snapshot so all
+  machinery (3D turntable, photo pipeline, AR, watchdog) carries over. NOT pushed.
+- Wrote **BLUEPRINT.md** — the "DRAWN TO MEASURE" system: u=8px, 6/3 columns, panels
+  only in 1:√2 or 1:1, baseline-snapped type scale, structural (not decorative) grid,
+  per-sheet column maps S1–S8, title blocks + real-mm dimension lines, integration
+  plan + acceptance checks. Awaiting Saadman's approval before implementing.
+- Also this session, pre-stop: hero rebuilt as the grabbable multi-piece Turntable;
+  all 10 FB photos were ad graphics → crop pipeline (npm run crop); defocused baked
+  hero backdrop; AR press-to-load verified; grid made opt-in; two-level dead-wheel
+  watchdog; bespoke blueprint floor 0.22 so the panel is never empty.
+- Verified: bespoke 3D genuinely renders (canvas pixel read: 12% opaque, maxA 255).
+  Deep-scroll black screenshots are a headless raster artifact, NOT a page bug.
+- Next: Saadman reviews BLUEPRINT.md → implement §6 order 1→10.
