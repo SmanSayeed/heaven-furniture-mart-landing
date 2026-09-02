@@ -5,65 +5,108 @@
    ============================================================ */
 
 :root {
-  /* ---- v3 "MONOLITH" palette (PLAN Part 1.5 v3). Monochrome page, brand
-     colour rationed: a viewport is black, white, and ONE gold thing. ---- */
+  /* ============ DRAWN TO MEASURE tokens (BLUEPRINT.md SS2) ============
+     The page owns NO hue (SS2.8). Colour exists in exactly three places:
+     the photographs, the 3D pieces + fabric swatch chips, and the logo's
+     own triangle. Everything below is ink, paper, and white light. */
+
+  /* ---- ground ---- */
   --ink: #070809;            /* near black, the page ground */
-  --ink-2: #0e1113;          /* raised panels / glass base */
-  --paper: #f2f3f4;          /* cool white for light sections */
+  --ink-2: #101214;          /* raised dark panels */
+  --paper: #f2f3f4;          /* NEUTRAL near-white (never warm ivory) */
   --paper-2: #e6e8e9;
-  --graphite: #17191c;       /* grid lines, hairline borders */
+  --graphite: #17191c;       /* hairline borders on ink */
   --text-dim: rgba(242, 243, 244, 0.62);
   --brand: #0c1312;          /* the logo's own ground: ONLY the logo block */
-  --gold: #c8a96a;           /* THE accent, max 3 uses per viewport */
-  --marigold: #f0a62b;       /* micro doses only: triangle, hairline tips */
-  --glow-cool: rgba(214, 232, 255, 0.55); /* the "neon" white light */
+
+  /* ---- light (SS2.8: "neon" means light, not colour) ---- */
+  --glow: rgba(255, 255, 255, 0.06);       /* broad white bloom */
+  --glow-cool: rgba(238, 244, 252, 0.55);  /* light pools; cast <= 6% sat */
+  --filament: rgba(255, 255, 255, 0.55);   /* 1px lit lines: plot line, dims */
 
   /* text on the light ground: 16.3:1 on --paper */
   --text-ink: #14161a;
 
-  --accent: var(--gold);     /* dynamic accent, scrubbed per section by GSAP */
+  /* collapsed to white: every old accent consumer (CTA border, index
+     numerals, tri glyphs, focus ring) is now white-on-ink. Light-ground
+     consumers carry their own overrides below. */
+  --accent: #ffffff;
 
   /* ---- compatibility layer ----
-     The section modules were written against the v2 names. Rather than a
-     risky mass rename, the old names now RESOLVE to v3 values, so every
-     existing rule inherits the new palette in one place. New rules should
-     use the v3 names above. */
+     Section modules were written against older names; they now RESOLVE to
+     the monochrome values so no mass rename was needed. New rules use the
+     names above. */
   --ivory: var(--paper);
   --ivory-soft: var(--paper-2);
   --ink-soft: var(--ink-2);
   --brown: var(--text-ink);
-  --brass: var(--gold);
+  --brass: #ffffff;          /* dead as a colour; alias = filament white */
+  --gold: #ffffff;
+  --marigold: #f0a62b;       /* THE LOGO EXCEPTION ONLY: used by the
+                                wordmark triangle override, nowhere else */
 
   /* ---- hairlines ---- */
   --line-on-ink: rgba(242, 243, 244, 0.1);
   --line-on-ivory: rgba(20, 22, 26, 0.14);
 
-  /* ---- type ----
+  /* ---- type (BLUEPRINT SS2.6: baseline-snapped scale) ----
      font family custom properties are injected by next/font in layout.tsx:
      --font-display (Inter Tight), --font-sans (Inter), --font-mono (Geist
      Mono), --font-quote (Fraunces italic, the MD quote only) */
-  --text-statement: clamp(3rem, 13vw, 9rem);
-  --text-section: clamp(2.25rem, 8vw, 5rem);
-  --text-placard: 0.9375rem;
-  --text-specimen: 0.6875rem;
+  --text-statement: clamp(3rem, 9vw, 5.5rem);   /* 48 -> 88px */   /* 48 -> 88px */
+  --text-section: clamp(2.375rem, 6vw, 3.125rem); /* 38 -> 50px */
+  --text-placard: 1rem;                          /* 16/24 */
+  --text-specimen: 0.75rem;                      /* 12/16 mono */
 
-  /* ---- the neon grid ----
-     Dense minor cells with a 4x major rhythm. Lines are never solid and never
-     white: each is a bright core plus a dimmer halo band, which reads as a
-     blurred neon filament without a filter (a filter here would blur the
-     section's content too). Cool blue tint = "neon", very low alpha = it
-     stays atmosphere and never competes with the type. */
-  --grid-cell: 34px;
-  --grid-major: 136px;
-  --grid-neon: 168, 206, 255;   /* cool neon blue, used as rgb() triplet */
-  --grid-core: 0.05;            /* minor line core alpha */
-  --grid-halo: 0.018;           /* the soft bloom either side of the core */
-  --grid-major-core: 0.075;
+  /* ---- THE MODULE (BLUEPRINT SS2.1-2.3) ----
+     u is the base unit; every spacing on the page is a multiple of it.
+     Columns: 6 on desktop, 3 on mobile (the media query below). The drawn
+     background grid and the layout grid share these SAME tokens, which is
+     the entire point: drawn lines ARE column lines. */
+  --u: 8px;
+  --cols: 3;
+  --gutter: 16px;            /* 2u mobile */
+  --content-max: 1360px;
+  --baseline-row: 64px;      /* 8u: horizontal drawn lines */
 
   /* ---- rhythm ---- */
-  --pad-x: clamp(1.25rem, 5vw, 4.5rem);
-  --pad-section: clamp(5.5rem, 16vw, 10rem);
+  --pad-x: clamp(1.25rem, 5vw, 4rem);   /* outer margin, 2.5u -> 8u */
+  --pad-section: clamp(6rem, 16vw, 10rem); /* 12u mobile -> 20u desktop */
+
+  /* THE EDGE: where the content box begins, on every sheet, for every layer.
+     It is the outer margin until the viewport is wider than --content-max,
+     after which it centres the measured page inside it. Custom properties
+     substitute textually, so the 100% here resolves against whichever element
+     uses it, which is exactly what makes the LAYOUT grid (padding on the
+     sheet) and the DRAWN grid (an absolutely positioned pseudo-element inset
+     from the same sheet) land on identical lines at every width. Aligning
+     them by hand was the bug the old decorative grid could never escape. */
+  --edge: max(var(--pad-x), calc((100% - var(--content-max)) / 2));
+
+  /* The same distance measured from the VIEWPORT instead of the parent, which
+     is what a full-bleed element needs: an image that runs off the page has
+     to know how far the page edge is, and its own grid area cannot tell it.
+     Used only for negative margins on bleeding panels. */
+  --edge-vw: max(var(--pad-x), calc((100vw - var(--content-max)) / 2));
+
+  /* One column and two columns, as real lengths. Anything that has to be
+     column-sized but is NOT a grid item - the floodlight's width, a rail
+     card's flex-basis - reads these instead of guessing in vw, so the light
+     and the rail travel along the same lines the grid paints. */
+  --col-w: calc(
+    (min(100vw - 2 * var(--edge-vw), var(--content-max)) -
+      (var(--cols) - 1) * var(--gutter)) / var(--cols)
+  );
+  --two-col: calc(var(--col-w) * 2 + var(--gutter));
 }
+
+@media (min-width: 900px) {
+  :root {
+    --cols: 6;
+    --gutter: 24px;          /* 3u desktop */
+  }
+}
+
 
 /* ---------- base ---------- */
 * {
@@ -116,12 +159,14 @@ img {
 }
 
 ::selection {
-  background: var(--brass);
+  background: #ffffff;
   color: var(--ink);
 }
 
+/* currentColor, not a token: white rings vanish on paper and ink rings
+   vanish on ink; the element's own text colour always contrasts its ground */
 :focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid currentColor;
   outline-offset: 3px;
 }
 
@@ -163,73 +208,191 @@ img {
   color: var(--text-ink);
 }
 
+/* THE STRUCTURAL GRID (BLUEPRINT SS2.5).
+   Drawn from the SAME tokens as the layout, so drawn lines = column lines:
+   verticals sit exactly on the 7 (desktop) / 4 (mobile) column boundaries.
+   The old decorative 34px grid died because content never aligned to it;
+   this one cannot misalign by construction.
+
+   THE HORIZONTALS ARE GONE, deliberately. They were baseline rows every 8u,
+   and they were doing two jobs badly. Crossed with the verticals they made
+   graph paper — a mesh, a cage, a texture — and a mesh is the one thing a
+   luxury page cannot look like; it also fought every real horizontal on the
+   page (the dimension lines, the specimen rules, the sheet-block baselines),
+   so the drawn rules that CARRY MEANING had to compete with dozens that
+   carry none. Verticals alone read as a plumb line and a column measure,
+   which is what a drawing of a room actually has.
+
+   The line layer is a ::before spanning the CONTENT box (inset by --edge),
+   so line 1 = content left edge and the last line = content right edge; the
+   repeating gradient paints the line at the END of each period, i.e. on
+   every interior column's left edge, and the pseudo's own borders draw the
+   two outer edges. Wash and bloom stay on the section's background and eat
+   the grid toward the edges so it reads as drafting paper, not a cage.
+
+   NEON, honestly: a real neon tube is a bright core inside a soft halo, and
+   that is exactly how these lines are built (halo, core, halo across three
+   pixels) — but the light is WHITE, because the page's colour law gives hue
+   only to the photographs, the pieces, the fabric chips and the client's
+   logo. A coloured grid would be the page shouting over its own product. */
+.dark[data-grid],
+.light[data-grid] {
+  isolation: isolate; /* gives z-index:-1 below a floor to sit on */
+}
+
 .dark[data-grid] {
   background-image:
-    /* 1 · the wash. Sits on top and eats the grid everywhere except a soft
-       central band, so the page never reads as graph paper. */
     radial-gradient(115% 75% at 50% 42%, transparent 2%, var(--ink) 78%),
-    /* 2 · a cool bloom from above: the "light in the room" the grid sits in */
-    radial-gradient(90% 45% at 50% 0%, rgba(var(--grid-neon), 0.055), transparent 72%),
-    /* 3 · major rhythm, every 4th cell */
-    repeating-linear-gradient(
-      to right,
-      rgba(var(--grid-neon), var(--grid-major-core)) 0 1px,
-      rgba(var(--grid-neon), var(--grid-halo)) 1px 3px,
-      transparent 3px var(--grid-major)
-    ),
-    repeating-linear-gradient(
-      to bottom,
-      rgba(var(--grid-neon), var(--grid-major-core)) 0 1px,
-      rgba(var(--grid-neon), var(--grid-halo)) 1px 3px,
-      transparent 3px var(--grid-major)
-    ),
-    /* 4 · the dense minor grid: core + halo = a soft filament, not a hairline */
-    repeating-linear-gradient(
-      to right,
-      rgba(var(--grid-neon), var(--grid-core)) 0 1px,
-      rgba(var(--grid-neon), var(--grid-halo)) 1px 2px,
-      transparent 2px var(--grid-cell)
-    ),
-    repeating-linear-gradient(
-      to bottom,
-      rgba(var(--grid-neon), var(--grid-core)) 0 1px,
-      rgba(var(--grid-neon), var(--grid-halo)) 1px 2px,
-      transparent 2px var(--grid-cell)
-    );
+    radial-gradient(90% 45% at 50% 0%, var(--glow), transparent 72%);
 }
 
 .light[data-grid] {
   background-image:
-    radial-gradient(115% 75% at 50% 42%, transparent 2%, var(--paper) 80%),
-    repeating-linear-gradient(
-      to right,
-      rgba(28, 44, 66, 0.05) 0 1px,
-      rgba(28, 44, 66, 0.016) 1px 3px,
-      transparent 3px var(--grid-major)
-    ),
-    repeating-linear-gradient(
-      to bottom,
-      rgba(28, 44, 66, 0.05) 0 1px,
-      rgba(28, 44, 66, 0.016) 1px 3px,
-      transparent 3px var(--grid-major)
-    ),
-    repeating-linear-gradient(
-      to right,
-      rgba(28, 44, 66, 0.032) 0 1px,
-      rgba(28, 44, 66, 0.012) 1px 2px,
-      transparent 2px var(--grid-cell)
-    ),
-    repeating-linear-gradient(
-      to bottom,
-      rgba(28, 44, 66, 0.032) 0 1px,
-      rgba(28, 44, 66, 0.012) 1px 2px,
-      transparent 2px var(--grid-cell)
-    );
+    radial-gradient(115% 75% at 50% 42%, transparent 2%, var(--paper) 80%);
 }
+
+/*
+  THE DRAWN GRID IS GONE. On the client's word, and they were right.
+
+  It went through three versions: verticals on every column boundary (read
+  as a cage), verticals masked inside the key light (read as a smudge), and
+  finally just three axes at half the ink (read, on a phone, as a stray line
+  through the middle of the product). Each version was defensible in theory
+  and none of them survived being LOOKED AT next to a photograph of a sofa.
+
+  The lesson, recorded so the next redesign does not relearn it: the grid's
+  job was "this page is a drawing", and the elements that already do that
+  job - the dimension lines, the crop marks, the mono specimens, the sheet
+  numbers - do it attached to real content, where structure reads as
+  precision. Unattached lines read as texture, and texture is noise.
+
+  What REMAINS of [data-grid]: the section backgrounds above (the lamp wash
+  and bloom on .dark, the vignette on .light). Those are light, not lines,
+  and they are what keeps the dark sheets from being flat black. The
+  attribute stays in the markup so sections keep their washes and nothing
+  else has to change.
+*/
 
 .section {
   position: relative;
-  padding: var(--pad-section) var(--pad-x);
+  padding: var(--pad-section) var(--edge);
+}
+
+/* ---------- THE SHEET GRID (BLUEPRINT SS2.2) ----------
+   The layout grid and the DRAWN grid read the same two tokens (--cols,
+   --gutter), which is the whole thesis: a line under a panel is the same
+   line the panel starts on. Six columns from 900px, three below it.
+
+   Placement is a data attribute rather than a class so it can never collide
+   with a CSS-Module hash, and so a span reads as data in the markup:
+   data-col="4-6" is "columns four through six", which is exactly how the
+   blueprint's sheet maps are written.
+
+   Mobile is deliberately not a translation of the desktop map: at three
+   columns almost everything is full width, and the few paired elements opt
+   in with data-col-m. */
+.sheet-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+  column-gap: var(--gutter);
+  row-gap: calc(var(--u) * 6);
+  align-content: start;
+  /* No max-width here on purpose: the sheet itself is full-bleed and its
+     --edge padding is what limits the content box. A max-width would measure
+     the border box (padding included) and drift from the drawn grid by
+     exactly 2 x --edge on wide screens. */
+}
+
+[data-col] {
+  grid-column: 1 / -1;
+  min-width: 0;
+}
+
+[data-col-m='1-2'] { grid-column: 1 / span 2; }
+[data-col-m='3-3'] { grid-column: 3 / span 1; }
+
+@media (min-width: 900px) {
+  [data-col='1-2'] { grid-column: 1 / span 2; }
+  [data-col='1-3'] { grid-column: 1 / span 3; }
+  [data-col='1-4'] { grid-column: 1 / span 4; }
+  [data-col='2-5'] { grid-column: 2 / span 4; }
+  [data-col='3-4'] { grid-column: 3 / span 2; }
+  [data-col='3-6'] { grid-column: 3 / span 4; }
+  [data-col='4-6'] { grid-column: 4 / span 3; }
+  [data-col='5-6'] { grid-column: 5 / span 2; }
+  [data-col='1-6'] { grid-column: 1 / -1; }
+}
+
+/* ---------- THE TITLE BLOCK (BLUEPRINT SS2.7.1) ----------
+   Every drawing sheet carries one: sheet number, what this sheet IS in the
+   story, position in the set, and the pull to the next one. It is the page's
+   wayfinding, borrowed wholesale from real technical drawings, and it is the
+   reason a visitor always knows both where they are and that there is more. */
+.sheet-block {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: calc(var(--u) * 0.5) calc(var(--u) * 1.5);
+  border-top: 1px solid var(--line-on-ink);
+  padding-top: calc(var(--u) * 1);
+  min-height: calc(var(--u) * 3);
+}
+
+.light .sheet-block {
+  border-top-color: var(--line-on-ivory);
+}
+
+/* the "NEXT:" pull is the one part of the block that is not neutral data,
+   so it is the one part drawn in filament white */
+.sheet-next {
+  color: var(--accent);
+  opacity: 0.8;
+}
+
+/* At three columns the full block wraps to two lines and pushes the foot of
+   Sheet 01 past the fold (measured: 883px of content in an 844px viewport).
+   The word SHEET plus its number is the redundant half - the NN/08 right
+   beside it says the same thing - so it is what gives way. */
+@media (max-width: 899px) {
+  .sheet-no {
+    display: none;
+  }
+}
+
+.light .sheet-next {
+  color: var(--text-ink);
+  opacity: 0.75;
+}
+
+@media (min-width: 900px) {
+  .sheet-block {
+    justify-content: flex-end;
+    text-align: right;
+    /* the blueprint's title-block height, 8u, once there is room for it */
+    gap: calc(var(--u) * 0.5) calc(var(--u) * 2);
+    padding-top: calc(var(--u) * 1.5);
+    min-height: calc(var(--u) * 5);
+  }
+}
+
+/* ---------- THE BEAT CAPTION (BLUEPRINT SS0.9 fix 2) ----------
+   The brief asks for an elegant serif at the headlines; the design language
+   asks for a drawing's machine voice. Both are served by splitting them: the sheet
+   speaks in mono (data), the STORY speaks in Fraunces italic (a person).
+   That contrast is a classic editorial move, not a compromise. */
+.beat {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.9rem;
+}
+
+.beat-caption {
+  font-family: var(--font-quote), Georgia, serif;
+  font-style: italic;
+  font-size: clamp(1.05rem, 3.2vw, 1.35rem);
+  line-height: 1.5;
+  opacity: 0.8;
 }
 
 /* ---------- text roles (PLAN Part 1.6) ---------- */
@@ -250,14 +413,14 @@ img {
   color: var(--accent);
 }
 
-/* the Apple move, in our voice: ONE keyword of a statement carries a
-   metallic brass gradient (background-clip: text). Never more than one. */
+/* THE ONE LIT WORD (SS2.8): one keyword of a statement glows like a neon
+   sign in a dark studio window. White core, soft white bloom, no hue.
+   Never more than one per statement. */
 .grad-word {
-  /* the ONE gold thing in the hero viewport */
-  background: linear-gradient(105deg, #ffffff 0%, var(--gold) 55%, #8d7440 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: #ffffff;
+  text-shadow:
+    0 0 18px rgba(255, 255, 255, 0.45),
+    0 0 64px rgba(255, 255, 255, 0.18);
 }
 
 .section-title {
@@ -309,59 +472,130 @@ img {
   color: var(--accent);
 }
 
-/* giant ghost numeral watermark behind sections */
-.ghost-num {
-  position: absolute;
-  top: 0.5rem;
-  right: var(--pad-x);
-  font-family: var(--font-display), system-ui, sans-serif;
-  font-size: clamp(6rem, 24vw, 16rem);
-  line-height: 1;
-  font-weight: 380;
-  opacity: 0.05;
-  pointer-events: none;
-  user-select: none;
-}
+/* The giant ghost numeral is GONE. Every sheet now carries a title block
+   and a beat caption (SS2.7), and the annotation budget is three kinds per
+   viewport: a decorative 240px watermark of the same number the title block
+   already prints was the fourth, and the least informative of them. */
 
 /* ---------- primitives ---------- */
 
-/* the logo's gold triangle, as a motif */
+/* the triangle motif. Monochrome everywhere (currentColor follows the
+   ground); ONLY the wordmark's own triangle keeps the brand colour, via a
+   module override next to the wordmark (the logo exception, SS2.8). */
 .tri {
   display: inline-block;
   width: 0;
   height: 0;
   border-left: 5px solid transparent;
   border-right: 5px solid transparent;
-  border-bottom: 8px solid var(--marigold);
+  border-bottom: 8px solid currentColor;
 }
 
-/* the single CTA */
+/* ---------- THE BUTTON, and there is only one ----------
+
+   Every pressable thing on this page — the CTA, the swatch chips, the AR
+   button, the sticky pill, the Index toggle — is this one shape at one of
+   three sizes. That is the whole system, and it is deliberate: a page with
+   a single call to action should not have five different ideas about what a
+   button looks like.
+
+   THE LIGHT SITS UNDER IT. A ring plus a downward halo, not a flat fill:
+   the page's One Light Law puts a single source above and to the left, so
+   the thing a control casts is a pool BELOW it. That reads as an object
+   resting on the sheet rather than a rectangle painted on it, and it is the
+   one motif that ties the controls to the drawn grid's own neon.
+
+   It has to work on BOTH grounds, and a single set of values cannot: on ink
+   the ring glows and the halo is light, on paper the ring is drawn dark and
+   the halo is a real shadow, because a white glow on white is nothing at
+   all. So the four tokens below are re-declared under .light, and every
+   button rule reads only the tokens. */
 .btn {
+  --btn-ring: rgba(232, 238, 246, 0.28);
+  --btn-ring-lit: var(--accent);
+  --btn-face: rgba(255, 255, 255, 0.03);
+  /* the pool under the control: colour, blur, spread */
+  --btn-pool: 0 10px 26px -12px rgba(232, 238, 246, 0.32);
+  --btn-pool-lit: 0 16px 40px -14px color-mix(in srgb, var(--accent) 70%, transparent);
+
   display: inline-flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 1.05rem 1.9rem;
-  border: 1px solid var(--accent);
+  justify-content: center;
+  gap: 0.85rem;
+  /* BIG. This is the only action on the page and it was previously the size
+     of a form control; at 390px it now spans most of the sheet's width, and
+     a 56px minimum height clears the 44px touch target with room to spare. */
+  min-height: 3.5rem;
+  padding: 1.15rem 2.1rem;
+  border: 1px solid var(--btn-ring);
   border-radius: 999px;
+  background: var(--btn-face);
   color: inherit;
   font-family: var(--font-sans), sans-serif;
-  font-size: 0.75rem;
+  font-size: 0.78rem;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.22em;
-  transition: box-shadow 0.5s ease, background-color 0.35s ease, color 0.35s ease;
+  letter-spacing: 0.2em;
+  text-align: center;
+  box-shadow: var(--btn-pool);
+  transition:
+    box-shadow 0.45s ease,
+    border-color 0.35s ease,
+    background-color 0.35s ease,
+    color 0.35s ease,
+    transform 0.35s ease;
 }
 
-.btn:hover {
-  background: var(--accent);
-  color: var(--ink);
-  /* one of v3's two permitted glows: the gold CTA halo */
-  box-shadow: 0 0 38px 0 color-mix(in srgb, var(--accent) 45%, transparent);
+/* On paper the same object, lit the same way, described in the terms paper
+   understands: a drawn ring and a real cast shadow. */
+.light .btn,
+.btn.on-light {
+  --btn-ring: rgba(10, 12, 15, 0.22);
+  --btn-face: rgba(255, 255, 255, 0.7);
+  --btn-pool: 0 12px 28px -14px rgba(10, 12, 15, 0.42);
+  --btn-pool-lit: 0 18px 44px -16px color-mix(in srgb, var(--accent) 78%, transparent);
+}
+
+.btn:hover,
+.btn:focus-visible {
+  border-color: var(--btn-ring-lit);
+  box-shadow: var(--btn-pool-lit);
+  /* a millimetre off the sheet, which is what deepens the pool below */
+  transform: translateY(-2px);
+}
+
+.btn:active {
+  transform: translateY(0);
+  box-shadow: var(--btn-pool);
 }
 
 .btn svg {
-  width: 15px;
-  height: 15px;
+  width: 16px;
+  height: 16px;
+  flex: none;
+}
+
+/* the primary instance: full width of its column on phones, where the CTA is
+   the last thing between a visitor and a WhatsApp message */
+.btn-lead {
+  width: 100%;
+  font-size: 0.82rem;
+}
+
+@media (min-width: 720px) {
+  .btn-lead {
+    width: auto;
+    min-width: 22rem;
+  }
+}
+
+/* the small instance: chips and pills, same object, same light */
+.btn-sm {
+  min-height: 2.75rem;
+  padding: 0.7rem 1.15rem;
+  gap: 0.6rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
 }
 
 /* quiet secondary text link, never a button */
@@ -402,7 +636,25 @@ img {
   font-size: var(--text-specimen);
   text-transform: uppercase;
   letter-spacing: 0.14em;
-  white-space: nowrap;
+  /*
+    nowrap UNTIL IT CANNOT. A chip is a single spoken phrase and breaking one
+    mid-sentence looks like a mistake, so nowrap is right — right up to the
+    phrase that is longer than a phone. "Trusted by hundreds of happy
+    homeowners" measured 355 px inside a 320 px column and was, on its own,
+    the last 14 px of horizontal scroll on the whole page.
+
+    max-width caps it at the column and `balance` then breaks it across two
+    lines of equal length, which reads as a deliberate two-line chip rather
+    than as a word that fell off the end.
+
+    `normal` rather than `nowrap` is safe here BECAUSE the row wraps: in a
+    flex-wrap container an item keeps its max-content width and moves to a
+    new line, and only shrinks — and therefore only breaks — when it is on a
+    line by itself and still too wide. Short chips are untouched.
+  */
+  white-space: normal;
+  max-width: 100%;
+  text-wrap: balance;
 }
 
 .light .chip {
@@ -420,12 +672,61 @@ img {
   border-color: var(--line-on-ivory);
 }
 
+/* ---- PANELS (BLUEPRINT SS2.4): the only allowed media shapes ----
+   Sharp corners: drafting paper has none. Buttons keep radius; sheets do not. */
+/* ---- THE PLATE, and its four different corners ----
+
+   Every photograph and every stage on this page sits in a `panel`, and every
+   one of them used to be a hard rectangle. Four equal radii would have been
+   the obvious alternative and the wrong one: a uniform 16px round is the
+   single most-used shape on the web, and this page's whole claim is that it
+   was drawn rather than assembled.
+
+   So the corners are all DIFFERENT, and they are different by a rule rather
+   than by taste — 0, 1, 3 and 5 modules, clockwise from the top left:
+
+     · top left stays SQUARE. It is the datum. The One Light Law puts the
+       source above and to the left, so this is the corner the light strikes
+       and the corner a drafter measures from; softening it would round off
+       the one point the whole composition is registered to.
+     · the others open up as they travel away from it, ending widest at the
+       bottom left, in the deepest shadow.
+
+   The result is a shape that is recognisably ours at a glance and is still
+   arithmetic rather than decoration. It scales with --u, so it is the same
+   proportion on a phone as on a desktop. */
+.panel {
+  position: relative;
+  overflow: hidden;
+  border-radius: 0 calc(var(--u) * 1) calc(var(--u) * 3) calc(var(--u) * 5);
+  border: 1px solid var(--line-on-ink);
+}
+
+.light .panel {
+  border-color: var(--line-on-ivory);
+}
+
+.panel-land {
+  aspect-ratio: 1.41421 / 1;
+}
+
+.panel-port {
+  aspect-ratio: 1 / 1.41421;
+}
+
+.panel-sq {
+  aspect-ratio: 1 / 1;
+}
+
 /* placeholder media panel, until graded photos land.
    Deliberately art-directed so the skeleton already looks intentional. */
 .ph {
   position: relative;
   overflow: hidden;
-  border-radius: 18px;
+  /* the same four corners as a real plate: a placeholder that is a different
+     shape from the photograph replacing it makes the layout jump on the day
+     the photograph lands */
+  border-radius: 0 calc(var(--u) * 1) calc(var(--u) * 3) calc(var(--u) * 5);
   background:
     radial-gradient(120% 90% at 50% 0%, var(--glow-cool), transparent 62%),
     linear-gradient(170deg, #16191d 0%, #0e1113 55%, #08090b 100%);
@@ -447,18 +748,24 @@ img {
   will-change: transform;
 }
 
-/* collection card media: the shadow deepens as the card settles flat.
-   ScrollTrigger only toggles the class; this transition does the easing, so
-   the scrubbed timeline never has to animate box-shadow per frame (cheap). */
-[data-card] .ph {
+/* THE ONE LIGHT LAW (BLUEPRINT SS5.7): every light on this page comes from
+   the top left at 45 degrees, so every shadow falls to the bottom right at
+   135. A card's shadow deepens as it settles flat under that light.
+   ScrollTrigger only toggles the attribute; this transition does the easing,
+   so the scrubbed timeline never animates box-shadow per frame (cheap).
+   Attribute, not class: class names inside CSS Modules are hashed, and the
+   motion layer writes this from a string. */
+[data-card-media] {
   transition: box-shadow 0.8s ease;
 }
 
-[data-card] .ph.is-lit {
-  box-shadow: 0 32px 64px -28px rgba(42, 33, 27, 0.35);
+[data-card-media][data-lit] {
+  /* 24u long, falling bottom-right, neutral black: a warm shadow would be a
+     colour cast, and the page owns no hue (SS2.8) */
+  box-shadow: 24px 24px 64px -26px rgba(0, 0, 0, 0.55);
 }
 
-/* ---------- golden thread (PLAN Part 2.5 "the signature") ----------
+/* ---------- THE PLOT LINE (was: golden thread; SS2.8 re-lit white) ----------
    Fully drawn by default so the no-JS page and reduced-motion users see the
    finished thread; PageMotion rewinds it to scaleY 0 and lets scroll draw it.
    z-index 10: over section backgrounds, under the grain (80) and pill (90).
@@ -470,8 +777,10 @@ img {
   height: 100dvh;
   left: max(10px, calc(var(--pad-x) * 0.35));
   width: 1px;
-  background: var(--brass);
-  opacity: 0.55;
+  background: #ffffff;
+  /* a lit filament, not a printed line: the bloom is what says neon */
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.5);
+  opacity: 0.35;
   transform-origin: top center;
   pointer-events: none;
   z-index: 10;
@@ -513,18 +822,75 @@ img {
 .preloader-line {
   width: min(46vw, 220px);
   height: 1px;
-  background: var(--brass);
+  background: #ffffff;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.55);
   transform: scaleX(0);
   transform-origin: left center;
 }
 
+/* the story's title, said once, before anything else */
+.preloader-sub {
+  opacity: 0.55;
+}
+
+/* ---- THE DRAWING ON THE LOADING SHEET ----
+   A sofa's front elevation in line, struck stroke by stroke while the page
+   loads (preloader.ts). It is the site's whole thesis, stated before a
+   single section has been seen: this studio draws furniture to measure.
+
+   --draw-glow is a REGISTERED custom property so GSAP can tween it: an
+   unregistered one is a string to the animation engine and interpolates in
+   jumps, which on a filament switching on is exactly the artefact you would
+   notice. Registered, it is a real number and the light comes up smoothly. */
+@property --draw-glow {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+
+.preloader-draw {
+  --draw-glow: 0;
+  width: min(78vw, 420px);
+  height: auto;
+  margin-bottom: calc(var(--u) * 3);
+  overflow: visible;
+}
+
+.preloader-stroke {
+  fill: none;
+  stroke: var(--ivory);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  /* the bloom rides the tween: 0 while the line is being drawn in graphite,
+     full once the filament is switched on */
+  opacity: calc(0.45 + 0.55 * var(--draw-glow));
+  filter: drop-shadow(0 0 calc(6px * var(--draw-glow)) rgba(255, 255, 255, 0.75));
+  vector-effect: non-scaling-stroke;
+}
+
+/* the annotation layer is drawn finer than the object, here as everywhere */
+.preloader-stroke-dim {
+  stroke-width: 1;
+  opacity: calc(0.25 + 0.4 * var(--draw-glow));
+}
+
+.preloader-dimtext {
+  fill: var(--ivory);
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 15px;
+  letter-spacing: 0.18em;
+  text-anchor: middle;
+  opacity: calc(0.2 + 0.55 * var(--draw-glow));
+}
+
 /* ---------- accessibility tokens (Lighthouse a11y 100) ----------
-   Computed against WCAG relative-luminance math, not eyeballed:
-   brass #C8A96A on ivory is 1.98:1, so light sections get an ink-side
-   member of the brass family. #7D612E on #F4F0E8 = 5.1:1. The specimen
-   opacity lift lands brown@0.7 on ivory at 5.51:1 (0.62 was 4.29:1). */
+   Monochrome (SS2.8): the light-ground index is ink at a measured opacity.
+   #14161A on #F2F3F4 is 16.3:1; at opacity 0.72 the effective contrast is
+   ~9.9:1, far above the 4.5:1 floor for 12px mono caps. */
 .light .index {
-  color: #7d612e;
+  color: var(--text-ink);
+  opacity: 0.72;
 }
 
 .light .specimen {

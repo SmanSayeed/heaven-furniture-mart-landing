@@ -1,15 +1,140 @@
 /* Shared layout styles for the eight sections + sticky CTA.
    Text roles and primitives come from globals.css; this file is layout only. */
 
-/* ============ S1 · HERO ============ */
+/* ============ THE ANNOTATION LAYER (BLUEPRINT SS2.7) ============
+   L5 in the six-layer sandwich: drawn marks that sit OUTSIDE the objects
+   they describe. That separation is a rule, not a preference: the old
+   bespoke panel printed its dimensions inside the stage, where they floated
+   over the model and read as a bug. Annotations on L5, objects on L4, and
+   the overlap becomes impossible by construction. */
+
+/* |<---- 2286 MM ---->|  drawn in filament white, 1px, with end ticks */
+.dimLine {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  width: 100%;
+  min-height: 1.5rem;
+  color: var(--filament);
+}
+
+.dimRule {
+  flex: 1;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.45;
+}
+
+.dimTick {
+  width: 1px;
+  height: 9px;
+  background: currentColor;
+  opacity: 0.65;
+  flex: none;
+}
+
+.dimText {
+  flex: none;
+  opacity: 0.72;
+  color: var(--paper);
+  white-space: nowrap;
+}
+
+:global(.light) .dimLine {
+  color: var(--text-ink);
+}
+
+:global(.light) .dimText {
+  color: var(--text-ink);
+}
+
+/* the vertical variant: the S7 timeline is literally a dimension line whose
+   ticks are years, which is the whole conceit of that sheet */
+.dimLineV {
+  flex-direction: column;
+  width: auto;
+  height: 100%;
+  min-height: 0;
+}
+
+.dimLineV .dimRule {
+  width: 1px;
+  height: auto;
+  flex: 1;
+}
+
+.dimLineV .dimTick {
+  width: 9px;
+  height: 1px;
+}
+
+/* corner registration marks, a hair inside the panel edge */
+.cropMarks {
+  position: absolute;
+  inset: 6px;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.cropMarks span {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  opacity: 0.42;
+  border-color: var(--filament);
+  border-style: solid;
+  border-width: 0;
+}
+
+.cropMarks span:nth-child(1) {
+  top: 0;
+  left: 0;
+  border-top-width: 1px;
+  border-left-width: 1px;
+}
+
+.cropMarks span:nth-child(2) {
+  top: 0;
+  right: 0;
+  border-top-width: 1px;
+  border-right-width: 1px;
+}
+
+.cropMarks span:nth-child(3) {
+  bottom: 0;
+  left: 0;
+  border-bottom-width: 1px;
+  border-left-width: 1px;
+}
+
+.cropMarks span:nth-child(4) {
+  bottom: 0;
+  right: 0;
+  border-bottom-width: 1px;
+  border-right-width: 1px;
+}
+
+:global(.light) .cropMarks span {
+  border-color: var(--text-ink);
+  opacity: 0.3;
+}
+
+/* ============ SHEET 01 · THE WINDOW ============
+   The sheet is a real column grid now (BLUEPRINT SS4 Sheet 01), not a flex
+   stack: type on columns 1-3, the A-LAND stage panel on 4-6, the title block
+   on 5-6. Nothing can overlap at any width because nothing shares a column,
+   and the drawn background grid runs on the SAME lines the panel starts on. */
 .hero {
   position: relative;
   min-height: 100dvh;
-  display: flex;
-  flex-direction: column;
-  padding: 1.1rem var(--pad-x) 1.25rem;
+  padding: 1.1rem var(--edge) 0.75rem;
   overflow: hidden; /* the photo is scaled 1.12 and parallaxes inside this */
   isolation: isolate; /* the hero's layers stack against each other only */
+  /* mobile: three columns, everything full width, stacked in story order.
+     1.5u, not 2u: six stacked blocks in an 844px viewport cannot afford 2u,
+     and the sheet's foot has to stay above the fold while it is pinned. */
+  row-gap: calc(var(--u) * 1.25);
+  align-content: space-between;
 }
 
 /* ---- S1b layer 0: the room ---- */
@@ -19,12 +144,47 @@
   z-index: 0;
 }
 
-.heroPhoto {
+/* `.heroPhotoWrap .heroPhoto`, not `.heroPhoto`, and the extra class is
+   load-bearing. Photo.tsx puts BOTH `.photo` and `.heroPhoto` on this img,
+   `.photo` carries its own `filter: saturate(.86) contrast(1.06)`, and it is
+   declared later in this same file - so at equal specificity it won and the
+   grayscale below silently did nothing. Measured: the computed filter was
+   `saturate(0.86) contrast(1.06)` and the hero rendered warm brown. */
+.heroPhotoWrap .heroPhoto {
   width: 100%;
   height: 100%;
   object-fit: cover;
   /* scaled per PLAN S1b so the parallax has somewhere to travel */
   transform: scale(1.12);
+
+  /*
+    THE ROOM IS BLACK AND WHITE. It used to arrive in its own colour, and a
+    defocused warm-brown interior behind a monochrome page did two bad things
+    at once: it made the whole first screen read muddy-brown rather than as
+    ink, and it broke the page's one colour rule from the very first frame —
+    the rule being that hue belongs to the PHOTOGRAPHS OF THE WORK, the
+    pieces, the fabric chips and the logo. This backdrop is not evidence of
+    the work. It is atmosphere: an out-of-focus room for a piece to stand in.
+    Atmosphere does not get colour.
+
+    AND IT IS CRUSHED ALMOST TO BLACK. Even in greyscale, a legible room
+    behind a lit object is a second subject: the eye reads the furniture in
+    the photograph before it reads the piece on the plinth. At brightness
+    0.26 the room survives as texture — you can tell there is a space, you
+    cannot inventory it — and the sheet reads as what it is meant to be, a
+    black stage with one light on it.
+
+    The loadshedding strike (PageMotion) tweens the WRAPPER's filter, which
+    composes on top of this one, so the tube still catches and the room still
+    briefly comes up before settling back into the dark. Nothing here fights
+    it.
+
+    This is also why there is no background video. A stock clip of somebody
+    else's showroom would be a licence question, a megabyte or two on
+    Chattogram mobile data, and a second subject again — three problems to
+    buy an atmosphere that a black ground and one beam already have.
+  */
+  filter: grayscale(1) contrast(1.28) brightness(0.26);
 }
 
 /* text contrast at the top, clearing at the bottom so the vitrine glow reads
@@ -44,13 +204,26 @@
     );
 }
 
-/* every hero layer above the photo shares this stacking context */
+/* SHEET 01's stack, bottom to top: photograph (0), scrim (1), the DRAWN
+   GRID (2), content (3).
+
+   The grid pseudo-element defaults to z-index -1, which is right for every
+   other sheet (they paint their own flat background and the lines sit just
+   above it). Here it put the page's whole thesis behind a photograph, where
+   it was invisible. The grid has to be drawn ON the room: this sheet is a
+   plan of a space, and the lines are the plan. */
+.hero[data-grid]::before,
+.hero[data-grid]::after {
+  z-index: 2;
+}
+
 .heroTop,
 .heroMain,
+.heroActions,
 .heroBottom,
-.vitrine {
+.turntable {
   position: relative;
-  z-index: 2;
+  z-index: 3;
 }
 
 /* The Index pill is fixed in the top-RIGHT corner at every breakpoint, so
@@ -69,6 +242,13 @@
 
 /* THE LOGO BLOCK (PLAN v3): the wordmark sits in a solid --brand rectangle,
    the one saturated block on an otherwise monochrome page. */
+/* THE LOGO EXCEPTION (BLUEPRINT SS2.8): the wordmark's triangle is the one
+   non-photo element on the page allowed to carry hue, because it IS the
+   client's mark. Every other .tri on the page is currentColor. */
+.wordmark :global(.tri) {
+  border-bottom-color: var(--marigold);
+}
+
 .wordmark {
   display: inline-flex;
   flex-direction: column;
@@ -96,19 +276,21 @@
 /* Tuned against a real 390 x 844 viewport: at the old rhythm the CTA wrapped,
    the sticky pill sat on top of it and the AR hook fell below the fold. The
    gaps are deliberately tight here and relax at 700px up. */
-.heroMain {
-  flex: 1;
+.heroMain,
+.heroActions {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 0.85rem;
-  padding-top: 1rem;
+  /* 0.6rem, not 0.85: the mobile hero's budget closed at 20px over the
+     viewport, and these two pills plus the AR hook's own padding were the
+     only rows left with slack that is not content */
+  gap: 0.6rem;
 }
 
 @media (min-width: 700px) {
-  .heroMain {
+  .heroMain,
+  .heroActions {
     gap: 1.4rem;
-    padding-top: 3rem;
   }
 }
 
@@ -136,12 +318,12 @@
 
 /* the hero pill never wraps: the short label plus tighter tracking keeps it
    to one line at 390px */
-.heroCtaRow .btn {
+.heroCtaRow :global(.btn) {
   white-space: nowrap;
 }
 
 @media (max-width: 479px) {
-  .heroCtaRow .btn {
+  .heroCtaRow :global(.btn) {
     padding: 0.95rem 1.35rem;
     font-size: 0.68rem;
     letter-spacing: 0.14em;
@@ -154,26 +336,28 @@
   }
 }
 
-/* ---- S1 layer 1: THE TURNTABLE ----
-   The piece stands in a pool of light on a floor line. Deliberately NOT a
-   framed panel: a bordered box with nothing in it reads as a broken image
-   for as long as the 3D takes to arrive, while light and a floor line read
-   as a composition the whole time. */
+/* ---- SHEET 01 layer 3-4: THE TURNTABLE ----
+   The stage is now an A-LAND panel (BLUEPRINT SS2.4) on columns 4-6, which
+   buys two things at once: the visitor reads a placed, measured object
+   instead of a floating cutout, and the 3D camera's framing becomes a
+   CONSTANT because the aspect ratio no longer depends on the viewport.
+
+   The earlier "no frame, just light" version existed because an empty
+   bordered box reads as a broken image. That risk is gone for a different
+   reason now: the panel is never empty. It carries the light pool, the floor
+   line, the brand mark and its crop marks from the first paint, and the 3D
+   arrives INTO a composition rather than filling a hole. */
 .turntable {
-  position: relative;
-  z-index: 2;
   display: grid;
-  justify-items: center;
   gap: 0.55rem;
-  margin-top: 0.25rem;
+  align-content: start;
 }
 
 .stage {
   position: relative;
-  width: min(100%, 30rem);
-  /* the object owns a quarter of the fold on a phone: enough to read as the
-     subject, little enough that the statement and both pills stay above it */
-  height: min(27dvh, 220px);
+  width: 100%;
+  /* .panel .panel-land (globals) own the shape: 1.41421 : 1, sharp corners,
+     hairline edge. Height is derived, never set, so the ratio is exact. */
   /*
     The whole mobile gesture story in one line: the browser keeps vertical
     panning (the page scrolls normally under a finger) and hands us only the
@@ -183,6 +367,53 @@
   touch-action: pan-y;
 }
 
+/*
+  DESKTOP: THE PIECE IS THE POINT, SO GIVE IT THE ROOM.
+
+  The stage kept the A-series ratio (1.414:1) at every width, which is the
+  right default for a plate of photography and the wrong one for a stage. A
+  sofa is two and a half times wider than it is tall, so in a landscape panel
+  it sat as a thin band across the middle with a third of the frame empty
+  above and below, and the object the whole hero exists for was the smallest
+  lit thing on screen.
+
+  From 900px the panel goes taller (1.18:1), so the piece fills a frame built
+  for its proportions instead of floating in a letterbox. It ends up roughly
+  40% larger in area with no change to the type.
+
+  IT DOES NOT BLEED. An earlier version ran the panel out past the content
+  edge to the viewport edge, on the theory that the sheet's right margin was
+  doing nothing. It was doing something: it was the only thing telling the
+  eye where the page ends. Bled, the frame's right-hand rule and its crop
+  marks fell off-screen, the panel read as clipped rather than wide, and the
+  stage no longer lined up with the INDEX button or the footer above and
+  below it. On mobile the stage is centred in its column and looks composed;
+  the fix on desktop is the same discipline, not a different one.
+
+  This is still a deliberate departure from the single panel ratio, after
+  Sheet 02's photograph, and for the same reason: the ratio serves the
+  content. The MARGINS, though, serve the page, and they are not negotiable.
+*/
+@media (min-width: 900px) {
+  .stage {
+    aspect-ratio: 1.18 / 1;
+    /* full width of its own grid track, flush to the sheet's right margin —
+       the same edge the header, the CTA row and the footer all sit on */
+    width: 100%;
+    margin-right: 0;
+    /* on a SHORT desktop (760px laptop, measured 26px over) the ratio's
+       height is more than the pinned hero can afford; the cap only bites
+       there, and the camera refits the piece to whatever box remains */
+    max-height: 52dvh;
+  }
+
+  /* the annotations share the stage's track, so the dimension line measures
+     exactly the width of the frame it sits under */
+  .turntable > :not(.stage) {
+    margin-right: 0;
+  }
+}
+
 /* the grab affordance appears only once the 3D is genuinely up */
 .stageLive {
   cursor: grab;
@@ -190,12 +421,6 @@
 
 .stageLive:active {
   cursor: grabbing;
-}
-
-@media (min-height: 900px) {
-  .stage {
-    height: min(30dvh, 270px);
-  }
 }
 
 /* the light the piece stands in */
@@ -267,18 +492,26 @@
   transition: opacity 0.6s ease;
 }
 
-/* ---- the caption: what the piece IS ---- */
+/* ---- the caption: what the piece IS ----
+   Left-aligned under the panel, like the caption under a plate in a
+   catalogue. Centring it made the stage read as a slide; a drawing's
+   annotations all hang off the same left line. */
 .stageCaption {
   display: grid;
-  justify-items: center;
   gap: 0.3rem;
-  text-align: center;
   min-height: 2.6rem; /* reserved: the hint appearing must not shift the type */
+}
+
+.captionText {
+  display: grid;
+  gap: 0.3rem;
+  min-width: 0;
 }
 
 .pieceName {
   display: flex;
   align-items: baseline;
+  flex-wrap: wrap;
   gap: 0.6rem;
   font-family: var(--font-display), system-ui, sans-serif;
   font-weight: 600;
@@ -287,8 +520,84 @@
   color: var(--ivory);
 }
 
-.pieceName .specimen {
+.pieceName :global(.specimen) {
   opacity: 0.62;
+}
+
+/* the piece's name goes to that category's own page */
+.pieceLink {
+  color: inherit;
+  border-bottom: 1px solid color-mix(in srgb, currentColor 35%, transparent);
+  padding-bottom: 1px;
+  transition: border-color 0.3s ease;
+}
+
+.pieceLink:hover {
+  border-bottom-color: var(--accent);
+}
+
+/* ---- THE RANGE, BY HAND ----
+   Prev / next under the plinth. The count between them is the whole
+   affordance: it says there are five of these before a visitor has pressed
+   anything, which is what turns two arrows into "there is more to see". */
+/* .pieceNav / .pieceNavBtn: retired - the pager lives ON the stage now
+   (.stageArrow), because the separate control row cost 53px of a phone hero
+   that was over its viewport budget. */
+
+/* one glyph, pointed both ways: a second SVG for "the same arrow backwards"
+   is a second thing to keep in sync for no benefit */
+.flip {
+  transform: rotate(180deg);
+}
+
+/* ---- "IT IS STILL COMING" ----
+   Shown only between first paint and the 3D landing, and only when the 3D is
+   actually going to land (see Turntable). A specimen line with a filament
+   crawling under it, because this is a drawing office and not a browser
+   widget. */
+.stageLoading {
+  position: relative;
+  display: inline-block;
+  margin-top: calc(var(--u) * 1.5);
+  padding-bottom: 0.35rem;
+  opacity: 0.55;
+}
+
+.stageLoadingRule {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--paper) 14%, transparent);
+}
+
+.stageLoadingRule::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, #ffffff, transparent);
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+  transform: translateX(-100%);
+  animation: stageLoadingSweep 1.4s ease-in-out infinite;
+}
+
+@keyframes stageLoadingSweep {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+/* a repeating sweep is exactly the motion a vestibular disorder reacts to,
+   and the global reduce rule would otherwise strobe it at 0.001s */
+@media (prefers-reduced-motion: reduce) {
+  .stageLoadingRule::after {
+    animation: none;
+    transform: none;
+    background: color-mix(in srgb, var(--paper) 30%, transparent);
+    box-shadow: none;
+  }
 }
 
 .dragHint {
@@ -322,17 +631,26 @@
   }
 }
 
+/* the foot of the sheet: the story's opening beat and the scroll cue on the
+   left, the title block on the right */
 .heroBottom {
   display: flex;
   align-items: flex-end;
+  flex-wrap: wrap;
   justify-content: space-between;
-  gap: 1rem;
+  gap: 0.75rem 1rem;
 }
 
 .scrollHint {
   display: inline-flex;
   align-items: center;
   gap: 0.55rem;
+}
+
+/* the cue points the way the page goes. An up-pointing triangle beside the
+   word SCROLL is the page contradicting itself in its first viewport. */
+.scrollHint :global(.tri) {
+  transform: rotate(180deg);
 }
 
 /* on phones the sticky pill owns the bottom-right corner; the specimen row
@@ -350,130 +668,190 @@
 @media (min-width: 900px) {
   .hero {
     padding-top: 2rem;
+    align-content: center;
+    row-gap: calc(var(--u) * 4);
   }
-  /* From 900px the hero is two columns: type left, piece right. The old
-     absolute vitrine overlapped the headline at 1280px (verified); a real
-     column cannot, at any width. */
-  .hero {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    grid-template-rows: auto 1fr auto;
-    column-gap: 3rem;
-    align-items: center;
-  }
+  /* Sheet 01's map: the sheet head spans the full width, then type [1-3] and
+     the stage panel [4-6] share the middle row, then the foot. Placement is
+     declared in the markup with data-col, so this block only has to set the
+     rows and the vertical rhythm. */
+  /* SHEET 01's rows: head, type, actions, foot. The stage spans the two
+     middle rows in columns 4-6, which is what lets the type and the actions
+     stack in the left column while the panel stays one tall placed object
+     rather than being split across them. */
   .heroTop {
-    grid-column: 1 / -1;
     grid-row: 1;
   }
   .heroMain {
-    grid-column: 1;
     grid-row: 2;
-    padding-top: 0;
+    align-self: end;
   }
-  .turntable {
-    grid-column: 2;
-    grid-row: 2;
-    align-self: center;
-    margin-top: 0;
-    gap: 1rem;
+  .heroActions {
+    grid-row: 3;
+    align-self: start;
+    padding-top: calc(var(--u) * 2);
   }
   .heroBottom {
-    grid-column: 1 / -1;
-    grid-row: 3;
+    grid-row: 4;
   }
-  .stage {
-    width: 100%;
-    height: min(46dvh, 420px);
+  .turntable {
+    grid-row: 2 / span 2;
+    align-self: center;
+    gap: 0.9rem;
+  }
+  /* the title block shares the foot row with the scroll cue: one drawn
+     strip across the bottom of the sheet, not two stacked ones */
+  .hero [data-sheet-block] {
+    grid-row: 4;
+    align-self: end;
   }
   .pieceName {
     font-size: 1.05rem;
   }
   /*
-    The statement now lives in HALF the width, so the full-bleed size (up to
-    9rem) ran to four lines and pushed the CTA and the specimen row below the
-    fold at 1280x800 (measured). Sized to the column, and additionally capped
-    against viewport HEIGHT so a short laptop screen cannot be overrun by a
-    wide one's type.
+    BLUEPRINT SS2.6: the statement is 88/88 on desktop, and "clamps down by
+    viewport height" is not a hedge - it is the rule that keeps a 1280x800
+    laptop from pushing the CTA below the fold while a 1440x1000 screen still
+    gets the full 88px. 11dvh hits exactly 88px at 800px tall.
   */
   .heroMain :global(.statement) {
-    font-size: min(clamp(2.6rem, 5vw, 4.4rem), 13dvh);
+    font-size: min(5.5rem, 11dvh);
+    line-height: 1;
   }
 }
 
-/* ============ S2 · BRAND PLACARD ============ */
+/* Short desktop windows (a 1280x600 browser, a laptop with devtools docked):
+   a 3-column A-LAND panel is 400px tall there and the sheet overflows. The
+   panel narrows so its DERIVED height fits, which keeps the ratio exact -
+   capping the height instead would silently break the sqrt(2) the whole
+   design rests on. It then no longer starts on a column line, which is the
+   one place the grid law yields, and it yields to the ratio deliberately. */
+@media (min-width: 900px) and (max-height: 720px) {
+  .stage {
+    width: min(100%, calc(40dvh * 1.41421));
+    justify-self: end;
+  }
+}
+
+/* ============ SHEET 02 - THE STUDIO ============
+   Placard [1-2], photograph A-PORT [3-6] beginning on column 3's line and
+   running off the right edge of the page. The 2+4 split is asymmetric on
+   purpose: a 3+3 reads as a comparison, and this sheet is not comparing. */
 .brand {
-  display: grid;
-  gap: 2.25rem;
-  /* the ivory curtain (PLAN 2.5): S2 must paint ABOVE the fixed 3D canvas
-     (z-index 4) so the pinned hero and its chair are covered as the curtain
-     slides up. Static CSS, harmless without JS. */
+  /* the paper curtain (PLAN 2.5): Sheet 02 must paint ABOVE the fixed 3D
+     canvas (z-index 4) so the pinned hero and its piece are covered as the
+     curtain slides up. Static CSS, harmless without JS. */
   z-index: 5;
+  row-gap: calc(var(--u) * 5);
+  align-items: center;
+  /*
+    THE BLEED STOPS AT THE GLASS.
+
+    .brandPhoto deliberately breaks the margin and runs to the viewport edge,
+    and it computes that reach from --edge-vw, which is built on 100vw.
+    100vw INCLUDES the classic scrollbar; the element's containing block does
+    not. On Windows desktop Chrome that is a 16 px difference, and 16 px past
+    the right edge is a horizontal scrollbar on a 1920 px screen — the bleed
+    causing the exact scroll it was drawn to avoid.
+
+    Clipping here is not a workaround for a wrong number: the photograph is
+    SUPPOSED to end at the edge of the screen, so cutting it at the edge of
+    the screen is the intent stated a second way. `clip` rather than `hidden`
+    for the usual reason — no scrollport, so nothing about pinning or sticky
+    positioning elsewhere on the page changes.
+  */
+  overflow-x: clip;
+  overflow-clip-margin: 0;
 }
 
 .placard {
   display: grid;
-  gap: 0.9rem;
+  /*
+    minmax(0, 1fr), for the same reason .cards carries it (comment there).
+
+    An implicit `auto` track sizes to MAX-CONTENT, and this placard contains
+    .trustRow — a wrapping flex row whose max-content width is every chip on
+    one line. The track therefore asked for 355 px inside a 320 px column,
+    the chips never reached the width at which they would have wrapped, and
+    the 35 px difference was the page's entire horizontal scroll on a phone.
+    Capping the track at the column makes the flex row wrap as designed.
+  */
+  grid-template-columns: minmax(0, 1fr);
+  gap: calc(var(--u) * 1.5);
+  align-content: start;
 }
 
-/* The photograph BREAKS THE MARGIN. A picture that stops politely at the
-   same gutter as the paragraph beside it reads as a document; one that runs
-   off the edge of the page reads as a magazine spread, and this section is
-   the page's first real look at Heaven's work. Edge to edge on a phone,
-   bleeding off the right on desktop. */
+/* the fast read (BLUEPRINT SS0.9 fix 3): four reasons in two seconds */
+.trustRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--u) * 1);
+  margin-top: calc(var(--u) * 1.5);
+}
+
+/* THE PHOTOGRAPH BREAKS THE MARGIN. One that stops politely at the same
+   gutter as the words beside it reads as a document; one that runs off the
+   page reads as a magazine spread, and this sheet is the visitor's first
+   real look at Heaven's work. The bleed is measured from the VIEWPORT
+   (--edge-vw), because a grid item cannot know how far the page edge is. */
 .brandPhoto {
   position: relative;
-  aspect-ratio: 5 / 4;
-  margin-inline: calc(var(--pad-x) * -1);
+  aspect-ratio: 1.41421 / 1;
+  margin-inline: calc(var(--edge-vw) * -1);
   overflow: hidden;
+  order: -1; /* on a phone the picture IS the headline */
 }
 
 .brandPhotoCaption {
   position: absolute;
-  left: var(--pad-x);
-  bottom: 0.85rem;
+  left: calc(var(--edge-vw) + var(--u) * 1.5);
+  bottom: calc(var(--u) * 1.5);
+  z-index: 2;
   color: var(--paper);
   /* the photographs are bright: the caption needs its own shadow, not a
      scrim over the whole picture */
-  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.75);
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.85);
 }
 
 @media (min-width: 900px) {
   .brand {
-    grid-template-columns: 5fr 7fr;
-    align-items: center;
-    gap: 4.5rem;
+    row-gap: calc(var(--u) * 8);
   }
   .brandPhoto {
-    /* off the right edge of the viewport, and taller than it is wide: the
-       eye goes to the picture, the reading happens in the quiet column */
-    aspect-ratio: 4 / 5;
-    max-height: 80dvh;
-    margin-inline: 0 calc(var(--pad-x) * -1);
-    border-radius: 20px 0 0 20px;
-    /* max-height makes the box narrower than its column; without this it
-       would sit at the column's LEFT edge and the bleed would not reach the
-       viewport at all (measured: 127px short at 1280) */
-    justify-self: end;
+    /* A-LAND on desktop too, and this is a deliberate departure from the
+       sheet map's A-PORT. BLUEPRINT SS2.4b is the binding constraint: every
+       source photograph caps at 1024 px wide and most are ~1024x625
+       LANDSCAPE crops. Forcing one into a portrait panel four columns wide
+       means cover-cropping a landscape at roughly 1.8x - the exact
+       letterbox-zoom the photography rules forbid, and it would have thrown
+       away the room context that makes the picture worth showing.
+       At 4 columns + the bleed the panel renders ~875 px wide, so a 1024 px
+       source is DOWNscaled: no softness, and the bleed off the page is
+       intact. The magazine spread survives; only its aspect gives way, to
+       the material we actually have. */
+    aspect-ratio: 1.41421 / 1;
+    margin-inline: 0 calc(var(--edge-vw) * -1);
+    order: 0;
   }
   .brandPhotoCaption {
-    left: 1.5rem;
-    bottom: 1.25rem;
+    left: calc(var(--u) * 2);
+    bottom: calc(var(--u) * 2);
   }
-  /* the placard sits low and wide-spaced against all that picture */
   .brand .placard {
-    gap: 1.15rem;
+    gap: calc(var(--u) * 2);
   }
 }
 
-/* ============ TICKER ============ */
+/* ============ TICKER ============
+   The client's own tagline, running as a measured band between two sheets. */
 .ticker {
-  /* follows S2 up the curtain: same layer, above the canvas */
+  /* follows Sheet 02 up the curtain: same layer, above the canvas */
   position: relative;
   z-index: 5;
   overflow: hidden;
   border-top: 1px solid var(--line-on-ink);
   border-bottom: 1px solid var(--line-on-ink);
-  padding: 1.1rem 0;
+  padding: calc(var(--u) * 1.5) 0;
   white-space: nowrap;
 }
 
@@ -482,12 +860,12 @@
   will-change: transform;
   display: inline-flex;
   align-items: center;
-  gap: 2.2rem;
+  gap: calc(var(--u) * 3);
   font-family: var(--font-display), system-ui, sans-serif;
   font-weight: 600;
   font-size: 1.35rem;
   letter-spacing: -0.03em;
-  padding-left: var(--pad-x);
+  padding-left: var(--edge);
 }
 
 .tickerInner i {
@@ -496,22 +874,55 @@
   font-size: 0.7rem;
 }
 
-/* ============ S3 · BESPOKE ============ */
+/* ============ SHEET 03 - THE DRAFTING TABLE ============
+   Steps [1-2], A-LAND stage [3-6], dimensions on the panel's EDGES. */
 .bespoke {
+  row-gap: calc(var(--u) * 5);
+  align-items: center;
+}
+
+.bespokeCol {
   display: grid;
-  gap: 3rem;
+  gap: calc(var(--u) * 2);
+  align-content: center;
+}
+
+.bespokeStageCol {
+  display: grid;
+  gap: calc(var(--u) * 1);
+  align-content: center;
+}
+
+/* phones, pinned OR not: the object leads and the words follow - the same
+   order the pinned layout always used, now also true for the short-viewport
+   scroll layout the client saw the wireframe stuck in */
+@media (max-width: 899px) {
+  .bespokeStageCol {
+    order: -1;
+  }
 }
 
 .bespokeStage {
-  border-radius: 18px;
-  aspect-ratio: 1 / 1;
-  max-height: 52dvh;
   background:
-    radial-gradient(70% 60% at 50% 45%, rgba(200, 169, 106, 0.1), transparent 70%),
-    var(--ink-soft);
-  border: 1px solid var(--line-on-ink);
-  display: grid;
-  place-items: center;
+    radial-gradient(70% 60% at 50% 45%, rgba(255, 255, 255, 0.05), transparent 70%),
+    var(--ink-2);
+  /* while 360 mode is armed the stage takes the pointer, but touch-action
+     pan-y keeps a vertical swipe scrolling the page: never trap the visitor
+     inside the canvas (PLAN S3b) */
+  touch-action: pan-y;
+  transition:
+    opacity 0.55s ease,
+    transform 0.75s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* THE DRAFTING TABLE IS LAID OUT, then drawn on. The DOM half of the arrival
+   in PageMotion: the plate itself strikes in as the sheet comes into view,
+   a beat before the blueprint inside it starts to draw. Inversion law — the
+   finished state is above, this is the state JS pushes it back to, so no-JS
+   and reduced motion see a plate that is simply already there. */
+.bespokeStage[data-drafting] {
+  opacity: 0;
+  transform: scale(0.965) translateY(10px);
 }
 
 .steps {
@@ -520,8 +931,8 @@
 
 .step {
   display: grid;
-  gap: 0.55rem;
-  padding: 1.6rem 0;
+  gap: calc(var(--u) * 0.75);
+  padding: calc(var(--u) * 2) 0;
   border-top: 1px solid var(--line-on-ink);
 }
 
@@ -529,95 +940,83 @@
   font-family: var(--font-display), system-ui, sans-serif;
   font-weight: 600;
   letter-spacing: -0.03em;
-  font-size: clamp(1.9rem, 7vw, 3.2rem);
+  font-size: clamp(1.9rem, 6vw, 3.125rem);
   line-height: 1;
 }
 
 .swatchDock {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
+  gap: calc(var(--u) * 1.25);
   align-items: center;
 }
 
+/* A swatch is `btn btn-sm` (globals) plus the two things that make it a
+   material chip rather than a call to action: the drawing-office mono face,
+   and the frosted ground that says it is a control floating over the sheet.
+   Everything the two shapes share — the ring, the pool of light under it,
+   the hover lift — now lives in ONE place. */
 .swatch {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
-  padding: 0.6rem 1.1rem;
-  border: 1px solid var(--graphite);
-  border-radius: 999px;
   background: color-mix(in srgb, var(--ink-2) 55%, transparent);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   font-family: var(--font-mono), ui-monospace, monospace;
   font-size: var(--text-specimen);
-  text-transform: uppercase;
   letter-spacing: 0.14em;
-  /* real <button> now (SwatchDock): strip the UA chrome, keep the chip look */
-  color: inherit;
   cursor: pointer;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* selected fabric: accent ring (aria-pressed doubles as the style hook, so
-   the visual state can never drift from the announced state) */
+/* selected fabric: the ring lights and the pool under it deepens, which is
+   the same "lit" state every other control uses. aria-pressed doubles as the
+   style hook, so the visual state can never drift from the announced one. */
 .swatch[aria-pressed='true'] {
   border-color: var(--accent);
-  box-shadow: 0 0 0 1px var(--accent);
+  box-shadow:
+    0 0 0 1px var(--accent),
+    0 16px 34px -16px color-mix(in srgb, var(--accent) 70%, transparent);
 }
 
+/* THE MATERIAL SAMPLE EXCEPTION (BLUEPRINT SS2.8): a fabric chip carries
+   real hue because it IS a material sample. It is one of exactly three
+   coloured things on the page, alongside the photographs and the pieces. */
 .swatchDot {
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  border: 1px solid rgba(244, 240, 232, 0.35);
+  border: 1px solid rgba(242, 243, 244, 0.35);
 }
 
 .bespokeCta {
-  margin-top: 0.5rem;
+  margin-top: calc(var(--u) * 1);
 }
 
-@media (min-width: 900px) {
-  .bespoke {
-    grid-template-columns: 6fr 5fr;
-    align-items: center;
-    gap: 4.5rem;
-  }
-}
-
-/* ============ S4 · COLLECTIONS ============ */
+/* ============ SHEET 04 - THE RANGE ============ */
 .collections {
-  display: grid;
-  /* minmax(0, 1fr), not the implicit auto track: auto sizes to max-content,
-     so the desktop rail (isRail, non-wrapping flex child) would silently
-     stretch this column to the full track width and the horizontal pin would
-     measure zero travel. Identical rendering in the normal grid state. */
-  grid-template-columns: minmax(0, 1fr);
-  gap: 2.5rem;
+  row-gap: calc(var(--u) * 5);
 }
 
 .cards {
   display: grid;
-  gap: 2.25rem;
+  gap: calc(var(--u) * 4);
+  /* minmax(0, 1fr), not the implicit auto track: auto sizes to max-content,
+     so the desktop rail (isRail, a non-wrapping flex child) would silently
+     stretch this to the full track width and the horizontal pin would
+     measure zero travel. Identical rendering in the normal grid state. */
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .card {
   display: grid;
-  gap: 0.85rem;
+  gap: calc(var(--u) * 1.5);
+  align-content: start;
 }
 
+/* mobile: A-LAND. A portrait plate at full phone width is taller than the
+   screen and cannot be scanned, so the shape changes with the column count
+   rather than the picture being squeezed. */
 .cardMedia {
-  aspect-ratio: 4 / 5;
+  aspect-ratio: 1.41421 / 1;
   position: relative;
-}
-
-.cardImg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
 }
 
 .cardHead {
@@ -636,93 +1035,275 @@
 
 .collectionsFoot {
   display: flex;
-  justify-content: flex-end;
 }
 
 @media (min-width: 900px) {
   .cards {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 3rem 2.5rem;
+    /* each card is exactly two columns of six */
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: calc(var(--u) * 6) var(--gutter);
+  }
+  .cardMedia {
+    aspect-ratio: 1 / 1.41421;
   }
 }
 
-/* ============ S5 · SHOWROOM ============ */
+/* ============ SHEET 05 - THE SHOWROOM ============ */
 .showroom {
-  display: grid;
-  gap: 2rem;
+  row-gap: calc(var(--u) * 4);
 }
 
 .showroomMedia {
-  aspect-ratio: 16 / 10;
+  position: relative;
 }
 
-.showroomFoot {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1.25rem;
-}
-
-/* ============ S6 · AR ============ */
-.ar {
+/* the visit placard beside the film: line, address chips, two links,
+   stacked and vertically centred against the panel */
+.showroomSide {
   display: grid;
-  gap: 2rem;
+  gap: calc(var(--u) * 2);
+  align-content: center;
+  justify-items: start;
+}
+
+.showroomLine {
+  max-width: 26ch;
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
+/* ============ SHEET 06 - YOUR ROOM ============ */
+.ar {
+  row-gap: calc(var(--u) * 4);
+  align-items: center;
 }
 
 .arMedia {
-  aspect-ratio: 1 / 1;
-  max-width: 30rem;
+  position: relative;
 }
 
-@media (min-width: 900px) {
-  .ar {
-    grid-template-columns: 5fr 6fr;
-    align-items: center;
-    gap: 4rem;
-  }
-}
-
-/* ============ S7 · PROOF ============ */
+/* ============ SHEET 03 - THE MAKER ============ */
 .proof {
-  display: grid;
-  gap: 3.5rem;
+  row-gap: calc(var(--u) * 7);
+  /* the shaft is 150% of the sheet's height and rotated 45 degrees, so the
+     sheet has to clip it or it lights the neighbours too */
+  overflow: hidden;
 }
 
 .quote {
-  /* the only serif left on the page, so the brief's "elegant serif" intent
-     still has a real home (PLAN v3) */
+  /* the brief's "elegant serif", at the one place on the page that is a
+     person speaking rather than a drawing annotating */
   font-family: var(--font-quote), Georgia, serif;
   font-style: italic;
   font-weight: 400;
-  font-size: clamp(1.35rem, 4.6vw, 2.2rem);
-  line-height: 1.35;
-  max-width: 24ch;
-  text-wrap: balance;
+  font-size: clamp(1.35rem, 3.6vw, 1.75rem);
+  line-height: 1.6;
+  max-width: 34ch;
+  text-wrap: pretty;
+  margin-top: calc(var(--u) * 2);
 }
 
 .quoteMark {
   color: var(--accent);
   font-size: 1.4em;
+  line-height: 0;
 }
 
 .quoteBy {
-  margin-top: 1.4rem;
+  margin-top: calc(var(--u) * 3);
   display: grid;
   gap: 0.2rem;
+  /* the blockquote is italic; the attribution is not part of the quote and
+     inherited the slant, which read as the page italicising a real person's
+     name */
+  font-style: normal;
 }
 
-.timeline {
+/* the words column: quote, then the timeline, with a real gap between them
+   so the sheet reads as two statements rather than one wall */
+.proofMain {
   display: grid;
-  border-left: 1px solid var(--line-on-ink);
+  align-content: start;
+  gap: calc(var(--u) * 5);
+}
+
+/* .trust is gone with the seven-chip list it styled: those promises live on
+   Sheet 02 as intro.trustFast and were being made twice. */
+
+.portrait {
+  position: relative;
+  /* THE ONE RESTING-GRAYSCALE IMAGE (BLUEPRINT SS5.5.4): a portrait beside a
+     man's own words should not perform. Colour arrives only on touch. */
+  filter: grayscale(1) contrast(1.05);
+  transition: filter 0.5s ease;
+}
+
+.portrait:hover,
+.portrait:focus-within {
+  filter: grayscale(0) contrast(1);
+}
+
+/* ============ THE MAKER, STANDING ON THE SHEET ============
+
+   A background-removed portrait, staged the way this page stages a piece of
+   furniture: a pool of light, a drawn floor line, a rule and a name plate.
+   Nothing frames him, because a cut-out in a frame is just a photograph with
+   its background painted back on.
+
+   The whole block is transform + opacity + one filter, so the arrival costs
+   one composited layer and no repaints.
+*/
+.mdStage {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  /* his own light, so the pool has somewhere to fall */
+  padding: calc(var(--u) * 5) 0 calc(var(--u) * 3);
+  isolation: isolate;
+}
+
+/* the pool he stands in. Offset up and LEFT of centre: the One Light Law
+   puts the source top-left at 45 degrees, so this is where the beam lands. */
+.mdGlow {
+  position: absolute;
+  z-index: -1;
+  left: 50%;
+  top: 8%;
+  width: min(115%, 30rem);
+  aspect-ratio: 1 / 1;
+  translate: -54% 0;
+  background: radial-gradient(
+    50% 50% at 50% 50%,
+    rgba(255, 255, 255, 0.16),
+    rgba(255, 255, 255, 0.05) 45%,
+    transparent 72%
+  );
+  /* breathes, exactly like the hero's key light: a still portrait under a
+     still light reads as a sticker */
+  animation: mdBreathe 7s ease-in-out infinite;
+}
+
+@keyframes mdBreathe {
+  50% {
+    opacity: 0.72;
+    scale: 1.06;
+  }
+}
+
+.mdCutout {
+  position: relative;
+  width: min(100%, 22rem);
+  height: auto;
+  /* THE ONE RESTING-GRAYSCALE IMAGE (BLUEPRINT SS5.5.4): a portrait beside a
+     man's own words should not perform. Colour arrives only on touch. The
+     drop-shadow follows the CUT-OUT's silhouette rather than a box, which is
+     the whole reason he reads as standing on the sheet rather than pasted
+     onto it - and it is the same 135 degree fall as every other shadow here. */
+  filter: grayscale(1) contrast(1.06) drop-shadow(14px 18px 22px rgba(0, 0, 0, 0.55));
+  transition: filter 0.6s ease;
+}
+
+.mdStage:hover .mdCutout,
+.mdStage:focus-within .mdCutout {
+  filter: grayscale(0) contrast(1) drop-shadow(14px 18px 26px rgba(0, 0, 0, 0.6));
+}
+
+/* the floor he stands on: one drawn line, brightest directly under him */
+.mdFloor {
+  width: min(100%, 24rem);
+  height: 1px;
+  margin-top: calc(var(--u) * -1);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--filament) 25%,
+    var(--filament) 75%,
+    transparent
+  );
+  opacity: 0.5;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.28);
+}
+
+/* the name plate, drawn like a callout on the drawing */
+.mdPlate {
+  display: grid;
+  justify-items: center;
+  gap: 0.3rem;
+  margin-top: calc(var(--u) * 2);
+  text-align: center;
+}
+
+.mdPlate :global(.placard-title) {
+  font-style: normal;
+}
+
+.mdRule {
+  width: calc(var(--u) * 4);
+  height: 1px;
+  background: var(--accent);
+  margin-bottom: calc(var(--u) * 1);
+}
+
+/* a repeating glow is exactly the motion a vestibular disorder reacts to,
+   and the global reduce rule would otherwise strobe it at 0.001s */
+@media (prefers-reduced-motion: reduce) {
+  .mdGlow {
+    animation: none;
+  }
+}
+
+/* HIS OWN WORK, beside him. Deliberately the smaller of the two plates: a
+   portrait next to a same-size room reads as a comparison, and this is not
+   one — it is a man and the evidence of what he does. */
+.proofWork {
+  position: relative;
+}
+
+.proofWork figcaption {
+  margin-top: calc(var(--u) * 1.5);
+}
+
+/* THE TIMELINE AS A DIMENSION LINE (BLUEPRINT SS4 Sheet 07): the company's
+   history, measured. One vertical rule, years as tick marks. */
+.timeline {
+  position: relative;
+  padding-left: calc(var(--u) * 3);
+}
+
+.timelineRule {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--filament);
+  opacity: 0.45;
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.35);
+  transform-origin: top center;
+}
+
+.timeList {
+  display: grid;
 }
 
 .timeRow {
+  position: relative;
   display: grid;
-  grid-template-columns: 4.5rem 1fr;
-  gap: 1rem;
-  padding: 0.85rem 0 0.85rem 1.25rem;
+  grid-template-columns: 3.5rem 1fr;
+  gap: calc(var(--u) * 1.5);
+  padding: calc(var(--u) * 1.5) 0;
   align-items: baseline;
+}
+
+/* the tick: a year is a measurement on the rule, drawn like one */
+.timeTick {
+  position: absolute;
+  left: calc(var(--u) * -3);
+  top: calc(var(--u) * 2.5);
+  width: calc(var(--u) * 1.5);
+  height: 1px;
+  background: var(--filament);
+  opacity: 0.55;
 }
 
 .timeYear {
@@ -732,39 +1313,174 @@
   color: var(--accent);
 }
 
-.trust {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.6rem;
-}
-
 @media (min-width: 900px) {
-  .proof {
-    grid-template-columns: 6fr 5fr;
-    gap: 4rem;
-  }
   .proofSide {
     display: grid;
-    gap: 2.5rem;
+    gap: calc(var(--u) * 4);
     align-content: start;
   }
 }
 
-/* ============ S8 · FOOTER ============ */
-.footer {
-  display: grid;
-  gap: 2.75rem;
-  padding-bottom: 6.5rem; /* clearance for the sticky pill */
+/* ============ SHEET 08 - THE HANDS ============
+   One photograph across all six columns and four words beside it. The plate
+   is the widest thing on the page on purpose: after eight sheets of measured
+   two- and three-column blocks, a single full-width image is the visual
+   equivalent of the page stopping to look someone in the eye. */
+.team {
+  row-gap: calc(var(--u) * 6);
 }
 
-.footerContact {
+.teamHead {
   display: grid;
-  gap: 1.6rem;
+  align-content: start;
+  gap: calc(var(--u) * 2);
+}
+
+.teamPhoto {
+  position: relative;
+  /* wider than the A-series sheet ratio, because a group of people is a wide
+     subject and cropping one to sqrt(2) means cropping someone out */
+  aspect-ratio: 2 / 1;
+}
+
+@media (max-width: 899px) {
+  /* on a phone a 2:1 crop of a standing group loses their faces; 4:3 keeps
+     them, and the plate is already full-bleed width here */
+  .teamPhoto {
+    aspect-ratio: 4 / 3;
+  }
+}
+
+.teamCaption {
+  position: absolute;
+  left: calc(var(--u) * 2);
+  bottom: calc(var(--u) * 2);
+  padding: 0.45rem 0.85rem;
+  background: color-mix(in srgb, var(--ink) 72%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: var(--paper);
+}
+
+/* ============ SHEET 09 - THE ORDER ============ */
+.footer {
+  row-gap: calc(var(--u) * 4);
+  padding-bottom: calc(var(--u) * 13); /* clearance for the sticky pill */
+}
+
+/* the last ask sits on the page's own axis, with nothing flanking it */
+.footerHead {
+  display: grid;
+  gap: calc(var(--u) * 2.5);
+  justify-items: start;
+}
+
+@media (min-width: 900px) {
+  .footerHead {
+    justify-items: center;
+    text-align: center;
+  }
+}
+
+/* ---- THE BRIEF FORM (Sheet 09) ----
+   A form on a page like this has one job: not to look like a form. So the
+   fields are drawn the way every other line on the page is drawn — a single
+   rule underneath, no box, no fill — and the only thing with a border and a
+   pool of light under it is the button, which is the same object as every
+   other button here. */
+.contactPanel {
+  display: grid;
+  gap: calc(var(--u) * 1.5);
+  margin-top: calc(var(--u) * 3);
+  padding-top: calc(var(--u) * 4);
+  border-top: 1px solid var(--graphite);
+}
+
+.contactTitle {
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-weight: 600;
+  font-size: clamp(1.5rem, 3.6vw, 2.1rem);
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  margin-bottom: calc(var(--u) * 1);
+}
+
+.contactForm {
+  display: grid;
+  gap: calc(var(--u) * 2.5);
+  justify-items: start;
+  width: 100%;
+  text-align: left;
+}
+
+.formRow {
+  display: grid;
+  gap: calc(var(--u) * 2.5);
+  width: 100%;
+}
+
+@media (min-width: 720px) {
+  .formRow {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--gutter);
+  }
+}
+
+.field {
+  display: grid;
+  gap: 0.5rem;
+  width: 100%;
+  min-width: 0;
+}
+
+/* the drawn field: a rule, and the light under it arrives on focus. Bottom
+   border only, because a full box would be the sixth rectangle in a column
+   of five and the sheet already has enough edges. */
+.input {
+  width: 100%;
+  padding: 0.85rem 0.1rem;
+  border: 0;
+  border-bottom: 1px solid var(--graphite);
+  border-radius: 0;
+  background: transparent;
+  color: var(--paper);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 1rem;
+  transition: border-color 0.3s ease, box-shadow 0.4s ease;
+}
+
+.input::placeholder {
+  /* 0.42 on ink is decorative-only text: the real label is above the field
+     and is what a screen reader and an audit both read */
+  color: color-mix(in srgb, var(--paper) 42%, transparent);
+}
+
+.input:focus {
+  outline: none;
+  border-bottom-color: var(--accent);
+  /* the same pool of light every control on this page casts downward */
+  box-shadow: 0 12px 26px -18px color-mix(in srgb, var(--accent) 85%, transparent);
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 5.5rem;
+  line-height: 1.5;
+}
+
+.formNote {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: var(--text-specimen);
+  letter-spacing: 0.06em;
+  opacity: 0.6;
+  margin: 0;
+  max-width: 46ch;
 }
 
 .contactBlock {
   display: grid;
   gap: 0.45rem;
+  align-content: start;
 }
 
 .contactBig {
@@ -803,16 +1519,8 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
-@media (min-width: 900px) {
-  .footerContact {
-    grid-template-columns: repeat(3, auto);
-    justify-content: space-between;
-    align-items: start;
-  }
+  gap: calc(var(--u) * 1) calc(var(--u) * 3);
+  margin-top: calc(var(--u) * 2);
 }
 
 /* ============ STICKY MOBILE CTA ============ */
@@ -834,7 +1542,8 @@
   display: inline-flex;
   align-items: center;
   gap: 0.6rem;
-  padding: 0.85rem 1.3rem;
+  min-height: 3rem;
+  padding: 0.95rem 1.5rem;
   border: 1px solid var(--brass);
   color: var(--ivory);
   font-family: var(--font-sans), sans-serif;
@@ -847,9 +1556,12 @@
   background: color-mix(in srgb, var(--ink-2) 72%, transparent);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
+  /* the house light again: the brass pool under the pill is what lifts it
+     off whatever photograph happens to be behind it */
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.06),
-    0 6px 30px rgba(0, 0, 0, 0.45);
+    0 6px 30px rgba(0, 0, 0, 0.45),
+    0 14px 32px -14px color-mix(in srgb, var(--brass) 70%, transparent);
 }
 
 .sticky svg {
@@ -864,13 +1576,15 @@
   }
 }
 
-/* the golden thread's start: short brass rule under the h1. Fully drawn by
-   default (no-JS / reduced motion); PageMotion draws it left-to-right. */
+/* THE PLOT LINE's first stroke: a short filament rule under the h1, the
+   same line that then travels the whole page in the left gutter. Fully drawn
+   by default (no-JS / reduced motion); PageMotion draws it left to right. */
 .heroRule {
   display: block;
   width: clamp(3.5rem, 9vw, 6rem);
   height: 1px;
-  background: var(--brass);
+  background: #ffffff;
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.45);
   transform-origin: left center;
 }
 
@@ -880,22 +1594,73 @@
 .cards.isRail {
   display: flex;
   flex-wrap: nowrap;
-  gap: 3rem;
+  gap: var(--gutter);
   overflow: visible;
   will-change: transform;
 }
 
+/* A card is exactly TWO of six columns, in the rail as much as in the grid.
+   The measurement is the grid's own arithmetic rather than a vw guess:
+   content width is min(100vw - 2*edge, content-max), a column is
+   (content - 5*gutter)/6, and a card is two columns plus the gutter between
+   them. The rail therefore travels along the same lines the drawn grid
+   paints, which is the only reason a horizontal pin is allowed here at all. */
 .cards.isRail > * {
-  flex: 0 0 44vw;
+  flex: 0 0 var(--two-col);
 }
 
-/* rail mode only: the 4/5 media at 44vw is taller than most desktop
-   viewports, which would hide the card's name and detail for the whole pin.
-   Cap the media to what the pinned viewport can actually show (viewport
-   minus section padding, title and the card's own text). */
+/* THE PINNED SECTION MUST FIT THE VIEWPORT.
+
+   A pin at 'top top' holds the section against the top of the screen at its
+   NATURAL height. Sheet 05's natural height ran past the fold, so for the
+   entire horizontal travel the card names and details were below it: five
+   photographs sliding past, none of them labelled. The section is now sized
+   and centred like the other pinned sheet (.bespoke.isPinned) — this class
+   is added by PageMotion only while the pin exists, so the stacked mobile
+   layout and the no-JS desktop layout never see it. */
+.collections.isRailPinned {
+  min-height: 100dvh;
+  align-content: center;
+  padding-top: calc(var(--u) * 9);
+  padding-bottom: calc(var(--u) * 5);
+  row-gap: calc(var(--u) * 3);
+  /*
+    THE RAIL'S TAIL MUST NOT BECOME A PAGE SCROLLBAR.
+
+    The rail is a non-wrapping flex row of five two-column cards, so it is
+    about 1.6 screens wide and the four cards still to come sit off to the
+    right at all times. With `overflow: visible` on the track — which they
+    need, so a card is not sliced as it arrives — that width propagated all
+    the way to the document: 2250 px of scrollWidth in a 1410 px window,
+    which is a horizontal scrollbar on every desktop and a page a trackpad
+    can shove sideways.
+
+    `clip`, not `hidden`: `hidden` makes the element a scroll container, and
+    ScrollTrigger pins by taking this very section out of flow — a scroll
+    container ancestor is exactly what breaks that. `clip` clips and creates
+    no scrollport, so the pin is untouched.
+
+    The clip margin puts the cut at the VIEWPORT edge rather than at the
+    content edge, so a card leaving the sheet still travels off the side of
+    the screen the way it always did instead of vanishing 64 px early.
+  */
+  overflow-x: clip;
+  overflow-clip-margin: var(--edge);
+}
+
+/* Rail mode only: an A-PORT plate two columns wide is taller than most
+   desktop viewports, which would hide the card's name and detail for the
+   whole pin. Cap the media to what the pinned viewport can actually show.
+   This is the one place a panel ratio yields, and it yields to legibility.
+
+   The 32rem subtracted is the measured cost of everything else on the sheet
+   at this breakpoint: padding (7rem), the title block (7rem), the card's own
+   name and detail (5.5rem), the footer link and the sheet block (7rem) and
+   the row gaps between them (5.5rem). It used to be 24rem, which was the
+   figure before the sheet block and the footer link existed. */
 .cards.isRail .cardMedia {
   aspect-ratio: auto;
-  height: clamp(18rem, 100dvh - 27rem, 34rem);
+  height: clamp(14rem, 100dvh - 32rem, 30rem);
 }
 
 /* ============ THE ONE 3D CANVAS (Sprint 3 hero, Sprint 4 shared) ============
@@ -932,37 +1697,138 @@
 .bespoke.isPinned {
   min-height: 100dvh;
   align-content: center;
-  padding-top: 4rem;
-  padding-bottom: 1.25rem;
-  gap: 1rem;
+  padding-top: min(calc(var(--u) * 8), 6vh);
+  padding-bottom: calc(var(--u) * 2);
+  row-gap: min(calc(var(--u) * 2), 1.6vh);
+}
+
+.bespoke.isPinned .bespokeStageCol {
+  order: -1; /* stage on top on mobile: the object is the story */
 }
 
 .bespoke.isPinned .bespokeStage {
-  order: -1; /* stage on top on mobile: the object is the story */
   aspect-ratio: auto;
-  height: 34dvh;
-  max-height: none;
+  /* 26dvh, measured backwards from the budget: at 27 the sheet was 856px on
+     an 844px phone, and the stage is the one row whose content (a camera)
+     refits itself to any box it is given */
+  height: 26dvh;
 }
 
+/*
+  THE PINNED SHEET IS A HEIGHT BUDGET, and every line below spends it.
+
+  Measured before this block existed: 1062px of pinned content on an 844px
+  phone, 852px on a 591px laptop - the CTA below the fold for the whole pin
+  on both. The pin itself is now skipped under 640px (PageMotion `tall`),
+  and above it these rules size the type and the controls by the axis that
+  actually constrains them, which is vh, not vw. Nothing is hidden: three
+  words, three lines, three fabrics and one button all stay; they just stop
+  pretending the viewport is taller than it is.
+*/
 .bespoke.isPinned .step {
-  padding: 0.65rem 0;
+  padding: min(calc(var(--u) * 1), 1vh) 0;
+}
+
+.bespoke.isPinned .stepWord {
+  /* the 1.55rem floor bites on PHONES: the un-pinned clamp never goes below
+     1.9rem, and on an 844px viewport that floor alone was 54px of the 176
+     the sheet was over budget */
+  font-size: min(max(1.55rem, clamp(1.9rem, 6vw, 3.125rem)), 4.4vh);
+  font-size: clamp(1.55rem, min(6vw, 4.4vh), 3.125rem);
+}
+
+.bespoke.isPinned .step :global(.placard-line) {
+  font-size: min(0.82rem, 2vh);
+  line-height: 1.35;
+}
+
+/* fabric chips tight enough that two share a row on a phone: three stacked
+   pills were 156px of a viewport that does not have them */
+.bespoke.isPinned .swatch {
+  min-height: min(2.4rem, 4.4vh);
+  padding: 0.3rem 0.75rem;
+  font-size: 0.56rem;
+}
+
+.bespoke.isPinned .swatchDock {
+  gap: calc(var(--u) * 0.75);
+}
+
+/* the three specimen chips under the stage repeat the three step words the
+   visitor is reading RIGHT NOW one column over; in the compressed pinned
+   state on a phone they are the cheapest 40px on the sheet. The full layout
+   (no JS, reduced motion, short windows, desktop) keeps them. */
+@media (max-width: 899px) {
+  .bespoke.isPinned .bespokeStageCol :global(.specimen-row) {
+    display: none;
+  }
 }
 
 .bespoke.isPinned .bespokeCta {
   margin-top: 0.75rem !important;
 }
 
+.bespoke.isPinned .bespokeCta :global(.btn) {
+  min-height: min(3.5rem, 6vh);
+  padding-top: 0.6rem;
+  padding-bottom: 0.6rem;
+}
+
 @media (min-width: 900px) {
   .bespoke.isPinned {
-    padding-top: 5rem;
-    gap: 3rem;
+    padding-top: calc(var(--u) * 10);
+    row-gap: calc(var(--u) * 4);
   }
+  .bespoke.isPinned .bespokeStageCol {
+    order: 0; /* the sheet's real map again: steps left, stage right */
+    /*
+      THE COLUMN TAKES THE WIDTH, NOT THE PANEL.
+
+      The ratio is fixed and the pinned height is capped, so on a short
+      viewport the plate is narrower than the three columns it lives in. That
+      slack used to be given away with `justify-self: end` on the PANEL alone,
+      which pushed the plate to the right while its dimension line, its
+      swatch caption and the 360 hint all stayed the full width of the track
+      underneath it. The result read as a picture that had slipped: the
+      object was measured by a rule wider than itself and centred on nothing.
+
+      Constraining the COLUMN instead and centring THAT keeps the plate and
+      every annotation on one shared width, which is what the mobile layout
+      has always done and the reason it looks composed.
+    */
+    width: 100%;
+    justify-self: center;
+  }
+  /*
+    THE PANEL FILLS ITS TRACK. THE HEIGHT IS WHAT GIVES WAY.
+
+    This is the third attempt at this box and the first two both lost the
+    same argument. Version one pinned the A-series ratio and pushed the
+    slack to one side (`justify-self: end`), so the plate sat right while
+    its dimension line ran wider underneath it. Version two kept the ratio
+    and centred the slack instead, which stopped the mismatch and left the
+    plate floating in the middle of its own track with dead air on both
+    sides — visibly neither aligned to anything nor filling anything.
+
+    The mistake in both was treating sqrt(2) as the fixed quantity. It is
+    not: it is the right ratio for a PLATE OF PHOTOGRAPHY, and this is a
+    stage holding a sofa that is two and a half times wider than it is tall.
+    The hero's stage already made exactly this trade (1.18:1, comment above
+    .stage) for exactly this reason.
+
+    So the width is now 100% of the track at every size — which is what the
+    mobile layout has always done, and why the mobile version has never
+    looked wrong — and the pinned viewport caps the HEIGHT. The panel is
+    wider, the piece inside it is bigger, and the plate, the dimension line
+    and the swatch caption finally share one edge.
+  */
   .bespoke.isPinned .bespokeStage {
-    order: 0; /* two-column layout again: text left, stage right */
-    height: min(60dvh, 34rem);
+    aspect-ratio: auto;
+    width: 100%;
+    height: min(54dvh, 30rem);
   }
   .bespoke.isPinned .step {
-    padding: 1rem 0;
+    padding: calc(var(--u) * 1.5) 0;
   }
 }
 
@@ -974,8 +1840,8 @@
   display: inline-flex;
   align-items: center;
   gap: 0.75rem;
-  margin-top: 0.5rem;
-  padding: 0.7rem 1.1rem 0.7rem 0.85rem;
+  margin-top: 0;
+  padding: 0.55rem 1.1rem 0.55rem 0.85rem;
   border: 1px solid var(--graphite);
   border-radius: 999px;
   background: color-mix(in srgb, var(--ink-2) 62%, transparent);
@@ -1042,7 +1908,7 @@
 .indexBtn {
   position: fixed;
   top: 1.15rem;
-  right: var(--pad-x);
+  right: var(--edge);
   z-index: 95; /* over the canvas (4) and pill (90), under the preloader */
   display: inline-flex;
   align-items: center;
@@ -1053,7 +1919,10 @@
   background: color-mix(in srgb, var(--ink-2) 62%, transparent);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  /* the house light: a pool underneath, on the inner highlight above */
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 10px 24px -12px rgba(232, 238, 246, 0.3);
   color: var(--paper);
   font-family: var(--font-sans), system-ui, sans-serif;
   font-size: 0.7rem;
@@ -1061,14 +1930,35 @@
   text-transform: uppercase;
   letter-spacing: 0.2em;
   cursor: pointer;
-  transition: transform 0.45s ease, opacity 0.45s ease, border-color 0.3s ease;
+  transition: transform 0.45s ease, opacity 0.45s ease, border-color 0.3s ease,
+    box-shadow 0.4s ease;
 }
 
 .indexBtn:hover {
   border-color: var(--accent);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 16px 36px -14px color-mix(in srgb, var(--accent) 70%, transparent);
 }
 
-/* hides on scroll down, returns on scroll up */
+/* THE ONLY MAP GETS A BIGGER PILL ON A BIGGER SCREEN. On desktop there is
+   room, the pointer is precise but the eye is further away, and this is the
+   one control the page never hides — so it is sized to be found, not to be
+   discreet. Mobile keeps the tighter pill: the corner is scarcer there. */
+@media (min-width: 900px) {
+  .indexBtn {
+    top: 1.5rem;
+    gap: 0.75rem;
+    padding: 0.85rem 1.5rem;
+    font-size: 0.78rem;
+  }
+
+  .indexGlyph {
+    width: 19px;
+  }
+}
+
+/* used by the nav-open state; the scroll-direction hide is gone (IndexNav) */
 .indexBtnHidden {
   transform: translateY(-150%);
   opacity: 0;
@@ -1103,15 +1993,30 @@
   color: var(--ivory);
   display: grid;
   grid-template-rows: 1fr auto;
-  padding: 5.5rem var(--pad-x) 2rem;
+  /* the top pad has to clear the Index pill, which is now permanent; below
+     that it gives way with the viewport so a laptop at 760px still fits */
+  padding: clamp(4rem, 9vh, 5.5rem) var(--edge) clamp(1rem, 3vh, 2rem);
   overflow-y: auto;
+  /* scrolling the menu must not chain into the page underneath it */
+  overscroll-behavior: contain;
 }
 
 .indexOverlayInner {
   position: relative;
   display: grid;
-  align-content: center;
-  gap: 2rem;
+  /*
+    SAFE centre, not centre.
+
+    Plain `center` distributes the overflow EVENLY when the content is taller
+    than its track — which means half of it goes off the TOP, above scroll
+    position zero, where no scrollbar can ever reach it. On a 760px laptop
+    that hid the first two sheets completely and left the last three below
+    the fold: nine beats, four of them reachable. `safe` says centre while it
+    fits and fall back to flush-start the moment it does not, which is the
+    behaviour anyone would have described if asked.
+  */
+  align-content: safe center;
+  gap: clamp(1rem, 3vh, 2rem);
 }
 
 .indexList {
@@ -1135,7 +2040,9 @@
   align-items: baseline;
   justify-content: space-between;
   gap: 1rem;
-  padding: 0.7rem 0;
+  /* the rows breathe on a tall screen and tighten on a short one, for the
+     same reason the names do */
+  padding: clamp(0.3rem, 1.1vh, 0.7rem) 0;
   background: none;
   border: 0;
   color: inherit;
@@ -1152,7 +2059,14 @@
 .indexName {
   display: block;
   font-family: var(--font-display), system-ui, sans-serif;
-  font-size: clamp(1.9rem, 8vw, 4rem);
+  /*
+    SIZED BY HEIGHT AS WELL AS WIDTH, because this list has nine rows and the
+    thing it has to fit inside is the viewport's SHORT axis. Sized on vw
+    alone, a wide 760px-tall laptop asked for 64px names, needed 1063px to
+    draw them, and clipped the last three sheets. min(8vw, 5vh) lets whichever
+    axis is scarcer decide.
+  */
+  font-size: clamp(1.5rem, min(8vw, 4.8vh), 4rem);
   font-weight: 600;
   line-height: 1.05;
   letter-spacing: -0.03em;
@@ -1164,52 +2078,77 @@
   color: var(--accent);
 }
 
-/* behind the type on mobile, a real column on desktop */
-.indexMedia {
-  position: fixed;
-  inset: 0;
-  z-index: 1;
-  opacity: 0.2;
-  pointer-events: none;
+/* THE LEGEND: the hovered sheet's own line of the story. It replaced five
+   placeholder image panels that read as unfinished; a drawing set's contents
+   page carries a legend, not thumbnails. */
+.indexLegend {
+  display: grid;
+  align-content: center;
+  gap: calc(var(--u) * 1.5);
+  padding-top: calc(var(--u) * 2);
+  border-top: 1px solid var(--line-on-ink);
 }
 
-.indexMediaPanel {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  transition: opacity 0.6s ease;
-}
-
-.indexMediaOn {
+.indexLegend :global(.beat-caption) {
+  font-size: clamp(1.2rem, 4vw, 1.6rem);
   opacity: 1;
 }
 
+/*
+  TWO UP ON A PHONE, not three stacked.
+
+  Stacked, the foot ran 362 px for three short blocks and pushed the CTA
+  clean off a 844 px screen — the menu opened, showed nine beats, and hid the
+  one button in it. Address and phone sit side by side now and the CTA spans
+  underneath, which is 160 px and fits. The overlay still scrolls if a
+  smaller phone needs it to; it just no longer NEEDS to.
+*/
 .indexFoot {
   display: grid;
-  gap: 1.25rem;
-  padding-top: 1.5rem;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(0.6rem, 2vh, 1.25rem) var(--gutter);
+  padding-top: clamp(0.9rem, 2.5vh, 1.5rem);
   border-top: 1px solid var(--line-on-ink);
+}
+
+.indexFoot > :global(.btn) {
+  grid-column: 1 / -1;
+  justify-self: start;
 }
 
 .indexFootCol {
   display: grid;
   gap: 0.3rem;
+  align-content: start;
+}
+
+/*
+  THE LEGEND IS A HOVER AFFORDANCE, so it does not exist on a phone.
+
+  It prints the caption of whichever sheet the cursor is over. With no
+  cursor there is nothing to be over, so on touch it sat under the list
+  showing sheet 01's caption for ever — 130 px of a 844 px screen spent on a
+  control that cannot be operated, and the 130 px that pushed the menu's own
+  CTA off the bottom. Desktop keeps it; it is genuinely good there.
+*/
+@media (max-width: 899px) {
+  .indexLegend {
+    display: none;
+  }
 }
 
 @media (min-width: 900px) {
   .indexOverlayInner {
-    grid-template-columns: 7fr 5fr;
+    grid-template-columns: 4fr 2fr;
     align-items: center;
     gap: 4rem;
   }
-  .indexMedia {
-    position: relative;
-    inset: auto;
-    z-index: 2;
-    opacity: 1;
-    aspect-ratio: 4 / 5;
-    border-radius: 18px;
-    overflow: hidden;
+  .indexLegend {
+    border-top: 0;
+    border-left: 1px solid var(--line-on-ink);
+    padding-top: 0;
+    padding-left: calc(var(--u) * 4);
+    min-height: 40dvh;
   }
   .indexFoot {
     grid-template-columns: repeat(3, auto);
@@ -1246,9 +2185,8 @@
 
 @media (min-width: 900px) {
   .footerIndexList {
-    grid-template-columns: repeat(5, auto);
-    justify-content: start;
-    gap: 2rem;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: calc(var(--u) * 2) var(--gutter);
   }
 }
 
@@ -1256,6 +2194,11 @@
 .bespokeStageCol {
   display: grid;
   align-content: center;
+  /* the stage and its annotations share one centred width at every size, so
+     the composition never depends on whether the pin is live */
+  justify-items: stretch;
+  justify-self: center;
+  width: 100%;
 }
 
 /* while 360 mode is armed the stage takes the pointer, but touch-action
@@ -1301,6 +2244,214 @@
   filter: saturate(0.86) contrast(1.06);
 }
 
+/* ============ THE FLOODLIGHT (BLUEPRINT SS5.7) ============
+   A shaft of white light entering from the top left at 45 degrees - the
+   page's only light direction and its only angle. Two columns wide, because
+   the grid holds even the light. mix-blend-mode: screen means it ADDS light
+   to whatever is under it instead of laying a grey band over it, which is
+   the difference between a lit room and a foggy one.
+
+   Default state is lit: reduced motion and no-JS get the room with the
+   lights on. The switchover (PageMotion) only dips and restores it. */
+.floodBeam {
+  position: absolute;
+  top: -25%;
+  left: 18%;
+  width: var(--two-col);
+  height: 150%;
+  z-index: 1;
+  pointer-events: none;
+  transform: rotate(45deg);
+  transform-origin: center;
+  mix-blend-mode: screen;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.02) 22%,
+    rgba(255, 255, 255, 0.06) 50%,
+    rgba(255, 255, 255, 0.02) 78%,
+    transparent 100%
+  );
+  /* the shaft fades out before it reaches the sheet's edges, so it reads as
+     light falling into a room rather than a rectangle drawn over one */
+  mask-image: linear-gradient(180deg, transparent, #000 22%, #000 72%, transparent);
+  -webkit-mask-image: linear-gradient(180deg, transparent, #000 22%, #000 72%, transparent);
+}
+
+/* on Sheet 07 the shaft stands still over the quote: the maker speaks from
+   inside the one pool of light on the sheet */
+.floodBeamQuote {
+  left: 4%;
+  width: calc(var(--two-col) * 1.35);
+}
+
+@media (max-width: 899px) {
+  /* at three columns a two-column shaft is two thirds of the screen, which
+     stops being light and becomes a wash */
+  .floodBeam {
+    width: var(--col-w);
+    left: 8%;
+  }
+}
+
+/* ============ THE PLOTTER PRINT (BLUEPRINT SS5.5) ============
+   READ THE INVERSION FIRST: every rule below describes the FINISHED state.
+   Printed, full colour, no sweep. PageMotion adds .is-unprinted from JS and
+   removes it on scroll, so a visitor with JS off, with reduced motion, or on
+   a page where the motion layer failed sees complete photographs. A CSS
+   default of "hidden" would have made a broken script into a blank page. */
+.printFrame {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.printImg {
+  width: 100%;
+  height: 100%;
+  /* the two acts, separately timed: the plotter reveals the sheet, and the
+     colour arrives a beat behind it */
+  clip-path: inset(0 0 0 0);
+  transition:
+    clip-path 0.9s cubic-bezier(0.22, 0.61, 0.36, 1),
+    filter 1s ease 0.28s;
+}
+
+[data-print][data-unprinted] .printImg {
+  clip-path: inset(0 0 100% 0);
+  filter: grayscale(1) brightness(0.82) saturate(0.9) contrast(1.06);
+}
+
+/* the plotter head. The wrapper is the full panel, so translateY(100%) is
+   "one panel height" and nothing has to be measured in JavaScript. */
+.sweep {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.sweep i {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: #ffffff;
+  box-shadow: 0 0 14px 3px rgba(255, 255, 255, 0.45);
+}
+
+[data-print][data-printing] .sweep {
+  animation: plot 0.9s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+@keyframes plot {
+  0% {
+    opacity: 0;
+    transform: translateY(-2%);
+  }
+  12% {
+    opacity: 1;
+  }
+  88% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+}
+
+/* ---- THE TUBE STRIKES (every photograph, not just Sheet 02) ----
+
+   The plotter print above reveals the sheet. This is what happens a beat
+   after it: the light over the plate CATCHES, the way a fluorescent tube in
+   a Chattogram showroom does after the power comes back — two fast dips,
+   then steady. Sheet 02's full loadshedding cut (the pool of light widening
+   across a room) stays the big statement; this is the same physics at a
+   fraction of the cost, and it means no photograph on the page simply
+   fades in.
+
+   Pure CSS on a data attribute, so it costs no JavaScript per image and
+   the global reduced-motion rule already flattens it. `filter` on an
+   already-composited image layer, no layout, no paint of anything else. */
+[data-print][data-striking] .printImg {
+  animation: tube-strike 0.62s steps(1, end) both;
+}
+
+@keyframes tube-strike {
+  0% {
+    filter: brightness(0.62) saturate(0.4);
+  }
+  14% {
+    filter: brightness(1.28) saturate(1.05);
+  }
+  22% {
+    filter: brightness(0.7) saturate(0.5);
+  }
+  38% {
+    filter: brightness(1.34) saturate(1.08);
+  }
+  46% {
+    filter: brightness(0.82) saturate(0.72);
+  }
+  100% {
+    filter: none;
+  }
+}
+
+/* Hover on pointer devices: the colour deepens (BLUEPRINT SS5.5.3).
+   Deliberately FILTER only, never transform: the Ken Burns scrub owns this
+   element's transform every frame, so a hover scale here would be silently
+   overwritten by GSAP and read as a broken interaction. Two owners, one
+   property, is the bug; one property each is the fix. */
+@media (hover: hover) {
+  .printFrame:hover .printImg {
+    filter: saturate(1.04) contrast(1.08) brightness(1.02);
+  }
+}
+
+/* ============ THE LOADSHEDDING CUT (BLUEPRINT SS5.6) ============
+   Two stacked copies of one file: the dark room, and the lit room clipped to
+   a circle of light. Default radius is 120% - the whole room lit - because
+   that is the finished state (see the inversion note above). */
+.focus {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  --focus-r: 120%;
+}
+
+.focusBase,
+.focusTop {
+  width: 100%;
+  height: 100%;
+}
+
+/* the loadshedding zone: grey, and dimmer than the room it remembers */
+.focusBase {
+  filter: grayscale(1) brightness(0.68) contrast(1.04);
+}
+
+.focusLit {
+  position: absolute;
+  inset: 0;
+  clip-path: circle(var(--focus-r) at var(--focus-x) var(--focus-y));
+  /* the bulb's rim: drop-shadow follows the CLIPPED silhouette, so the glow
+     is a real ring around the pool of light and costs one filter, no extra
+     element and no second gradient to keep in sync with the radius */
+  filter: drop-shadow(0 0 26px rgba(255, 255, 255, 0.2));
+}
+
+.focusTop {
+  filter: brightness(1.06) saturate(1.02);
+}
+
 /* ============ S6 · AR PANEL ============ */
 .arPanel {
   display: grid;
@@ -1308,21 +2459,36 @@
   justify-items: start;
 }
 
+/* The poster and the live viewer are the SAME box - one A-LAND panel - so
+   pressing the button swaps content without moving a single pixel of the
+   layout. That is the entire reason both carry the ratio explicitly. */
 .arPoster {
   position: relative;
   width: 100%;
-  aspect-ratio: 16 / 10;
-  border-radius: 18px;
   overflow: hidden;
 }
 
-/* the live viewer takes the poster's exact box, so pressing the button
-   swaps content without moving a single pixel of the layout */
 .arModel {
   display: block;
   width: 100%;
-  aspect-ratio: 16 / 10;
-  border-radius: 18px;
+  /*
+    height: auto IS THE FIX, and without it nothing else here mattered.
+
+    model-viewer ships `:host { width: 300px; height: 150px }` in its own
+    stylesheet — the replaced-element default it inherits from <video>. An
+    author rule that sets width and aspect-ratio but never touches height
+    leaves that 150px standing, and `aspect-ratio` is ignored the moment
+    height is not auto. So the viewer rendered as an 847x150 letterbox, the
+    sofa was framed correctly INSIDE a slot a fifth of the intended height,
+    and it looked like a stamp lost in the corner of the panel. The camera
+    angles were never the problem; the box was.
+
+    With height auto the ratio drives again and the live viewer is exactly
+    the box the poster was, which is the whole reason both declare it.
+  */
+  height: auto;
+  aspect-ratio: 1.41421 / 1;
+  border: 1px solid var(--line-on-ivory);
   overflow: hidden;
   background: transparent;
   /* the page keeps vertical gestures; the viewer gets horizontal ones */
@@ -1331,4 +2497,640 @@
 
 .arButton {
   margin-top: 0.15rem;
+}
+
+/* the collection card's name is the door to that room's page */
+.cardLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: inherit;
+  transition: color 0.3s ease;
+}
+
+.cardLink svg {
+  width: 14px;
+  height: 14px;
+  transition: transform 0.35s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.cardLink:hover {
+  color: var(--accent);
+}
+
+.cardLink:hover svg {
+  transform: translateX(5px);
+}
+
+
+/* ============ THE DOCK (SocialDock.tsx) ============
+   One lit ring in the corner that fans four contact marks up a rail.
+
+   Everything here is transform + opacity, so the whole thing composites and
+   never touches layout — which matters more than usual because it sits over
+   a live WebGL canvas for the whole of Sheet 01.
+
+   INVERSION LAW: the OPEN state is the default written below, and [data-open]
+   is absent when closed. That is backwards from how it reads and it is the
+   point — with JS off the fan is simply out and every link is reachable,
+   which is a correct page rather than a dead button. */
+.dock {
+  position: fixed;
+  right: 1rem;
+  /* above the mobile Consult pill, which owns the corner until 900px */
+  bottom: 5.25rem;
+  z-index: 92;
+  display: grid;
+  justify-items: end;
+  gap: 0.6rem;
+  /*
+    THE CONTAINER IS NOT A TARGET. The grid reserves layout room for the
+    folded fan above the trigger - an invisible column ~200px tall - and a
+    plain div is hit-testable across its whole border box even when nothing
+    is painted there. On desktop that column stood exactly over the hero
+    stage's next arrow: hovering the arrow opened the dock, and clicks in
+    the column died on a transparent rectangle. pointer-events: none on the
+    container, auto on the controls, and the container's own hover-to-open
+    still works because enter events fire when the pointer enters any
+    hit-testable DESCENDANT.
+  */
+  pointer-events: none;
+}
+
+.dockTrigger,
+.dock[data-open] .dockLink {
+  pointer-events: auto;
+}
+
+@media (min-width: 900px) {
+  .dock {
+    right: var(--edge);
+    bottom: 1.75rem;
+    gap: 0.75rem;
+  }
+}
+
+.dockFan {
+  display: grid;
+  justify-items: end;
+  gap: 0.55rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dockItem {
+  /* --i comes from the component: 0 for the item nearest the trigger, so the
+     fan unrolls from the thumb outward and rolls back the same way */
+  transition:
+    transform 0.42s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.3s ease;
+  transition-delay: calc(var(--i, 0) * 45ms);
+}
+
+/* CLOSED: tucked under the trigger, invisible, and out of the tab order
+   (tabIndex is handled in the component so this is purely visual) */
+.dock:not([data-open]) .dockItem {
+  transform: translateY(calc((var(--i, 0) + 1) * 0.6rem)) scale(0.55);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.dockLink {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 1px solid var(--graphite);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ink-2) 72%, transparent);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 8px 22px -12px rgba(0, 0, 0, 0.7);
+  color: var(--paper);
+  transition:
+    border-color 0.3s ease,
+    box-shadow 0.35s ease,
+    transform 0.3s ease;
+}
+
+.dockLink svg {
+  width: 17px;
+  height: 17px;
+}
+
+/* WhatsApp is the page's one real CTA, so it is the only mark that carries
+   the brand's brass. The other three stay graphite on purpose. */
+.dockLink[data-lead] {
+  border-color: var(--brass);
+  color: var(--brass);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 10px 26px -12px color-mix(in srgb, var(--brass) 75%, transparent);
+}
+
+.dockLink:hover,
+.dockLink:focus-visible {
+  border-color: var(--accent);
+  transform: translateX(-2px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 14px 30px -12px color-mix(in srgb, var(--accent) 70%, transparent);
+}
+
+/* the name, printed to the LEFT of its mark: a plate beside the object,
+   the same way every piece on this page is labelled */
+.dockLabel {
+  position: absolute;
+  right: calc(100% + 0.5rem);
+  padding: 0.3rem 0.6rem;
+  border: 1px solid var(--graphite);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ink) 88%, transparent);
+  color: var(--paper);
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateX(0.4rem);
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+  pointer-events: none;
+}
+
+.dockLink:hover .dockLabel,
+.dockLink:focus-visible .dockLabel {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* ---- the trigger ---- */
+.dockTrigger {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 3.25rem;
+  height: 3.25rem;
+  padding: 0;
+  border: 1px solid var(--brass);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ink-2) 78%, transparent);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 10px 30px rgba(0, 0, 0, 0.5),
+    0 16px 36px -16px color-mix(in srgb, var(--brass) 80%, transparent);
+  color: var(--ivory);
+  cursor: pointer;
+  transition:
+    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.4s ease;
+}
+
+.dockTrigger:hover {
+  transform: translateY(-2px);
+}
+
+/* the ring: one thin brass arc turning slowly behind the glyph. It is a
+   conic gradient masked to a 1px annulus, so it costs one compositor layer
+   and no elements. */
+.dockRing {
+  position: absolute;
+  inset: -4px;
+  border-radius: 999px;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    color-mix(in srgb, var(--brass) 85%, transparent) 40deg,
+    transparent 120deg,
+    transparent 360deg
+  );
+  mask: radial-gradient(farthest-side, transparent calc(100% - 1.5px), #000 calc(100% - 1.5px));
+  -webkit-mask: radial-gradient(
+    farthest-side,
+    transparent calc(100% - 1.5px),
+    #000 calc(100% - 1.5px)
+  );
+  animation: dock-ring 6s linear infinite;
+  opacity: 0.75;
+}
+
+@keyframes dock-ring {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+.dockGlyph {
+  width: 20px;
+  height: 20px;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* open: the speech mark tips over and its two lines close up, which reads as
+   "this is now a dismiss" without swapping icons mid-animation */
+.dock[data-open] .dockGlyph {
+  transform: rotate(-135deg) scale(0.92);
+}
+
+.dockGlyphLines {
+  opacity: 0.75;
+  transition: opacity 0.3s ease;
+}
+
+.dock[data-open] .dockGlyphLines {
+  opacity: 0;
+}
+
+@media (min-width: 900px) {
+  .dockTrigger {
+    width: 3.75rem;
+    height: 3.75rem;
+  }
+
+  .dockGlyph {
+    width: 23px;
+    height: 23px;
+  }
+
+  .dockLink {
+    width: 3.1rem;
+    height: 3.1rem;
+  }
+
+  .dockLink svg {
+    width: 19px;
+    height: 19px;
+  }
+}
+
+/* A ring that turns for ever is exactly the kind of idle motion the reduce
+   rule exists for; the dock still opens and closes, it just stops spinning. */
+@media (prefers-reduced-motion: reduce) {
+  .dockRing {
+    animation: none;
+  }
+}
+
+
+/* ============ THE MAKER, KEYED (Proof.tsx, data-keyed) ============
+   The MD's portrait as supplied is a studio JPEG on a flat light-grey
+   seamless. On a near-black sheet that is a bright rectangle, and the
+   free-standing staging around it — a pool of light, a drawn floor line, a
+   dimension beside him — only makes sense if there is no rectangle.
+
+   There is a way to remove a seamless backdrop that is not Photoshop and is
+   not destructive: mask it. A radial mask eats the frame's corners and
+   edges, and the grade takes what is left of the grey down to the sheet's
+   own black, so the lit part of the picture is his head and shoulders and
+   everything outside that dissolves. Zero bytes, no edit to the client's
+   only portrait of their founder, and the moment a real cut-out PNG arrives
+   the sheet drops this branch on its own (Photo.tsx, photoHasAlpha).
+
+   It is honest about its limit: a hard edge behind a shoulder survives it.
+   On a seamless there is no such edge, which is the whole reason studios
+   shoot on one. */
+.mdStage[data-keyed] .mdCutout {
+  /* the grade: kill the colour cast, then crush the backdrop grey toward
+     black while keeping the face in the top two thirds of the range */
+  filter: grayscale(1) contrast(1.34) brightness(0.86);
+  /* and the key: an oval of light with a long falloff, biased upward
+     because a head-and-shoulders portrait carries its subject high */
+  mask-image: radial-gradient(
+    62% 74% at 50% 42%,
+    #000 0%,
+    #000 44%,
+    rgba(0, 0, 0, 0.72) 62%,
+    rgba(0, 0, 0, 0.22) 82%,
+    transparent 96%
+  );
+  -webkit-mask-image: radial-gradient(
+    62% 74% at 50% 42%,
+    #000 0%,
+    #000 44%,
+    rgba(0, 0, 0, 0.72) 62%,
+    rgba(0, 0, 0, 0.22) 82%,
+    transparent 96%
+  );
+  /* the silhouette drop-shadow the cut-out version uses would trace the
+     rectangle here, so it goes: the glow behind him does that job instead */
+  filter: grayscale(1) contrast(1.34) brightness(0.86) drop-shadow(none);
+}
+
+/* a keyed portrait has no crisp edge to catch the light, so the pool behind
+   him works harder to separate him from the sheet */
+.mdStage[data-keyed] .mdGlow {
+  opacity: 0.85;
+  transform: scale(1.12);
+}
+
+/* the drawn floor line assumes feet. A bust has none, so under a keyed
+   portrait the rule sits closer and reads as the plate's top edge. */
+.mdStage[data-keyed] .mdFloor {
+  margin-top: -1.6rem;
+}
+
+
+/* ============ THE TOUR (VideoEmbed.tsx) ============
+   A play control over the showroom still, and the player that replaces it. */
+.videoFrame {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.videoPlay {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 0.9rem;
+  padding: 0;
+  border: 0;
+  background: radial-gradient(58% 58% at 50% 46%, rgba(0, 0, 0, 0.42), transparent 72%);
+  color: var(--ivory);
+  cursor: pointer;
+  /* the still underneath already carries the aperture and Ken Burns; this
+     layer only fades, so it never fights either of them for the compositor */
+  transition: background 0.4s ease;
+}
+
+.videoPlay:hover,
+.videoPlay:focus-visible {
+  background: radial-gradient(64% 64% at 50% 46%, rgba(0, 0, 0, 0.55), transparent 76%);
+}
+
+/* the disc: frosted, brass-edged, the same material as every other control
+   on this page so the film reads as part of the drawing set */
+.videoDisc {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 4.25rem;
+  height: 4.25rem;
+  border: 1px solid var(--brass);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ink-2) 68%, transparent);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 16px 40px -16px color-mix(in srgb, var(--brass) 80%, transparent);
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.videoDisc svg {
+  /* nudged right by a hair: a triangle centred on its bounding box always
+     looks left of centre inside a circle */
+  margin-left: 2px;
+  width: 26px;
+  height: 26px;
+  color: var(--brass);
+}
+
+.videoPlay:hover .videoDisc,
+.videoPlay:focus-visible .videoDisc {
+  transform: scale(1.06);
+}
+
+/* one slow ring leaving the disc — the film's only idle motion, and the
+   reason a static panel reads as playable at a glance */
+.videoPulse {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 4.25rem;
+  height: 4.25rem;
+  margin: -2.125rem 0 0 -2.125rem;
+  border: 1px solid color-mix(in srgb, var(--brass) 60%, transparent);
+  border-radius: 999px;
+  animation: video-pulse 3.2s cubic-bezier(0.2, 0.6, 0.3, 1) infinite;
+  pointer-events: none;
+}
+
+@keyframes video-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.65;
+  }
+  70%,
+  100% {
+    transform: scale(1.85);
+    opacity: 0;
+  }
+}
+
+.videoLabel {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--paper);
+  opacity: 0.82;
+}
+
+@media (min-width: 900px) {
+  .videoDisc,
+  .videoPulse {
+    width: 5.25rem;
+    height: 5.25rem;
+  }
+
+  .videoPulse {
+    margin: -2.625rem 0 0 -2.625rem;
+  }
+
+  .videoDisc svg {
+    width: 30px;
+    height: 30px;
+  }
+
+  .videoLabel {
+    font-size: 0.68rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .videoPulse {
+    animation: none;
+    opacity: 0.4;
+  }
+}
+
+
+/* ============ THE PROOF CHIP (Turntable.tsx) ============
+   The real photograph as an inline thumb in the caption row. Both in-stage
+   corners have been tried and lost to the 3D (see the JSX comment); inline
+   it cannot collide with anything and costs the row no height. */
+.realChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: inherit;
+}
+
+.realFrames {
+  position: relative;
+  display: block;
+  width: 2.75rem;
+  aspect-ratio: 4 / 3;
+  border: 1px solid var(--graphite);
+  border-radius: 0 3px 8px 3px;
+  overflow: hidden;
+  background: var(--ink-2);
+  transition: border-color 0.3s ease, box-shadow 0.35s ease;
+}
+
+.realChip:hover .realFrames,
+.realChip:focus-visible .realFrames {
+  border-color: var(--accent);
+  box-shadow: 0 8px 20px -10px color-mix(in srgb, var(--accent) 65%, transparent);
+}
+
+/* all five plates live stacked; the active one is simply the opaque one, so
+   a piece change is a crossfade rather than a swap */
+.realFrame {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.realFrame[data-active] {
+  opacity: 1;
+}
+
+.realImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* the label rides only where there is room for it */
+.realLabel {
+  color: var(--accent);
+}
+
+@media (max-width: 599px) {
+  .realLabel {
+    display: none;
+  }
+
+  /* the category specimen wrapped the caption to a second line, and that
+     line was the hero's last 20px over budget. On a phone the thumb and the
+     name carry the category; the page it links to says the rest. */
+  .pieceName > :global(.specimen) {
+    display: none;
+  }
+}
+
+/* ============ THE STAGE ARROWS (Turntable.tsx) ============
+   The pager, on the stage's own edges. `btn btn-sm` supplies the ring and
+   the pool; this trims them to a round 44px control and floats them mid-
+   height, clear of both the chip below and the crop marks above. */
+.stageArrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 3;
+  min-height: 2.75rem;
+  min-width: 2.75rem;
+  padding: 0;
+  justify-content: center;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ink-2) 62%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.stageArrow:hover {
+  transform: translateY(-50%); /* the btn hover lift would unseat the centring */
+}
+
+.stageArrowPrev {
+  left: calc(var(--u) * 1.25);
+}
+
+.stageArrowNext {
+  right: calc(var(--u) * 1.25);
+}
+
+
+/* ============ FOOTER · the site's pages ============ */
+.footerPages {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.footerPagesList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem calc(var(--u) * 3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* ============ SHEET 04 · the practical link ============ */
+.bespokeHow {
+  display: inline-block;
+  margin-top: 0.8rem;
+  opacity: 0.7;
+  transition: opacity 0.25s ease, color 0.25s ease;
+}
+
+.bespokeHow:hover,
+.bespokeHow:focus-visible {
+  opacity: 1;
+  color: var(--accent);
+}
+
+
+/* ============ SHORT PHONES (~360x740 and under) ============
+   The 100dvh hero has a floor: three lines of statement, a stage with a
+   fixed ratio, two pills, a caption. On an 844px phone that floor is exactly
+   the viewport; on a 740px one it was 108px past it, and because the hero is
+   PINNED while the pieces swap, the overflow was not "scrolls a bit" but
+   "the bottom of the sheet is cut for the whole pin". Each rule below gives
+   back height from the row that can spare it. The remainder (~2-3 lines of
+   specimen at the very bottom edge) is accepted: the CTA stays above the
+   fold, which is the line that may never be cut. */
+@media (max-width: 599px) and (max-height: 799px) {
+  /* the statement gives back height too - but ONLY here. A first draft put
+     a 6vh cap on the token itself, which quietly took the DESKTOP headline
+     from 88px to 54px, because a 900px-tall window also has a 6vh. Height
+     may only tax the type on the screens where height is actually scarce. */
+  .hero :global(.statement) {
+    font-size: min(var(--text-statement), 6vh);
+  }
+
+  .stage {
+    /* the ratio yields to the viewport: the drei View tracks the rect, so
+       the camera simply refits the piece to the shorter box */
+    aspect-ratio: auto;
+    height: 24dvh;
+  }
+
+  .heroMain {
+    gap: 0.45rem;
+  }
+
+  .heroActions {
+    gap: 0.45rem;
+  }
+
+  .turntable {
+    gap: 0.4rem;
+  }
+
 }

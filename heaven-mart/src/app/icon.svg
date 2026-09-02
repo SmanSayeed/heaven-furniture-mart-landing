@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Heaven Furniture Mart">
+  <!--
+    THE MARK, not a photograph.
+
+    A favicon is rendered at 16 px in a browser tab. Any photograph — the
+    founder, a sofa, the showroom — is a grey smear at that size, which is
+    why every brand on earth ships a device rather than a picture there. So
+    this is the page's own wordmark reduced to the one glyph that carries it:
+    the brass triangle standing in for the A of HEAVEN, on the sheet's ink.
+
+    Drawn rather than exported: it is 500 bytes, it is crisp at every size
+    including the 180 px Apple touch icon, and it stays in step with the
+    header automatically because it is built from the same two brand values
+    (--ink #0B0C0C, --brass #B08D57) rather than from a rasterised copy.
+
+    If the client supplies their real logotype, replace this file — Next
+    picks up app/icon.svg by filename and nothing else has to change.
+  -->
+  <rect width="64" height="64" rx="14" fill="#0B0C0C"/>
+  <path d="M32 17 L46 45 H18 Z" fill="#B08D57"/>
+  <path d="M32 30.5 L38 43 H26 Z" fill="#0B0C0C"/>
+</svg>

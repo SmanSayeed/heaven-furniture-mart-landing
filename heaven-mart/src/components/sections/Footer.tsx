@@ -1,67 +1,110 @@
-import { brand, footer, nav, collections } from '@/content/copy'
+import { brand, contact, footer, nav, siteNav, story } from '@/content/copy'
 import { Cta } from '@/components/ui/Cta'
+import { ContactForm } from '@/components/ui/ContactForm'
 import { FacebookLogo, InstagramLogo, YoutubeLogo } from '@/components/ui/Icons'
+import { SheetBlock, BeatCaption } from '@/components/ui/SheetBlock'
 import s from './sections.module.css'
 
-/* S8. Last ask + every contact fact from the brief + the Meshy attribution. */
+/**
+ * SHEET 09 · "THE ORDER" — have yours drawn.
+ *
+ * The last ask, centred on columns 2-5 so it sits on the page's axis and
+ * nothing flanks it, then every contact fact from the brief as three two-
+ * column blocks. The plot line that has been drawing itself down the left
+ * gutter since Sheet 01 ties off here.
+ *
+ * The index of beats doubles as the no-JS route map: the Index overlay is
+ * progressive enhancement, so the whole story has to exist as plain anchors
+ * somewhere in the server HTML. It is useful with JS too, which is why it is
+ * a real list rather than something hidden from sighted readers.
+ */
 export function Footer() {
   return (
-    <footer className={`dark section ${s.footer}`} data-accent="#C8A96A">
-      <h2 className="section-title">{footer.headline}</h2>
-      <Cta label={footer.cta} />
+    <footer id="sheet-09" className={`dark section sheet-grid ${s.footer}`}>
+      <div className={s.footerHead} data-col="2-5">
+        <BeatCaption no="09" />
+        <h2 className="section-title">{footer.headline}</h2>
+        <Cta label={footer.cta} />
+      </div>
 
-      <hr className="rule" />
+      {/* THE BRIEF, under the button rather than instead of it. The one-tap
+          WhatsApp link stays the primary route because it is the fastest one
+          on a phone; this is for the visitor who would rather say what they
+          want before they say hello. Same destination, same conversation. */}
+      <div className={s.contactPanel} data-col="2-5">
+        <span className="specimen">{contact.eyebrow}</span>
+        <h3 className={s.contactTitle}>{contact.title}</h3>
+        <ContactForm />
+      </div>
 
-      {/* The Index nav's no-JS path (PLAN S1d): the overlay is progressive
-          enhancement, so the category links must also exist as plain, always
-          visible anchors. Useful with JS too, which is why it is not hidden. */}
-      <nav className={s.footerIndex} aria-label={nav.footerHeading}>
+      <hr className="rule" data-col="1-6" />
+
+      <nav className={s.footerIndex} aria-label={nav.footerHeading} data-col="1-6">
         <span className="specimen">{nav.footerHeading.toUpperCase()}</span>
         <ul className={s.footerIndexList}>
-          {collections.items.map((item) => (
-            <li key={item.num}>
-              <a href={`#collection-${item.num}`} className={s.footerIndexLink}>
-                <span className="index">{item.num}</span>
-                {item.name}
+          {story.map((beat) => (
+            <li key={beat.no}>
+              {/* rooted (`/#...`), not bare (`#...`): this footer is shared
+                  by every page of the site, and a bare fragment on /contact
+                  pointed at nothing. Rooted, it goes home AND scrolls. */}
+              <a href={`/#${beat.target}`} className={s.footerIndexLink}>
+                <span className="index">{beat.no}</span>
+                {beat.beat}
               </a>
             </li>
           ))}
         </ul>
       </nav>
 
-      <hr className="rule" />
+      {/* THE SITE'S PAGES, beside the story's sheets. The contents list above
+          maps the landing page; this row maps the business - collections,
+          process, about, contact - so every page of the site is reachable
+          from the bottom of every other one. */}
+      <nav className={s.footerPages} aria-label="Pages" data-col="1-6">
+        <span className="specimen">PAGES</span>
+        <ul className={s.footerPagesList}>
+          {siteNav.map((item) => (
+            <li key={item.href}>
+              <a href={item.href} className={s.footerIndexLink}>
+                {item.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
 
-      <div className={s.footerContact}>
-        <div className={s.contactBlock}>
-          <span className="specimen">VISIT</span>
-          <p className={s.contactBig}>{brand.address}</p>
-        </div>
-        <div className={s.contactBlock}>
-          <span className="specimen">TALK</span>
-          <p className={s.contactBig}>
-            <a href={`tel:${brand.phoneTel}`}>{brand.phoneDisplay}</a>
-          </p>
-          <p className="placard-line">
-            <a href={`mailto:${brand.email}`}>{brand.email}</a>
-          </p>
-        </div>
-        <div className={s.contactBlock}>
-          <span className="specimen">FOLLOW</span>
-          <div className={s.socials}>
-            <a href={brand.social.facebook} target="_blank" rel="noopener noreferrer" aria-label="Facebook">
-              <FacebookLogo />
-            </a>
-            <a href={brand.social.instagram} target="_blank" rel="noopener noreferrer" aria-label="Instagram">
-              <InstagramLogo />
-            </a>
-            <a href={brand.social.youtube} target="_blank" rel="noopener noreferrer" aria-label="YouTube">
-              <YoutubeLogo />
-            </a>
-          </div>
+      <hr className="rule" data-col="1-6" />
+
+      <div className={s.contactBlock} data-col="1-2">
+        <span className="specimen">VISIT</span>
+        <p className={s.contactBig}>{brand.address}</p>
+      </div>
+      <div className={s.contactBlock} data-col="3-4">
+        <span className="specimen">TALK</span>
+        <p className={s.contactBig}>
+          <a href={`tel:${brand.phoneTel}`}>{brand.phoneDisplay}</a>
+        </p>
+        <p className="placard-line">
+          <a href={`mailto:${brand.email}`}>{brand.email}</a>
+        </p>
+      </div>
+      <div className={s.contactBlock} data-col="5-6">
+        <span className="specimen">FOLLOW</span>
+        <div className={s.socials}>
+          <a href={brand.social.facebook} target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+            <FacebookLogo />
+          </a>
+          <a href={brand.social.instagram} target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+            <InstagramLogo />
+          </a>
+          <a href={brand.social.youtube} target="_blank" rel="noopener noreferrer" aria-label="YouTube">
+            <YoutubeLogo />
+          </a>
         </div>
       </div>
 
-      <div className={s.footerBottom}>
+      {/* the colophon: this sheet's title block is the real one */}
+      <div className={s.footerBottom} data-col="1-4">
         <span className="specimen">© 2026 {brand.name.toUpperCase()}</span>
         <span className="specimen">{footer.attribution.toUpperCase()}</span>
         <a
@@ -73,6 +116,8 @@ export function Footer() {
           {footer.hackathon.toUpperCase()} · {footer.hackathonTag.toUpperCase()}
         </a>
       </div>
+
+      <SheetBlock no="09" />
     </footer>
   )
 }

@@ -49,11 +49,15 @@
   Bespoke: blueprint edges (floor opacity 0.22) → clip-plane sweep → fabric swatches.
   Models: `public/models/{sofa-velvet,chair-damask,sofa-leather,placeholder-chair}.glb`
   (Draco; decoder self-hosted at `/draco/`, HDR at `/hdr/potsdamer_platz_1k.hdr`).
-- **Photos**: `npm run crop` (originals → graded, removes burned-in ad overlays; every FB
-  photo IS an ad graphic) then `npm run photos` (graded-else-originals → 3 WebP widths +
-  LQIP + `src/content/photos.generated.ts`). `Photo.tsx` renders plain `<img srcset>` with
-  LQIP background (deliberate: no next/image; reasons in its doc comment). Hero backdrop
-  is a build-time defocused 7 KB webp (`hero-backdrop`).
+- **Photos**: `npm run crop` (originals -> graded, removes burned-in ad overlays; every
+  FB photo IS an ad graphic; crop SKIPS any name that already has a cleaned graded file,
+  whatever its extension) then `npm run photos` (graded-else-originals -> 3 WebP widths +
+  LQIP + `src/content/photos.generated.ts`). `Photo.tsx` renders plain `<img srcset>`
+  with LQIP background (deliberate: no next/image; reasons in its doc comment). The hero
+  backdrop is a build-time defocused webp (`hero-backdrop`). **HARD FACT (measured
+  2026-09-02): every photo source caps at 1024 px wide** - Gemini's output ceiling, and
+  the client has nothing larger - so the 1600 tier is an enlargement; design per
+  BLUEPRINT 2.4b and never depend on >1024 detail.
 - **AR**: `ArViewer.tsx` — model-viewer 4.3.1 self-hosted at
   `/vendor/model-viewer-4.3.1.min.js`, loaded ONLY on button press,
   `dracoDecoderLocation = '/draco/'` set before use. Verified loading (loaded:true,
@@ -157,11 +161,57 @@
    135°) on dark sheets.
 5. **§4 THE SHEETS** — per-section column maps, mobile + desktop.
 
+## 4.5 STATUS (2026-09-02: the build below is DONE unless noted)
+
+Steps 1 and 3 through 10 are built and verified; see PROGRESS.md for the measurement
+results, the five bugs found, the two deliberate deviations from BLUEPRINT, and the
+honest performance position. Step 2 was cut as planned (SS5.0) and replaced by console
+measurement. Step 0's OG card is built (`public/og/card.png`); **Step 0's DEPLOY is the
+one thing still outstanding and it needs Saadman's permission.**
+
+Read this section as history now. What remains actionable:
+- deploy to Vercel, then re-run the checks against the live URL and inside the Facebook
+  in-app browser;
+- the two Step 9 stretch items (scrubbed panning beams, blueprint glint);
+- landing Saadman's assets, all of which are drop-ins (SS8).
+
 ## 5. BUILD ORDER (do steps in order; each has a gate)
+
+### 5.0 THE 3-DAY CUT (deadline 2026-09-04; decided, not silent)
+DO IN FULL: Step 0 (deploy + OG), 1, 3, 4, 5, 6, 7, 8, and Step 10's audits/README.
+CUT OR TRIMMED, with reasons:
+- **Step 2 `?grid=1` overlay component -> CUT as product tooling.** Replaced by a
+  console-run measurement script during each sheet's gate (6.5). Same rigor, zero build
+  time on a tool users never see.
+- **Step 9 floodlight -> TRIMMED to the cheap 80%:** static beams on Sheets 01/07 + the
+  120ms switchover dip at dark-sheet entries. The scrubbed panning beams and the
+  blueprint glint are stretch - only if everything else is gated with slack left.
+- **Sheet-edge ruler ticks (BLUEPRINT 2.7.4) -> CUT** (already marked expendable).
+- **Monochrome audit -> run once manually** at Step 10, not built as tooling.
+- **Lighthouse: ship gate Perf >= 85**; the deep font/three-chunk surgery toward 90 only
+  if the deadline allows. A11y stays gated at 100 (non-negotiable).
+- **iPhone AR (USDZ)**: time-boxed to whatever Meshy delivers; the AR section ships
+  regardless with Android + 3D-viewer paths.
 
 > Work loop per step: implement → `npx eslint src` + `npx tsc --noEmit` → verify recipe →
 > PROGRESS.md entry → show Saadman a screenshot when it is visually meaningful → next.
 > Ask permission before any commit.
+
+### STEP 0 - Live URL + the Open Graph card (submission format demands both on day 1)
+- Deploy the current branch state to Vercel FIRST (needs Saadman's account/permission;
+  ask him, never create infrastructure silently). Every later step iterates against the
+  live URL; test inside the Facebook in-app browser early.
+- **The OG card is a designed surface** (judges meet the social link card before the
+  page). Build `public/og/card.png` at 1200x630: ink ground + structural grid lines +
+  the cleaned hero sofa photo in a white light pool + a drawn dimension line under it +
+  the wordmark + "Furniture, Crafted Around You." Compose a small HTML file, render once
+  via Playwright at exactly 1200x630 (dpr 0.75: viewport 900x473, verify innerWidth
+  1200), screenshot, optimize to < 300 KB.
+- `layout.tsx` metadata: openGraph.images = [{url:'/og/card.png', width:1200,
+  height:630}], twitter: { card: 'summary_large_image' }, absolute URLs via metadataBase
+  set from an env (previews stay correct).
+- **Gate:** deployed URL renders; the HTML head carries og:image/title/description and
+  the twitter card; the card file looks composed, not like a screenshot.
 
 ### STEP 1 · Tokens + monochrome purge (`globals.css`)
 - Replace the token block: add
@@ -215,7 +265,7 @@
     { no:'04', beat:'The Range',         caption:'Walk the collections.' },
     { no:'05', beat:'The Showroom',      caption:'Step through. Agrabad.' },
     { no:'06', beat:'Your Room',         caption:'See it in your place.' },
-    { no:'07', beat:'The Maker',         caption:'The man who signs it.' },
+    { no:'07', beat:'The Maker',         caption:'In his own words.' },
     { no:'08', beat:'The Order',         caption:'Have yours drawn.' },
   ] as const
   ```
@@ -339,7 +389,7 @@
   Perf ≥ 85 first pass; then chase ≥ 90: the known levers are font families and the
   three chunk), a11y 100, full JS-off render, real-phone pass by Saadman (LAN).
 - Update README (the one-liner from BLUEPRINT §0), ASSETS.md (unchanged licences),
-  PROGRESS.md. Remove `/labs` route before deploy (Sprint 8 in TASKS.md).
+  PROGRESS.md. Remove the `/labs` route before the final deploy.
 - **Gate:** BLUEPRINT §8 checklist all ticked or explicitly deferred with reasons.
 
 ## 6. VERIFICATION RECIPES (copy-paste)
@@ -395,7 +445,7 @@ scrollY advances, assert reaching document end, and assert zero
   → point `hero.pieces[].id` at it → footer attribution line switches to the Meshy line
   (`copy.ts` comment explains) → ASSETS.md ledger updated. USDZ → `public/models/` +
   `ios-src` on model-viewer (unlocks iPhone AR).
-- Video → `public/video/showroom.webm/.mp4` (compress ≤ 6 MB, muted, loop) → Sheet 05
-  panel, poster = first frame, `preload="none"`, plays only in view.
+- ~~Video~~ - CONFIRMED none exists and none is coming (2026-09-02). Sheet 05 is
+  stills-only: a slow Ken Burns pan inside the aperture. Do not build a video branch.
 - MD/team photos → `people/` in raw folders → pipeline → Sheet 07 slots.
 ```

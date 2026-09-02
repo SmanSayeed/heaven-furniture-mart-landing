@@ -1,0 +1,402 @@
+/* ============================================================================
+   THE CATALOGUE ROUTES (/collections, /collections/[slug])
+
+   These pages share the landing page's token layer, grid, panels, buttons and
+   image system wholesale — that is the point. A visitor who taps a category
+   should feel they went deeper into the same drawing set, not that they left
+   for a shop. What differs is only what has to: there is a header here
+   (the landing page has none, because it is one continuous route), the sheets
+   are shorter, and nothing is pinned.
+   ========================================================================= */
+
+.page {
+  min-height: 100dvh;
+}
+
+/* ---- the header bar ---- */
+.chrome {
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: calc(var(--u) * 2) var(--edge);
+  background: color-mix(in srgb, var(--paper) 88%, transparent);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--line-on-ivory);
+  color: var(--text-ink);
+}
+
+.chromeBrand {
+  display: inline-block;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 1.05rem;
+  letter-spacing: 0.06em;
+  line-height: 1;
+  color: inherit;
+}
+
+/* the logo exception (BLUEPRINT SS2.8): the wordmark's triangle is the one
+   non-photo element allowed to carry the brand's hue */
+.chromeBrand :global(.tri) {
+  border-bottom-color: var(--marigold);
+  margin: 0 0.1em;
+}
+
+/* the wordmark's own span is the column, not the link: the link wraps an
+   sr-only name AND the stylised letters, so making the LINK the flex column
+   put the accessible name in the layout and pushed the sub-line inline */
+.chromeBrand > span[aria-hidden] {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+}
+
+.chromeBrandRow {
+  display: inline-flex;
+  align-items: center;
+}
+
+.chromeBrandSub {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.5rem;
+  letter-spacing: 0.3em;
+  opacity: 0.6;
+  margin-top: 0.28rem;
+}
+
+.chromeRight {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--u) * 2.5);
+}
+
+.chromeBack {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: inherit;
+}
+
+.chromeBackGlyph {
+  width: 13px;
+  height: 13px;
+  transform: rotate(180deg);
+}
+
+@media (max-width: 599px) {
+  /* the phone number is one tap away in the footer and in the sticky pill;
+     at 390px it pushed the back link off the bar */
+  .chromeRight > :global(a[href^='tel']) {
+    display: none;
+  }
+}
+
+/* ---- shared type ---- */
+.lead {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: clamp(1rem, 2.4vw, 1.15rem);
+  line-height: 1.55;
+  max-width: 46ch;
+  margin-top: calc(var(--u) * 2);
+  opacity: 0.85;
+  text-wrap: pretty;
+}
+
+.indexHead,
+.catHero {
+  row-gap: calc(var(--u) * 4);
+  padding-bottom: calc(var(--u) * 4);
+}
+
+.indexAction {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+}
+
+@media (min-width: 900px) {
+  .indexAction {
+    justify-content: flex-end;
+  }
+}
+
+/* ---- the index grid: five categories, two up on desktop ---- */
+.grid {
+  row-gap: calc(var(--u) * 7);
+  padding-top: 0;
+}
+
+.catCard {
+  min-width: 0;
+}
+
+.catLink {
+  display: grid;
+  gap: calc(var(--u) * 1.5);
+  color: inherit;
+}
+
+.catMedia {
+  display: block;
+  position: relative;
+  width: 100%;
+}
+
+.catHead {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+}
+
+.catName {
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-weight: 600;
+  font-size: clamp(1.35rem, 3.2vw, 1.9rem);
+  letter-spacing: -0.02em;
+  flex: 1;
+}
+
+/* the arrow travels on hover: the only motion a link needs to say "this goes
+   somewhere", and transform-only so it costs nothing */
+.catArrow {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.35s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.catLink:hover .catArrow {
+  transform: translateX(6px);
+}
+
+.catLink:hover .catName {
+  color: var(--accent);
+}
+
+/* ---- a category's pieces ---- */
+.pieces {
+  row-gap: calc(var(--u) * 8);
+  padding-top: 0;
+}
+
+.piece {
+  display: grid;
+  gap: calc(var(--u) * 2.5);
+  min-width: 0;
+}
+
+.pieceMedia {
+  position: relative;
+  width: 100%;
+}
+
+.pieceBody {
+  display: grid;
+  gap: calc(var(--u) * 1.5);
+  justify-items: start;
+}
+
+.pieceTitle {
+  display: flex;
+  align-items: baseline;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-weight: 600;
+  font-size: clamp(1.05rem, 2.4vw, 1.3rem);
+  letter-spacing: -0.015em;
+}
+
+/* ---- the closing ask ---- */
+.note {
+  row-gap: calc(var(--u) * 3);
+  text-align: left;
+}
+
+.note > * {
+  display: grid;
+  gap: calc(var(--u) * 2);
+  justify-items: start;
+}
+
+.nextCat {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--accent);
+  border-bottom: 1px solid currentColor;
+  padding-bottom: 0.35rem;
+  transition: gap 0.3s ease;
+}
+
+.nextCat:hover {
+  gap: 1rem;
+}
+
+.nextCat svg {
+  width: 14px;
+  height: 14px;
+}
+
+
+/* ---- the site nav in the bar ---- */
+.chromeNav {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem calc(var(--u) * 2.5);
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.18em;
+}
+
+.chromeNavLink {
+  color: inherit;
+  opacity: 0.66;
+  transition: opacity 0.25s ease, color 0.25s ease;
+}
+
+.chromeNavLink:hover,
+.chromeNavLink:focus-visible {
+  opacity: 1;
+  color: var(--accent);
+}
+
+/* the page underfoot: not a link, and marked with the brand's brass */
+.chromeNavHere {
+  color: var(--marigold);
+}
+
+@media (max-width: 767px) {
+  /* the bar wraps: brand and phone on the first row, the map on its own
+     second row where four labels actually fit */
+  .chrome {
+    flex-wrap: wrap;
+    row-gap: 0.55rem;
+  }
+
+  .chromeNav {
+    order: 3;
+    flex-basis: 100%;
+  }
+}
+
+/* ---- /process: the four steps ---- */
+.stepGrid {
+  row-gap: calc(var(--u) * 5);
+}
+
+.stepCard {
+  display: grid;
+  gap: calc(var(--u) * 1.25);
+  align-content: start;
+  padding-top: calc(var(--u) * 2);
+  border-top: 1px solid var(--line-on-ivory);
+}
+
+.stepName {
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-weight: 600;
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.stepLine {
+  max-width: 34ch;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--text-ink-soft, inherit);
+}
+
+.processPlate {
+  position: relative;
+}
+
+.plateCaption {
+  margin-top: 0.6rem;
+}
+
+/* ---- /about ---- */
+.aboutQuote {
+  margin: 0;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-style: italic;
+  font-weight: 500;
+  font-size: clamp(1.1rem, 2.2vw, 1.5rem);
+  line-height: 1.55;
+  letter-spacing: -0.01em;
+}
+
+.aboutBy {
+  display: grid;
+  gap: 0.25rem;
+  margin-top: calc(var(--u) * 2);
+}
+
+.mileList {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mileRow {
+  display: flex;
+  align-items: baseline;
+  gap: calc(var(--u) * 2);
+  padding: calc(var(--u) * 1.25) 0;
+  border-top: 1px solid var(--line-on-ivory);
+}
+
+.mileYear {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  opacity: 0.7;
+  flex: 0 0 3.2rem;
+}
+
+.rangeRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--u) * 1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* ---- /contact: the channels ---- */
+.channelGrid {
+  row-gap: calc(var(--u) * 3);
+}
+
+.channel {
+  display: grid;
+  gap: 0.45rem;
+  align-content: start;
+  padding: calc(var(--u) * 2.5) 0 calc(var(--u) * 2);
+  border-top: 1px solid var(--line-on-ivory);
+  color: inherit;
+  transition: color 0.25s ease;
+}
+
+.channel:hover .channelValue,
+.channel:focus-visible .channelValue {
+  color: var(--accent);
+}
+
+.channelValue {
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-weight: 600;
+  font-size: clamp(1.1rem, 2.4vw, 1.6rem);
+  letter-spacing: -0.015em;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+  transition: color 0.25s ease;
+}

@@ -18,7 +18,7 @@ Goal: the page is COMPLETE and shippable with JavaScript disabled.
 - [x] C · lib/whatsapp.ts + ui primitives (Cta, icons, StickyCta)
 - [x] C · All 8 sections as server components with real copy (placeholder media panels)
 - [x] C · Playwright pass at 390px (real phone check by S still pending)
-- [ ] S · WhatsApp group join + the 5 questions (**deadline answer needed!**)
+- [x] S · WhatsApp group questions answered (2026-09-02) - see PROGRESS.md; deadline is 2-3 days
 - [ ] S · Gemini cleanup of all 10 photos → `assets-raw/photos/graded/` (same filenames)
 - [ ] S · Hunt: showroom wide shot, golden-room shot, blue bed shot, logo file, walkthrough video
 
@@ -40,24 +40,19 @@ Goal: the page is COMPLETE and shippable with JavaScript disabled.
 - [ ] C · Golden Thread → measurement lines refinement (polish pass)
 - [ ] C · Real sofa GLB swapped in via gltf-transform (≤ 1.5 MB) — WAITS ON S (Meshy)
 
-## Sprint 5 · Real assets in (Day 5–6)
-- [ ] C · sharp pipeline: graded photos → WebP 480/960/1600 → next/image everywhere
-- [ ] C · S2 brand photo, S4 card photos, S7 polish, footer, hero poster from live scene
+## SUPERSEDED — see BUILD-GUIDE.md and SAADMAN-TASKS.md v2
 
-## Sprint 6 · Bonus layers (Day 6–7)
-- [ ] C · S6 AR: model-viewer standalone bundle, QR on desktop; S test on Android
-- [ ] C · S5 showroom: splat if capture arrived, else video fallback, else photo
-- [ ] S · Any showroom walkthrough video handed over
+The compressed board that stood here was written before the DRAWN TO MEASURE redesign
+(BLUEPRINT.md / BUILD-GUIDE.md, branch `redesign/drawn-to-measure`) and it now contradicts it
+in two places. Both are resolved in favour of the newer design, recorded in PROGRESS.md
+2026-09-02 "v2 task list audited":
 
-## Sprint 7 · Performance + polish (Day 8–9)
-- [ ] C · Lighthouse mobile ≥ 90 / a11y ≥ 95, LCP < 2.5s, degradation ladder applied
-- [ ] C · FB in-app browser sanity, UTM passthrough, pixel env hook, README funnel paragraph
-- [ ] S · Full real-phone pass (scroll feel, tap targets, WhatsApp opens correctly)
+- pen-and-paper handmade layer: **dropped**, it fights the precise-drawing concept
+- AR / USDZ: **back in scope**, time-boxed to whatever Meshy delivers
 
-## Sprint 8 · Ship (Day 9–10)
-- [ ] C · Vercel deploy, labs removed, ASSETS.md final, README final
-- [ ] S · Screen recording per PLAN Part 8 script, post with #racdox_hackathon, submit
+Authoritative going forward: **BUILD-GUIDE.md** for Claude's build order, **SAADMAN-TASKS.md**
+for Saadman's manual work, **PROGRESS.md** for what is true right now. Do not maintain a third
+board here; it is how the two boards drifted apart in the first place.
 
-## Standing rule
-Every sprint ends with: build passes, Playwright 390px screenshot reviewed, PROGRESS.md updated,
-commit pushed (with Saadman's git permission).
+Ship target 2026-09-04. Submission = live URL + a public Facebook/LinkedIn post carrying the
+video and that URL + the organizer's form filled with the post link.

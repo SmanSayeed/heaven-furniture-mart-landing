@@ -1,12 +1,14 @@
 'use client'
 
-import { Suspense, useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { Environment, OrbitControls, PerspectiveCamera, View, useGLTF } from '@react-three/drei'
+import { OrbitControls, PerspectiveCamera, View } from '@react-three/drei'
 import * as THREE from 'three'
+import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js'
 import gsap from 'gsap'
 import { prefersReducedMotion, type Tier } from '@/lib/device'
 import { hero } from '@/content/copy'
+import { buildPiece, disposePiece, type PieceKind } from './piece-geometry'
 import {
   stageState,
   getSwatch,
@@ -14,33 +16,101 @@ import {
   setInspectArmed,
   getHeroPiece,
   onHeroPiece,
+  setPieceSize,
+  type PieceSize,
   type SwatchChoice,
 } from '@/lib/stage-state'
 
-/* Khronos SheenChair (CC0), Draco-compressed, staged as the placeholder
-   until the real Meshy sofa lands. Decoder and environment are SELF-HOSTED
-   (public/draco, public/hdr): zero third-party requests at runtime, and the
-   page keeps working if gstatic/githack are unreachable (FB in-app browser
-   networks are unpredictable). */
-const MODEL_URL = '/models/placeholder-chair.glb'
+/*
+  NOTHING IS DOWNLOADED ANY MORE.
 
-/* S1 turntable pieces. The order, the captions and these files are the same
-   list: copy.ts owns the words, public/models owns the geometry, and the id
-   is the join. Swapping in a Meshy scan of a real Heaven piece is renaming
-   one .glb. All three are TEMPORARY stand-ins; see ASSETS.md for licences. */
-const PIECE_URLS = hero.pieces.map((piece) => `/models/${piece.id}.glb`)
+  Every piece on this page used to be a Khronos glTF sample asset: 1.8 MB of
+  Draco-compressed GLB, a WASM decoder, three Suspense boundaries, and a
+  turntable whose first piece was the single most-used free 3D sofa on the
+  internet (a competing hackathon entry shipped the identical model). The
+  pieces are now GENERATED from real furniture measurements — see
+  piece-geometry.ts for why that is the right answer rather than merely a
+  cheaper one. Consequences for this file:
+
+    · no useGLTF, no Draco, no preloading, no Suspense around a piece
+    · a piece is ready on the frame it is asked for, so the "empty stage
+      while the model downloads" state cannot happen at any scroll speed
+    · the fabric swatch now reaches the hero as well as the bespoke stage,
+      because we author the materials instead of inheriting them
+
+  The scene still makes zero third-party requests at runtime, which inside
+  the Facebook in-app browser on a Bangladeshi mobile network was never a
+  hypothetical.
+*/
+
+/* the S1 turntable's three pieces: copy.ts owns the words, piece-geometry.ts
+   owns the shapes, and `kind` is the join */
+const PIECES = hero.pieces
 
 /* framing to use for the one frame before the first piece has been measured;
    a cube's half-extents, so the camera starts sane rather than at the origin */
 const DEFAULT_HALF = new THREE.Vector3(0.5, 0.5, 0.5)
-const DRACO_PATH = '/draco/'
-const HDR_URL = '/hdr/potsdamer_platz_1k.hdr'
 
 /* THE one fit factor: what share of the stage the piece fills once framed. */
-const FIT = 0.9
+const FIT = 0.96
 const FOV = 35
 
 const KEY_INTENSITY = 26
+
+/**
+ * The image-based light, generated rather than downloaded.
+ *
+ * This used to be a 1.5 MB .hdr file - by a wide margin the heaviest asset on
+ * the page, one third of its total weight, and it was being fetched by every
+ * visitor on Chattogram mobile data to be sampled at an intensity of 0.3.
+ * three's RoomEnvironment builds an equivalent neutral studio (soft area
+ * lights in a white box, which is exactly what upholstery wants) procedurally
+ * at runtime: same job, zero bytes, no network dependency at all.
+ *
+ * PMREM is generated ONCE per view and disposed with it. Each drei <View> has
+ * its own scene, so useThree().scene here is that view's scene, which is why
+ * the hero and the bespoke stage can carry different intensities.
+ */
+function StudioEnvironment({ intensity }: { intensity: number }) {
+  const gl = useThree((state) => state.gl)
+  /* The scene is reached through this anchor's own root rather than through
+     useThree().scene, because assigning to a hook's return value is exactly
+     what react-hooks/immutability forbids, and rightly: the compiler cannot
+     know a three.js scene is a mutable graph rather than React state. The
+     root of the graph an object is attached to IS its scene, so walking up
+     from an anchor gets the same object without lying to the compiler.
+     Same reasoning as BespokeChair's imperative attach below. */
+  const anchor = useRef<THREE.Group>(null)
+
+  useEffect(() => {
+    let node: THREE.Object3D | null = anchor.current
+    while (node?.parent) node = node.parent
+    const scene = node as THREE.Scene | null
+    if (!scene) return
+
+    const pmrem = new THREE.PMREMGenerator(gl)
+    const room = new RoomEnvironment()
+    const target = pmrem.fromScene(room, 0.04)
+    scene.environment = target.texture
+    scene.environmentIntensity = intensity
+
+    return () => {
+      scene.environment = null
+      target.dispose()
+      pmrem.dispose()
+      /* RoomEnvironment builds real meshes; without this its geometries and
+         materials outlive every view that ever mounted one */
+      room.traverse((obj) => {
+        if (!(obj instanceof THREE.Mesh)) return
+        obj.geometry.dispose()
+        const mats = Array.isArray(obj.material) ? obj.material : [obj.material]
+        mats.forEach((m) => m.dispose())
+      })
+    }
+  }, [gl, intensity])
+
+  return <group ref={anchor} />
+}
 
 /* ---------------------------------------------------------------- helpers */
 
@@ -51,6 +121,9 @@ export type Fit = {
   z: number
   /** half-extents AFTER scaling, so the camera can frame any silhouette */
   half: THREE.Vector3
+  /** the box BEFORE normalising, in the file's own units (glTF = metres).
+      This is what the drawn dimension lines print; see stage-state. */
+  raw: THREE.Vector3
 }
 
 /**
@@ -75,7 +148,17 @@ function measureFit(root: THREE.Object3D): Fit {
     y: -center.y * s,
     z: -center.z * s,
     half: new THREE.Vector3((size.x * s) / 2, (size.y * s) / 2, (size.z * s) / 2),
+    raw: size.clone(),
   }
+}
+
+/** glTF is metres by definition, and furniture is quoted in millimetres in
+    every workshop on earth, so the annotation layer speaks mm. Rounded to
+    the nearest 10: a bounding box measured off a mesh is not accurate to the
+    millimetre and printing four significant digits would be false precision. */
+function toPieceSize(raw: THREE.Vector3): PieceSize {
+  const mm = (m: number) => Math.round((m * 1000) / 10) * 10
+  return { w: mm(raw.x), h: mm(raw.y), d: mm(raw.z) }
 }
 
 /**
@@ -103,20 +186,59 @@ function fitDistance(half: THREE.Vector3, aspect: number): number {
  * every piece swap. `size` here is the drei View's own rect, not the window,
  * because that is the box the piece actually has to fit inside.
  */
+/* the smoothed elevation, module-scope so it survives a piece swap: the eye
+   should stay where the visitor put it when the turntable changes pieces */
+const tilt = { current: 0 }
+
 function StageCamera({
   half,
   lift = 0,
   yaw = 0,
+  orbit = false,
 }: {
   half: THREE.Vector3
   lift?: number
   yaw?: number
+  /** let a drag raise and lower the eye. Hero only; Sheet 04's blueprint has
+      a fixed elevation because a drawing is drawn from one station point. */
+  orbit?: boolean
 }) {
   const size = useThree((state) => state.size)
   const aspect = size.height > 0 ? size.width / size.height : 1
   const dist = fitDistance(half, aspect)
+  const cam = useRef<THREE.PerspectiveCamera>(null)
+
+  /*
+    THE SECOND AXIS, done by moving the eye rather than the object.
+
+    heroSpin turns the piece; heroTilt walks the camera up a circle of the
+    same radius and re-aims it at the origin, which is what "look at it from
+    above" actually is. Tilting the group instead would have been one line
+    and would have laid the sofa on its back.
+
+    The clamp is the floor. Below about -6 degrees the camera is under the
+    ground plane and the piece is lit from beneath by nothing at all; above
+    about 52 it is a plan view, which is a drawing this page already has on
+    Sheet 04. Between those the piece stays a piece.
+
+    Lerped, not set: a mouse delta arrives in jumps and the eye should
+    arrive smoothly, and the same lerp is what eases it back when the tilt is
+    reset on a piece swap.
+  */
+  useFrame((_, delta) => {
+    const c = cam.current
+    if (!c) return
+    const target = orbit ? THREE.MathUtils.clamp(stageState.heroTilt, -0.1, 0.9) : 0
+    tilt.current = THREE.MathUtils.damp(tilt.current, target, 8, delta)
+    const t = tilt.current
+    const flat = dist * Math.cos(t)
+    c.position.set(Math.sin(yaw) * flat, lift + Math.sin(t) * dist, Math.cos(yaw) * flat)
+    c.lookAt(0, 0, 0)
+  })
+
   return (
     <PerspectiveCamera
+      ref={cam}
       makeDefault
       fov={FOV}
       position={[Math.sin(yaw) * dist, lift, Math.cos(yaw) * dist]}
@@ -127,11 +249,12 @@ function StageCamera({
   )
 }
 
-/** The upholstery, not the legs: the SheenChair's fabric materials are named
-    'fabric Mystere Mango Velvet' / 'fabric Mystere Peacock Velvet' (verified
-    by parsing the GLB's JSON chunk), so the stable test is the name prefix.
-    Falls back to "has sheen" because upholstery in this asset is exactly the
-    set of KHR_materials_sheen materials. */
+/** The upholstery, not the legs. The contract is the material NAME: every
+    fabric this page builds is named 'fabric-<kind>' (piece-geometry.ts), and
+    the sheen fallback is kept so that a future imported GLB — a Meshy scan of
+    a real Heaven piece — is swatched correctly without being renamed first,
+    since upholstery in a scanned asset is exactly the set of
+    KHR_materials_sheen materials. */
 function collectFabrics(root: THREE.Object3D): THREE.MeshPhysicalMaterial[] {
   const out: THREE.MeshPhysicalMaterial[] = []
   root.traverse((obj) => {
@@ -168,54 +291,51 @@ function applyFabricTo(fabrics: THREE.MeshPhysicalMaterial[], sw: SwatchChoice, 
 /* ------------------------------------------------------------- hero view */
 
 /**
- * One piece on the plinth. Purely presentational: it normalises itself to
- * height 1 and does nothing else, so swapping pieces is swapping this
- * component's url and never touching the staging around it.
+ * One piece on the plinth: drawn on mount, measured, normalised, disposed.
+ *
+ * Each piece keeps its OWN default fabric (copy.ts `hex`) rather than the
+ * swatch. The swatch belongs to Sheet 03, where choosing the fabric is the
+ * interaction; a hero that silently re-dyed itself from a control four sheets
+ * away would be a mystery rather than a feature. Three pieces in three
+ * fabrics is also the more honest advertisement for a bespoke studio: a
+ * range, not one model recoloured.
  */
 function HeroPiece({
-  url,
+  kind,
+  hex,
   onReady,
   onMeasure,
 }: {
-  url: string
+  kind: PieceKind
+  hex: string
   onReady: () => void
   onMeasure: (fit: Fit) => void
 }) {
-  const { scene } = useGLTF(url, DRACO_PATH)
+  const group = useRef<THREE.Group>(null)
 
-  /* Each piece gets its own clone: useGLTF caches by url, and three.js
-     objects have exactly one parent, so rendering the cached scene directly
-     would tear the model out of whichever view mounted it first. */
-  const model = useMemo(() => {
-    const root = scene.clone(true)
-    root.traverse((obj) => {
-      if (obj instanceof THREE.Mesh) obj.castShadow = true
-    })
-    return { root, fit: measureFit(root) }
-  }, [scene])
+  /* Imperative attach for the same reason BespokeChair does it below: the
+     built piece is mutable three.js state with a disposal contract, which is
+     precisely what React's compiler rules keep out of render-time values.
+     Render declares the stable shell; the effect owns the contents. */
+  useEffect(() => {
+    const holder = group.current
+    if (!holder) return
+    const piece = buildPiece(kind, hex)
+    const fit = measureFit(piece)
+    piece.scale.setScalar(fit.s)
+    piece.position.set(fit.x, fit.y, fit.z)
+    holder.add(piece)
+    onMeasure(fit)
+    /* There is no loading state to wait for — the piece exists the moment it
+       is asked for — so "ready" is true on the first frame it is attached. */
+    onReady()
+    return () => {
+      holder.remove(piece)
+      disposePiece(piece)
+    }
+  }, [kind, hex, onReady, onMeasure])
 
-  /*
-    Deliberately NOT swatched. The swatch store belongs to S3, where choosing
-    the fabric IS the interaction; forcing the hero's pieces to the default
-    ivory overwrote materials that were authored with real velvet sheen and
-    left them looking mottled and worn (compared side by side). Each piece
-    now presents in the material it was made in, which is both better looking
-    and more honest about what a bespoke studio offers: different pieces, in
-    different fabrics, all of them real.
-  */
-
-  /* can only run after Suspense resolved = the GLB is genuinely renderable */
-  useEffect(() => onReady(), [onReady])
-  /* every piece has its own proportions, so the camera re-frames per piece */
-  useEffect(() => onMeasure(model.fit), [model, onMeasure])
-
-  return (
-    <primitive
-      object={model.root}
-      scale={model.fit.s}
-      position={[model.fit.x, model.fit.y, model.fit.z]}
-    />
-  )
+  return <group ref={group} />
 }
 
 /**
@@ -252,10 +372,10 @@ function HeroTurntable({
   const everGrabbed = useRef(false)
 
   useEffect(() => {
-    /* every piece is fetched once the first one is up, so the swap is
-       instant rather than a hole in the middle of the hero */
-    PIECE_URLS.forEach((url) => useGLTF.preload(url, DRACO_PATH))
-
+    /* No preloading, and no `index` in the dependency list that only existed
+       to drive it: there is nothing to fetch. A piece is built in about a
+       millisecond, so the swap is instant at any scroll speed and a visitor
+       on Chattogram mobile data pays nothing for pieces two and three. */
     return onHeroPiece((next) => {
       gsap.killTweensOf(presence.current)
       if (reduced) {
@@ -290,7 +410,10 @@ function HeroTurntable({
 
     /* ---- the presentation turn, until a hand takes over ---- */
     if (!reduced && !everGrabbed.current && !stageState.heroGrabbed) {
-      auto.current += delta * 0.14
+      /* slower than it was (0.14): at that rate a visitor who read the
+         headline first arrived to find the piece side-on, which is the one
+         angle a sofa has nothing to say from */
+      auto.current += delta * 0.085
     }
 
     if (group.current) {
@@ -314,9 +437,13 @@ function HeroTurntable({
   return (
     <group ref={group}>
       <group ref={shell}>
-        <Suspense fallback={null}>
-          <HeroPiece url={PIECE_URLS[index]} onReady={onReady} onMeasure={onMeasure} />
-        </Suspense>
+        {/* no Suspense boundary: a drawn piece has no pending state */}
+        <HeroPiece
+          kind={PIECES[index].kind}
+          hex={PIECES[index].hex}
+          onReady={onReady}
+          onMeasure={onMeasure}
+        />
       </group>
     </group>
   )
@@ -325,19 +452,46 @@ function HeroTurntable({
 function HeroLights({ tier }: { tier: Tier }) {
   const key = useRef<THREE.SpotLight>(null)
   const reduced = useMemo(() => prefersReducedMotion(), [])
+  /* THE SWITCH (BLUEPRINT SS5.7): tweened 1 -> 0.25 -> 1 by the piece swap,
+     multiplied into the light every frame. A floodlight being switched as
+     the plinth revolves, which is what makes the swap read as staging rather
+     than as an asset being replaced. */
+  const dip = useRef({ v: 1 })
+
+  useEffect(() => {
+    if (reduced) return
+    return onHeroPiece(() => {
+      gsap.killTweensOf(dip.current)
+      gsap
+        .timeline()
+        .to(dip.current, { v: 0.25, duration: 0.12, ease: 'power2.in' })
+        .to(dip.current, { v: 1, duration: 0.38, ease: 'power2.out' })
+    })
+  }, [reduced])
 
   /* key breathes +-8% over ~4s: the light moves, not the object */
   useFrame(({ clock }) => {
-    if (reduced || !key.current) return
+    if (!key.current) return
+    if (reduced) {
+      key.current.intensity = KEY_INTENSITY
+      return
+    }
     key.current.intensity =
-      KEY_INTENSITY * (1 + 0.08 * Math.sin(clock.elapsedTime * ((Math.PI * 2) / 4)))
+      KEY_INTENSITY *
+      (1 + 0.08 * Math.sin(clock.elapsedTime * ((Math.PI * 2) / 4))) *
+      dip.current.v
   })
 
   return (
     <>
       <spotLight
         ref={key}
+        /* warm, because a real showroom light is warm and this light is
+           INSIDE the photograph's world; the page's own monochrome rule
+           governs the page, never the lit object (SS2.8 exception 3) */
         color="#ffd9a0"
+        /* top LEFT, 45 degrees: the One Light Law (SS5.7). Every shadow on
+           the page, drawn or rendered, falls to the bottom right from here. */
         position={[-1.6, 2.4, 1.8]}
         angle={0.7}
         penumbra={1}
@@ -373,16 +527,31 @@ function HeroStage({ tier, onReady }: { tier: Tier; onReady: () => void }) {
   /* the active piece's proportions, published upward by HeroPiece so the
      camera and the shadow plane both track whatever is on the plinth */
   const [fit, setFit] = useState<Fit | null>(null)
-  const onMeasure = useCallback((next: Fit) => setFit(next), [])
+  /* the same measurement drives two very different things: the camera's
+     framing (normalised half-extents) and the drawn dimension line (the raw
+     box in mm). One measure, published both ways. */
+  const onMeasure = useCallback((next: Fit) => {
+    setFit(next)
+    setPieceSize('hero', toPieceSize(next.raw))
+  }, [])
+  /* leaving the stage retracts the annotation: no model, no dimensions */
+  useEffect(() => () => setPieceSize('hero', null), [])
   const half = fit?.half ?? DEFAULT_HALF
 
   return (
     <>
-      <StageCamera half={half} lift={half.y * 0.12} />
+      {/* THREE-QUARTER, never dead-on. A sofa photographed square to the
+          camera is a rectangle; the angle is what shows the arm's end, the
+          depth of the seat and the splay of the legs all at once, and it is
+          how every furniture catalogue on earth shoots one. Yaw is on the
+          CAMERA rather than the piece so that a visitor's drag still counts
+          from the piece's own front. */}
+      <StageCamera half={half} lift={half.y * 0.6} yaw={0.62} orbit />
       <HeroTurntable onReady={onReady} onMeasure={onMeasure} />
-      <Suspense fallback={null}>
-        <Environment files={HDR_URL} environmentIntensity={0.3} />
-      </Suspense>
+      {/* Raised from 0.3. The image-based light is what puts form on flat
+          upholstery — at 0.3 the large faces of a drawn piece all returned
+          nearly the same value and the sofa read as one blue shape. */}
+      <StudioEnvironment intensity={0.75} />
       <HeroLights tier={tier} />
       <Floor tier={tier} y={-half.y} />
     </>
@@ -391,10 +560,13 @@ function HeroStage({ tier, onReady }: { tier: Tier; onReady: () => void }) {
 
 /* ---------------------------------------------------------- bespoke view */
 
-function buildBespoke(scene: THREE.Object3D) {
-  /* Own clone + own materials: the hero view keeps rendering the original
-     scene graph at full opacity while this copy is blueprint-clipped. */
-  const root = scene.clone(true)
+function buildBespoke(swatchHex: string) {
+  /* Sheet 03 gets its OWN piece with its OWN materials: this copy is
+     blueprint-clipped and re-dyed by the swatch dock, and neither of those
+     may reach across into the hero's pieces. It is the sofa, because the
+     sofa is the largest fabric area on the page and the swatch is the point
+     of this sheet. */
+  const root = buildPiece('sofa', swatchHex)
   const fit = measureFit(root)
   /* The craft-plane sweeps the piece's OWN height, measured, with a hair of
      margin either side so the first and last frames are fully clipped.
@@ -412,7 +584,8 @@ function buildBespoke(scene: THREE.Object3D) {
   const planeEdges = new THREE.Plane(new THREE.Vector3(0, 1, 0), -minY)
 
   const edgeMat = new THREE.LineBasicMaterial({
-    color: '#C8A96A',
+    /* filament white (SS2.8): the blueprint is drawn in light, not in gold */
+    color: '#FFFFFF',
     transparent: true,
     opacity: 0,
     clippingPlanes: [planeEdges],
@@ -427,18 +600,36 @@ function buildBespoke(scene: THREE.Object3D) {
     if (obj instanceof THREE.Mesh) meshes.push(obj)
   })
 
+  /* One clone PER SOURCE MATERIAL, not per mesh. A drawn piece shares two
+     materials (upholstery, legs) across a dozen meshes, so cloning blindly
+     would put twelve distinct materials on the GPU, twelve opacity writes in
+     every frame of the sweep, and twelve state changes per draw — for two
+     actual appearances. The Map keeps the sharing the geometry already has. */
+  const clones = new Map<THREE.Material, THREE.Material>()
   const realMats: THREE.Material[] = []
   for (const mesh of meshes) {
-    const mat = (mesh.material as THREE.Material).clone()
-    mat.transparent = true
-    mat.opacity = 0
-    mat.clippingPlanes = [planeReal]
+    const source = mesh.material as THREE.Material
+    let mat = clones.get(source)
+    if (!mat) {
+      mat = source.clone()
+      mat.transparent = true
+      mat.opacity = 0
+      mat.clippingPlanes = [planeReal]
+      clones.set(source, mat)
+      realMats.push(mat)
+    }
     mesh.material = mat
-    realMats.push(mat)
     mesh.castShadow = false
-    /* 30deg threshold keeps structural edges, drops the triangle soup */
+    /* 30deg threshold keeps the structural edges of the beveled volumes and
+       drops the bevel's own shallow facets, which is exactly the difference
+       between a drafted outline and triangle soup */
     mesh.add(new THREE.LineSegments(new THREE.EdgesGeometry(mesh.geometry, 30), edgeMat))
   }
+
+  /* the originals are now referenced by nothing: every mesh carries a clone.
+     buildPiece created them, so leaving them undisposed would leak one
+     material pair per mount of this section. */
+  clones.forEach((_clone, source) => source.dispose())
 
   return { root, fit, minY, maxY, planeReal, planeEdges, edgeMat, realMats }
 }
@@ -459,7 +650,6 @@ function setRealOpacity(b: ReturnType<typeof buildBespoke>, opacity: number) {
 }
 
 function BespokeChair({ onMeasure }: { onMeasure: (fit: Fit) => void }) {
-  const { scene } = useGLTF(MODEL_URL, DRACO_PATH)
   const group = useRef<THREE.Group>(null)
   /* one-shot flag so per-frame work stays writes, not allocations */
   const doneRef = useRef(false)
@@ -474,25 +664,33 @@ function BespokeChair({ onMeasure }: { onMeasure: (fit: Fit) => void }) {
   useEffect(() => {
     const holder = group.current
     if (!holder) return
-    const built = buildBespoke(scene)
+    /* built already dyed to the visitor's current swatch, so a visitor who
+       picks emerald, scrolls away and scrolls back never sees one frame of
+       ivory before the sync catches up */
+    const built = buildBespoke(getSwatch().hex)
     builtRef.current = built
     onMeasure(built.fit)
     built.root.scale.setScalar(built.fit.s)
     built.root.position.set(built.fit.x, built.fit.y, built.fit.z)
     holder.add(built.root)
 
-    /* this clone owns cloned materials, so it needs its own fabric sync */
     const fabrics = collectFabrics(built.root)
-    applyFabricTo(fabrics, getSwatch(), true)
     const unsub = onSwatch((sw) => applyFabricTo(fabrics, sw, false))
 
     return () => {
       unsub()
       holder.remove(built.root)
+      /* the edge material and the line geometries are this piece's too, and
+         they are not reachable from disposePiece's mesh walk */
+      built.edgeMat.dispose()
+      built.root.traverse((obj) => {
+        if (obj instanceof THREE.LineSegments) obj.geometry.dispose()
+      })
+      disposePiece(built.root)
       builtRef.current = null
       doneRef.current = false
     }
-  }, [scene, onMeasure])
+  }, [onMeasure])
 
   /* The whole three-phase sequence is a pure function of one number that
      GSAP scrubs into stageState (PLAN 4.4): no coupling between the GSAP
@@ -501,14 +699,21 @@ function BespokeChair({ onMeasure }: { onMeasure: (fit: Fit) => void }) {
     const b = builtRef.current
     if (!b) return
     const p = stageState.bespokeProgress
+    /* 0 -> 1 the moment the sheet comes into view, independent of the scrub.
+       See stageState.bespokeArrival for why this is a second number. */
+    const arrival = stageState.bespokeArrival
 
-    /* A - Designed: the blueprint is ALWAYS faintly on the panel and glows up
-       over the first 8%. The floor is not decoration: at a hard 0 the stage
-       was an empty rectangle whenever the scrub had not started, which is
-       what a visitor sees if scrolling ever stalls, if they land deep-linked,
-       or if they simply stop at the top of the section. A drawing waiting to
-       be drawn is a composition; an empty panel is a bug. */
-    b.edgeMat.opacity = 0.22 + 0.78 * Math.min(p / 0.08, 1)
+    /* A - Designed: the blueprint is ALWAYS on the panel and brightens over
+       the first 8%. The FLOOR IS THE POINT, and it is 0.45 rather than the
+       0.22 it used to be: at 0.22 a white wireframe on a near-black panel is
+       at the edge of visible on a phone in daylight, so a visitor who arrived
+       before the scrub caught up saw an empty rectangle and read the section
+       as broken. A drawing waiting to be drawn is a composition; a faint one
+       is indistinguishable from a bug.
+
+       Multiplied by arrival so the drawing DRAWS ITSELF IN on entry rather
+       than being simply present. */
+    b.edgeMat.opacity = (0.45 + 0.55 * Math.min(p / 0.08, 1)) * arrival
 
     /* B - Crafted: material arrives right at phase start, then the sweep
        (the clip plane) is what actually reveals it */
@@ -531,8 +736,16 @@ function BespokeChair({ onMeasure }: { onMeasure: (fit: Fit) => void }) {
        Stops at the inspect threshold, otherwise it would overwrite both the
        discovery nudge and (through it) the visitor's sense that the piece is
        now theirs to move. */
+    /* the greeting's own motion: the piece settles down onto the drafting
+       table and its last few degrees of turn resolve, over the same 0.9s the
+       blueprint takes to brighten. Additive to everything below. */
+    if (group.current) {
+      group.current.position.y = (1 - arrival) * 0.16
+      group.current.scale.setScalar(0.94 + 0.06 * arrival)
+    }
+
     if (group.current && p < 0.98) {
-      group.current.rotation.y = -0.35 + p * 0.55
+      group.current.rotation.y = -0.35 + p * 0.55 - (1 - arrival) * 0.22
       nudgedRef.current = false
     } else if (group.current && !nudgedRef.current) {
       /* one-time discovery nudge: ~12 degrees out and eased back, so the
@@ -598,22 +811,24 @@ function InspectControls() {
 
 function BespokeStage() {
   const [fit, setFit] = useState<Fit | null>(null)
-  const onMeasure = useCallback((next: Fit) => setFit(next), [])
+  const onMeasure = useCallback((next: Fit) => {
+    setFit(next)
+    setPieceSize('bespoke', toPieceSize(next.raw))
+  }, [])
+  useEffect(() => () => setPieceSize('bespoke', null), [])
   const half = fit?.half ?? DEFAULT_HALF
 
   return (
     <>
       {/* slight three-quarter framing: a piece on the workshop floor */}
       <StageCamera half={half} lift={half.y * 0.35} yaw={0.42} />
-      <Suspense fallback={null}>
-        <BespokeChair onMeasure={onMeasure} />
-        {/* dimmer IBL than the hero: workshop, not showroom */}
-        <Environment files={HDR_URL} environmentIntensity={0.12} />
-      </Suspense>
+      <BespokeChair onMeasure={onMeasure} />
+      {/* dimmer IBL than the hero: workshop, not showroom */}
+      <StudioEnvironment intensity={0.12} />
       <InspectControls />
       {/* cool key + faint brass fill: the blueprint mood */}
       <spotLight color="#cfe0f2" position={[1.4, 2.6, 1.6]} angle={0.7} penumbra={1} intensity={14} />
-      <directionalLight color="#c8a96a" position={[-1.5, 0.8, -1.8]} intensity={0.35} />
+      <directionalLight color="#cfd6de" position={[-1.5, 0.8, -1.8]} intensity={0.35} />
     </>
   )
 }
@@ -683,9 +898,7 @@ export function StageCanvas({ tier, onReady }: { tier: Tier; onReady: () => void
   )
 }
 
-/* Start fetching the moment this chunk loads, not on first render. The hero
-   piece first (it is what the visitor is looking at), then the bespoke
-   chair; the other two turntable pieces follow once the first has resolved,
-   from inside HeroTurntable. */
-useGLTF.preload(PIECE_URLS[0], DRACO_PATH)
-useGLTF.preload(MODEL_URL, DRACO_PATH)
+/* There is no preload here any more, and that is the whole point: the module
+   that used to race a 411 KB download for the hero piece and defer a 570 KB
+   one for Sheet 03 now builds both on demand from arithmetic. Nothing to
+   fetch, nothing to race, nothing to be caught missing. */

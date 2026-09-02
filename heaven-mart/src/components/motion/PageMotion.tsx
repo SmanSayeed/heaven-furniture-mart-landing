@@ -4,9 +4,10 @@ import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { SplitText } from 'gsap/SplitText'
-import { hero, ticker } from '@/content/copy'
-import { detectTier } from '@/lib/device'
-import { stageState, setHeroPiece } from '@/lib/stage-state'
+import { ticker } from '@/content/copy'
+import { detectTier, prefersLightweight } from '@/lib/device'
+import { stageState } from '@/lib/stage-state'
+import { runPreloader, shouldShowPreloader } from './preloader'
 import s from '@/components/sections/sections.module.css'
 
 gsap.registerPlugin(useGSAP, ScrollTrigger, SplitText)
@@ -26,108 +27,6 @@ const STEP_FLOOR = 0.58
 
 function dimFloorFor(el: HTMLElement): number {
   return el.closest('.light') ? DIM_FLOOR_LIGHT : DIM_FLOOR_DARK
-}
-
-/* ---------------------- S0 preloader (PLAN Part 2 S0) ----------------------
-   Built imperatively, never as React markup: the overlay must not exist in
-   the server HTML (the crawlable page and the LCP element stay exactly the
-   plain document), must never appear for no-JS visitors, and is owned start
-   to finish by GSAP. Client-only DOM created after hydration is the one
-   shape that guarantees all three with zero hydration gymnastics. */
-
-function shouldShowPreloader(): boolean {
-  try {
-    if (sessionStorage.getItem('hfm-preloaded') === '1') return false
-    sessionStorage.setItem('hfm-preloaded', '1')
-    return true
-  } catch {
-    /* storage blocked (private mode / in-app browser): show it anyway, it
-       is capped at 1.2s and skippable */
-    return true
-  }
-}
-
-/** Runs the S0 sequence and calls onDone as the curtain clears (the hero
-    intro fires from there, so the two can never race). Returns a cleanup. */
-function runPreloader(onDone: () => void): () => void {
-  const overlay = document.createElement('div')
-  overlay.className = 'preloader'
-  overlay.setAttribute('aria-hidden', 'true')
-  const word = document.createElement('span')
-  word.className = 'preloader-word'
-  word.textContent = 'Heaven'
-  const line = document.createElement('span')
-  line.className = 'preloader-line'
-  overlay.append(word, line)
-  document.body.appendChild(overlay)
-
-  /* the wordmark letter-spaces in, per-char */
-  const split = SplitText.create(word, { type: 'chars' })
-  const wordIntro = gsap.timeline()
-  wordIntro
-    .from(
-      split.chars,
-      { autoAlpha: 0, yPercent: 40, duration: 0.5, ease: 'power2.out', stagger: 0.045 },
-      0,
-    )
-    .fromTo(
-      word,
-      { letterSpacing: '0.05em' },
-      { letterSpacing: '0.32em', duration: 1.15, ease: 'power3.out' },
-      0,
-    )
-
-  /* the brass line doubles as the progress bar; its base duration IS the
-     1.2s hard cap, so slow assets can never hold the page hostage */
-  const lineTween = gsap.to(line, { scaleX: 1, duration: 1.2, ease: 'none' })
-
-  let finished = false
-  const finish = () => {
-    if (finished) return
-    finished = true
-    removeSkips()
-    capCall.kill()
-    lineTween.kill()
-    gsap
-      .timeline()
-      .to(line, { scaleX: 1, duration: 0.18, ease: 'power1.out' })
-      .to(overlay, { yPercent: -100, duration: 0.65, ease: 'power3.inOut' }, '+=0.08')
-      /* hero intro starts while the curtain is still clearing: the masked
-         lines rise into view as the ink lifts */
-      .call(onDone, undefined, '-=0.3')
-      .call(() => overlay.remove())
-  }
-
-  /* real-ish progress: fonts + full load finish it early, but never under
-     a 0.9s hold: a sub-second flash of the overlay reads as a glitch, not a
-     brand moment. The 1.2s cap is absolute and a skip is always instant. */
-  const startedAt = performance.now()
-  const capCall = gsap.delayedCall(1.2, finish)
-  let minCall: gsap.core.Tween | null = null
-  const loaded =
-    document.readyState === 'complete'
-      ? Promise.resolve()
-      : new Promise<void>((res) => window.addEventListener('load', () => res(), { once: true }))
-  Promise.all([document.fonts.ready, loaded]).then(() => {
-    const remain = Math.max(0, 900 - (performance.now() - startedAt))
-    minCall = gsap.delayedCall(remain / 1000, finish)
-  })
-
-  /* skippable: any input gesture completes it instantly */
-  const skip = () => finish()
-  const skipEvents = ['pointerdown', 'keydown', 'wheel', 'touchstart'] as const
-  skipEvents.forEach((ev) => window.addEventListener(ev, skip, { passive: true }))
-  const removeSkips = () => skipEvents.forEach((ev) => window.removeEventListener(ev, skip))
-
-  return () => {
-    finished = true
-    removeSkips()
-    capCall.kill()
-    minCall?.kill()
-    lineTween.kill()
-    wordIntro.kill()
-    overlay.remove()
-  }
 }
 
 /**
@@ -155,11 +54,25 @@ export function PageMotion() {
       {
         motionOK: '(prefers-reduced-motion: no-preference)',
         desktop: '(min-width: 900px)',
+        /* PINNING NEEDS HEADROOM. A pinned sheet holds ALL of its content
+           against one viewport, so on a short window (a 591px laptop with
+           the bookmarks bar open, measured) the bottom of the sheet is
+           simply cut off for the whole pin - the CTA sat 260px below the
+           fold with no way to reach it. Under this height the pins are not
+           created and both sheets fall back to their spacious scroll
+           layouts, which fit any window because they scroll.
+
+           768, measured twice: at 640 a 740px phone and a 760px laptop both
+           still pinned and both were still over budget (88px and 26px). The
+           compressed pinned layouts genuinely fit from 768 up; below it the
+           scroll layout is simply the better page. */
+        tall: '(min-height: 768px)',
       },
       (ctx) => {
-        const { motionOK, desktop } = ctx.conditions as {
+        const { motionOK, desktop, tall } = ctx.conditions as {
           motionOK: boolean
           desktop: boolean
+          tall: boolean
         }
         /* reduced motion: create nothing at all (rule 2 above) */
         if (!motionOK) return
@@ -176,8 +89,58 @@ export function PageMotion() {
            useGSAP's contextSafe it cannot create a parent/child context
            cycle (contextSafe here recursed Context.getTweens to a stack
            overflow on the first breakpoint revert). */
+        /* Same reasoning as the preloader (see shouldShowPreloader): the
+           masked-lines intro sets the h1's hidden initial state from JS, so
+           on a slow device the headline waits for GSAP to parse before it can
+           be read at all. Lightweight visitors get it painted, immediately,
+           by the server HTML - which is the state this whole file's rule 1
+           exists to guarantee. */
+        const lightweight = prefersLightweight()
+
         const startHeroIntro = () => {
+          if (lightweight) return
           ctx.add(() => {
+            /* ---- THE POWER COMES BACK ON (BLUEPRINT SS5.6, stated first) ----
+
+               The page's recurring event is a light returning: Sheet 02's
+               loadshedding cut, the tube striking over every photograph, the
+               floodlight dipping as the turntable revolves. All of it used to
+               begin on Sheet 02, which meant the hero — the one screen every
+               visitor sees — was the only part of the page that did not do
+               the thing the page is about.
+
+               So the room now arrives the way a Chattogram showroom does
+               after a cut: dark, drained of colour, and then the tube
+               strikes. Two fast flickers, then the room is warm and in full
+               colour. The whole event is 1.8s and it lands under the
+               headline's own entrance, so nothing waits on it.
+
+               INVERSION LAW, as everywhere: the CSS describes the finished
+               room. This pushes it back to the blackout and animates forward,
+               so no JS, reduced motion or a thrown tween all leave a visitor
+               looking at the lit room rather than a dark one. */
+            const room = document.querySelector<HTMLElement>('[data-hero-photo]')
+            if (room) {
+              gsap.fromTo(
+                room,
+                { filter: 'grayscale(1) brightness(0.18) contrast(1.3)' },
+                {
+                  /* keyframes, not a tween: a fluorescent tube does not fade
+                     up, it catches, fails, catches again and holds. The dips
+                     are what make people read it as a light rather than as an
+                     opacity animation. */
+                  keyframes: [
+                    { filter: 'grayscale(0.9) brightness(0.9) contrast(1.2)', duration: 0.09 },
+                    { filter: 'grayscale(1) brightness(0.22) contrast(1.3)', duration: 0.1 },
+                    { filter: 'grayscale(0.5) brightness(1.15) contrast(1.1)', duration: 0.08 },
+                    { filter: 'grayscale(0.6) brightness(0.45) contrast(1.2)', duration: 0.12 },
+                    { filter: 'none', duration: 1.1, ease: 'power2.out' },
+                  ],
+                  delay: 0.35,
+                },
+              )
+            }
+
             SplitText.create('h1.statement', {
             type: 'lines',
             mask: 'lines',
@@ -281,7 +244,9 @@ export function PageMotion() {
            the viewport" is a reliable "the hero is leaving" signal. */
         const curtainForPill = document.querySelector<HTMLElement>('[data-curtain]')
         if (curtainForPill) {
-          stickyHost.dataset.heroView = '1'
+          /* the flag now ARRIVES in the server HTML (layout.tsx) rather than
+             being set here, so it is correct on first paint and correct with
+             JavaScript off; this block only ever takes it away */
           ScrollTrigger.create({
             trigger: curtainForPill,
             start: 'top 85%',
@@ -303,90 +268,42 @@ export function PageMotion() {
         const heroSec = document.querySelector<HTMLElement>('main > header')
         const curtainSec = document.querySelector<HTMLElement>('[data-curtain]')
         if (heroSec && curtainSec) {
-          /* ---- S1 · THE PINNED TURNTABLE (PLAN S1b, revised) ----
+          /* ---- S1 · THE TURNTABLE, UNPINNED (client call, 2026-09-03) ----
 
-             The hero holds while the visitor scrolls and the piece on the
-             plinth CHANGES: velvet sofa, then armchair, then leather lounge,
-             each announced by its own caption and accent. Then, over the last
-             fifth, the hero performs its exit and hands over to S2.
+             The hero USED to pin for ~2 viewports while scrolling stepped
+             through the five pieces. The client watched real users meet it
+             and called it: scroll-as-pager reads as the page being stuck,
+             because the visitor's gesture says "next section" and the page
+             answers "same section, different sofa". The pieces now change
+             on their own clock (the slider effect in Turntable.tsx) and by
+             the arrows, and a scroll does the one thing a scroll means:
+             leaves.
 
-             pinSpacing is TRUE here (it was false while the pin only lasted
-             one viewport). Real spacing is what buys the hold: the extra
-             scroll distance belongs to the hero and nothing else moves during
-             it, so the piece changes read as deliberate scenes rather than as
-             S2 sliding over a hero that happens to be mutating. It also
-             removes the un-pin snap the old pinSpacing:false pin had to hide
-             behind a full-viewport curtain.
-
-             The hold is shorter on phones: the same three scenes, less thumb.
-          */
-          const HOLD_VH = desktop ? 220 : 170
-          /* progress thresholds inside the pin: scene, swap, scene, swap,
-             scene, then the exit. Fractions of the pinned range, so the same
-             rhythm holds at either hold length. */
-          const SWAP_1 = 0.3
-          const SWAP_2 = 0.56
-          const EXIT_FROM = 0.8
-
-          let shownPiece = -1
-          const showPiece = (index: number) => {
-            if (index === shownPiece) return
-            shownPiece = index
-            setHeroPiece(index)
-            /* each piece brings its own accent, so the CTA, the index
-               numerals and the thread all shift with the material on stage */
-            gsap.to(document.documentElement, {
-              '--accent': hero.pieces[index].accent,
-              duration: 0.6,
-              ease: 'power2.out',
-              overwrite: 'auto',
-            })
-          }
-
-          /* ONE timeline owns the pin, the scrub and the exit. A second
-             ScrollTrigger on the same element would have to measure a
-             position that the first one has made `fixed`, which is exactly
-             the case GSAP warns about; nesting the exit inside this
-             timeline's last fifth sidesteps it entirely. */
+             What remains here is only the EXIT - the parallax of the room,
+             the deepening scrim, the plinth's light going out - scrubbed
+             over the single viewport the hero occupies as it hands over to
+             S2. No pin, no pin spacer, no hold. */
           const heroTl = gsap.timeline({
             defaults: { ease: 'none' },
             scrollTrigger: {
               trigger: heroSec,
               start: 'top top',
-              end: `+=${HOLD_VH}%`,
-              pin: true,
-              anticipatePin: 1,
+              end: 'bottom top',
               scrub: 1,
               invalidateOnRefresh: true,
-              onUpdate: (self) => {
-                /* a step function, not a tween: the piece is a discrete
-                   thing and interpolating an index would mean nothing */
-                showPiece(self.progress >= SWAP_2 ? 2 : self.progress >= SWAP_1 ? 1 : 0)
-              },
-              /* scrolled back above the hero: first piece on stage again */
-              onLeaveBack: () => showPiece(0),
             },
           })
-
-          const EXIT_DUR = 1 - EXIT_FROM
           heroTl
-            /* spacer: fixes the timeline's total at exactly 1 so the
-               positions below are true fractions of the pinned range */
-            .to({}, { duration: 1 }, 0)
-            /* photo parallaxes slower than the page and its scrim deepens,
-               so the room sinks away behind the rising ivory */
-            .fromTo('[data-hero-photo]', { yPercent: 0 }, { yPercent: 18, duration: EXIT_DUR }, EXIT_FROM)
+            .fromTo('[data-hero-photo]', { yPercent: 0 }, { yPercent: 18 }, 0)
             /* 0.82 -> 1: opacity above 1 clamps, so the deepening is a real
                range. JS-set start only, and the no-JS default is the FULL
                scrim, so text contrast without JS is higher, never lower. */
-            .fromTo('[data-hero-scrim]', { opacity: 0.82 }, { opacity: 1, duration: EXIT_DUR }, EXIT_FROM)
-            /* the plinth lifts and its light goes out: the piece is taken
-               off stage, and the 3D on it yaws and recedes off stageState */
-            .fromTo('[data-turntable]', { yPercent: 0 }, { yPercent: -10, duration: EXIT_DUR }, EXIT_FROM)
-            .fromTo('[data-stage-pool]', { opacity: 0.5 }, { opacity: 0, duration: EXIT_DUR }, EXIT_FROM)
-            .to(stageState, { heroProgress: 1, duration: EXIT_DUR }, EXIT_FROM)
-            /* statement drifts up at 0.6x: type leaves before the room does */
-            .fromTo('[data-hero-statement]', { yPercent: 0 }, { yPercent: -60, duration: EXIT_DUR }, EXIT_FROM)
+            .fromTo('[data-hero-scrim]', { opacity: 0.82 }, { opacity: 1 }, 0)
+            .fromTo('[data-turntable]', { yPercent: 0 }, { yPercent: -10 }, 0)
+            .fromTo('[data-stage-pool]', { opacity: 0.5 }, { opacity: 0 }, 0)
+            .to(stageState, { heroProgress: 1 }, 0)
+            /* statement drifts up faster than the page: type leaves first */
+            .fromTo('[data-hero-statement]', { yPercent: 0 }, { yPercent: -60 }, 0)
 
           /* ---- S1 -> S2 · the ivory curtain (PLAN 2.5) ----
              "The room lights come on." S2 rises a little faster than the page
@@ -411,15 +328,16 @@ export function PageMotion() {
           )
         }
 
-        /* ---- S4 -> S5 · the aperture (PLAN 2.5) ----
-           The showroom panel reveals through an expanding rounded window,
-           like stepping through a doorway. One-shot scrub, no pin; the
-           18px end radius matches the .ph panel's own. */
+        /* ---- SHEET 05 · the aperture ----
+           The showroom panel reveals through an expanding window, like
+           stepping through a doorway. One-shot scrub, no pin. The end state
+           has NO corner radius, because a drafting panel has none: the
+           doorway opens into a drawn sheet, not a rounded card. */
         gsap.fromTo(
           '[data-aperture]',
-          { clipPath: 'inset(18% 24% 18% 24% round 32px)' },
+          { clipPath: 'inset(18% 24% 18% 24%)' },
           {
-            clipPath: 'inset(0% 0% 0% 0% round 18px)',
+            clipPath: 'inset(0% 0% 0% 0%)',
             ease: 'none',
             scrollTrigger: {
               trigger: '[data-aperture]',
@@ -437,7 +355,65 @@ export function PageMotion() {
            does NOT touch three.js: it scrubs one number into stageState and
            the scene (whenever it mounts) reads it per frame. */
         const bespokeSec = document.querySelector<HTMLElement>('#bespoke')
-        const bespokePinned = !!bespokeSec && detectTier() !== 'low'
+        /* the 3D gate and the pin gate are SEPARATE questions now. 3D exists
+           on any non-low tier; the pin additionally needs a viewport tall
+           enough to hold the whole sheet. Skipping the pin used to skip the
+           progress scrub with it, which froze the blueprint as a wireframe
+           for every short-viewport visitor - the drawing never became the
+           sofa, and the sheet read as broken (client screenshot, mobile). */
+        const bespoke3D = !!bespokeSec && detectTier() !== 'low'
+        const bespokePinned = bespoke3D && tall
+
+        /* ---- THE ARRIVAL, shared by both layouts: the plate strikes in and
+           the piece settles a beat before the sheet is fully on screen. It
+           used to live inside the pinned branch only, which meant a phone
+           never got it. `once`: an arrival happens once; a return is not an
+           entrance. Inversion law: the 3D's arrival number rests at 1, so
+           the motion layer is what pushes it back to 0. */
+        if (bespokeSec && bespoke3D) {
+          const stagePanel = bespokeSec.querySelector<HTMLElement>('[data-stage-bespoke]')
+          stageState.bespokeArrival = 0
+          if (stagePanel) stagePanel.dataset.drafting = ''
+          ScrollTrigger.create({
+            trigger: bespokeSec,
+            start: 'top 85%',
+            once: true,
+            onEnter: () => {
+              gsap.to(stageState, {
+                bespokeArrival: 1,
+                duration: 0.9,
+                ease: 'power2.out',
+              })
+              /* the DOM half of the same beat: CSS owns the finished state;
+                 removing the attribute is what lets it transition to it */
+              if (stagePanel) delete stagePanel.dataset.drafting
+            },
+          })
+        }
+        if (bespokeSec && bespoke3D && !bespokePinned) {
+          /* NO PIN, SAME STORY: the one number the 3D reads is scrubbed by
+             the section's own passage across the viewport instead of by a
+             hold. By the time the stage is centred on screen the sweep is
+             done and the visitor is looking at the finished velvet piece;
+             scrolling back re-draws it. Steps and dock keep their static
+             fully-visible layout (inversion law): a spotlight sequence needs
+             a hold to be legible, and there is no hold. */
+          gsap.fromTo(
+            stageState,
+            { bespokeProgress: 0 },
+            {
+              bespokeProgress: 1,
+              ease: 'none',
+              scrollTrigger: {
+                trigger: bespokeSec,
+                start: 'top 75%',
+                end: 'center 45%',
+                scrub: 1,
+                invalidateOnRefresh: true,
+              },
+            },
+          )
+        }
         if (bespokeSec && bespokePinned) {
           /* compact pinned-state layout (stage + steps share the viewport);
              the class exists only while the pin does */
@@ -452,6 +428,25 @@ export function PageMotion() {
           }
           gsap.set('[data-swatch-dock]', { autoAlpha: 0, y: 24 })
 
+          /* ---- THE ARRIVAL, and it fires BEFORE the pin ----
+
+             THE BUG THIS FIXES, precisely: the pin starts at 'top top', so
+             everything on this sheet was a function of a progress that is 0
+             until the section's top reaches the top of the screen — and then
+             scrub adds a second of lag on top of that. Scroll down through
+             four sheets at any speed and you arrived to a stage holding a
+             nearly invisible wireframe, a stack of dim words and no dock. It
+             read as a section that had failed to load. It had not; it had
+             simply not been asked to do anything yet.
+
+             So the sheet now GREETS the visitor a fifth of a screen before it
+             pins: the blueprint draws itself in, the piece settles onto the
+             table, the first word lights and the panel's own frame is struck.
+             None of it touches bespokeProgress, so the scrubbed story is
+             untouched and starts from exactly where it always did.
+
+             `once` because an arrival happens once; scrolling back up and
+             down again is a return, not an entrance. */
           const tl = gsap.timeline({
             defaults: { ease: 'none' },
             scrollTrigger: {
@@ -481,6 +476,151 @@ export function PageMotion() {
           )
         }
 
+        /* ================= THE IMAGE SYSTEMS (BLUEPRINT SS5.5 / SS5.6) =====
+           Both obey the same inversion, and it is the most important detail
+           in this file: the CSS in sections.module.css already describes the
+           FINISHED image (printed, full colour, fully lit). The code below
+           first pushes each image BACK to its "before" state and only then
+           animates it forward. So with JavaScript off, under reduced motion,
+           or if anything here throws, the visitor is left with complete
+           photographs rather than blank panels. Never invert this. */
+
+        /* ---- THE PLOTTER PRINT: a filament sweeps down, the sheet prints,
+           then colour blooms in out of grayscale. One signature entrance for
+           every photograph on the page (SS5.5). Class-free on purpose: CSS
+           Modules hash class names, so the state hooks are data attributes,
+           which are never rewritten. */
+        const printCalls: gsap.core.Tween[] = []
+        gsap.utils.toArray<HTMLElement>('[data-print]').forEach((frame) => {
+          frame.dataset.unprinted = ''
+          /* cards inside one row print in sequence, not in unison: a stagger
+             is what makes a page feel plotted rather than switched on */
+          const siblings = frame.closest('[data-cards]')
+            ? Array.from(document.querySelectorAll('[data-cards] [data-print]')).indexOf(frame)
+            : 0
+          const delay = Math.max(0, siblings) * 0.08
+
+          ScrollTrigger.create({
+            trigger: frame,
+            start: 'top 78%',
+            once: true,
+            onEnter: () => {
+              printCalls.push(
+                gsap.delayedCall(delay, () => {
+                  frame.dataset.printing = ''
+                  delete frame.dataset.unprinted
+                  /* the sweep animation is 900ms; the attribute is removed
+                     after it so a re-entry can never replay a finished pass */
+                  printCalls.push(
+                    gsap.delayedCall(0.95, () => {
+                      delete frame.dataset.printing
+                      /* ...and THEN the tube over the plate catches. Two
+                         beats, never one: the plotter reveals the sheet, the
+                         light comes on over it. Overlapping them would put
+                         two owners on `filter` and the strike would fight the
+                         print's own grayscale-to-colour ramp. 620ms later the
+                         attribute goes, so nothing can replay it. */
+                      frame.dataset.striking = ''
+                      printCalls.push(
+                        gsap.delayedCall(0.68, () => {
+                          delete frame.dataset.striking
+                        }),
+                      )
+                    }),
+                  )
+                }),
+              )
+            },
+          })
+        })
+
+        /* ---- LIVING AT REST: a barely-there Ken Burns inside the panel, so
+           no photograph is ever a dead rectangle. Transform only, scrubbed,
+           and it owns this element's transform outright (the hover state is
+           filter-only for exactly that reason). */
+        gsap.utils.toArray<HTMLElement>('[data-kenburns] img').forEach((img) => {
+          gsap.fromTo(
+            img,
+            { scale: 1 },
+            {
+              scale: 1.06,
+              ease: 'none',
+              scrollTrigger: {
+                trigger: img.closest('[data-kenburns]') ?? img,
+                start: 'top bottom',
+                end: 'bottom top',
+                scrub: 1,
+              },
+            },
+          )
+        })
+
+        /* ---- THE LOADSHEDDING CUT: the room sits grey, then the light comes
+           back - a pool around the bulb first, then the whole room (SS5.6).
+           The scrub writes ONE custom property, which clip-path consumes on
+           the compositor; nothing here touches layout. */
+        gsap.utils.toArray<HTMLElement>('[data-focus]').forEach((el) => {
+          gsap.fromTo(
+            el,
+            { '--focus-r': '12%' },
+            {
+              '--focus-r': '120%',
+              ease: 'none',
+              scrollTrigger: {
+                trigger: el,
+                start: 'top 80%',
+                end: 'center 45%',
+                scrub: 1,
+              },
+            },
+          )
+
+          /* THE FLICKER: two 60ms dips as the light catches, exactly like a
+             tube striking. One-shot. This is what makes people FEEL the
+             loadshedding instead of reading a gradient. */
+          const lit = el.querySelector<HTMLElement>('[data-focus-lit]')
+          if (!lit) return
+          ScrollTrigger.create({
+            trigger: el,
+            start: 'top 80%',
+            once: true,
+            onEnter: () => {
+              gsap
+                .timeline()
+                .to(lit, { opacity: 0.35, duration: 0.06, ease: 'none' })
+                .to(lit, { opacity: 1, duration: 0.06, ease: 'none' })
+                .to(lit, { opacity: 0.55, duration: 0.06, ease: 'none' })
+                .to(lit, { opacity: 1, duration: 0.06, ease: 'none' })
+            },
+          })
+        })
+
+        /* ---- THE SWITCHOVER (BLUEPRINT SS5.7) ----
+           A dark sheet's light arrives 120ms AFTER the sheet does: the beam
+           dips to .4 and snaps back to 1, once per entry. A breaker being
+           flipped, room to room.
+
+           A TOGGLE, never a scrub. A scrubbed flicker judders with the wheel
+           and reads as a rendering fault rather than as a light; the whole
+           effect depends on it completing at its own speed regardless of how
+           fast the visitor is scrolling. */
+        gsap.utils.toArray<HTMLElement>('[data-beam]').forEach((beam) => {
+          const sheet = beam.closest('section, header')
+          if (!sheet) return
+          const flip = () => {
+            gsap
+              .timeline()
+              .set(beam, { opacity: 0.4 })
+              .to(beam, { opacity: 1, duration: 0.12, ease: 'power1.out' }, '+=0.12')
+          }
+          ScrollTrigger.create({
+            trigger: sheet,
+            start: 'top 70%',
+            onEnter: flip,
+            onEnterBack: flip,
+          })
+        })
+
         /* ---- b · Apple-style dim-to-bright ----
            Placard lines, the S3 step words and the S7 quote sit at 0.25 until
            they cross the viewport's middle band. Linear ease: with scrub the
@@ -499,6 +639,118 @@ export function PageMotion() {
             },
           )
         })
+
+        /* ---- b1 · THE MAKER ARRIVES ----
+
+           The one moment on this page that is about a person rather than an
+           object, so it gets the staging an object gets and then one more
+           beat on top: the light strikes BEFORE he does. The pool comes up
+           out of nothing, and he rises into it a fifth of a second later,
+           which is the difference between a photograph appearing and someone
+           stepping into a lit room.
+
+           Inversion law as everywhere: the CSS above describes him standing
+           lit, and these are `from` tweens, so no-JS and reduced motion get
+           the finished composition rather than an empty stage. */
+        const mdStage = document.querySelector<HTMLElement>('[data-md]')
+        if (mdStage) {
+          const glow = mdStage.querySelector<HTMLElement>(':scope > span:first-child')
+          const cutout = mdStage.querySelector<HTMLElement>('img')
+          const floor = mdStage.querySelector<HTMLElement>(':scope > span:last-of-type')
+          const plate = mdStage.querySelector<HTMLElement>('figcaption')
+
+          const tl = gsap.timeline({
+            scrollTrigger: { trigger: mdStage, start: 'top 82%', once: true },
+          })
+          if (glow) {
+            tl.from(glow, { autoAlpha: 0, scale: 0.55, duration: 0.9, ease: 'power2.out' }, 0)
+          }
+          if (floor) {
+            /* the floor line is struck outward from under his feet, which is
+               where the beam hits: a rule that draws left-to-right here would
+               contradict the light */
+            tl.from(
+              floor,
+              { scaleX: 0, transformOrigin: 'center', duration: 0.8, ease: 'expo.out' },
+              0.12,
+            )
+          }
+          if (cutout) {
+            tl.from(
+              cutout,
+              { yPercent: 12, autoAlpha: 0, duration: 1.0, ease: 'power3.out' },
+              0.2,
+            )
+          }
+          if (plate) {
+            tl.from(plate, { y: 14, autoAlpha: 0, duration: 0.6, ease: 'power2.out' }, 0.62)
+          }
+
+          /* AND HE STAYS ALIVE. A very slow float, two pixels, out of phase
+             with the light breathing above him. It is under the threshold of
+             "an animation" and over the threshold of "a dead cut-out", which
+             is the only place a portrait can sit on a page like this. */
+          gsap.to(cutout, {
+            y: -6,
+            duration: 4.5,
+            ease: 'sine.inOut',
+            yoyo: true,
+            repeat: -1,
+          })
+        }
+
+        /* ---- b2 · EVERY SHEET'S HEADING ARRIVES THE WAY THE HERO'S DOES ----
+
+           The hero's statement rose out of a mask and every other heading on
+           the page simply existed, which made the hero look like the only
+           designed moment and the rest like a document underneath it. One
+           entrance, applied to all of them, is what turns nine sheets into
+           one piece of work.
+
+           `mask: 'lines'` has SplitText build its own overflow-clipped
+           wrapper per line, so the type rises from behind a hard edge rather
+           than fading — the difference between something being revealed and
+           something appearing. `autoSplit` re-splits on resize and on the
+           late webfont swap, which is the only way a masked line stays
+           correct when the font metrics change under it.
+
+           `once` on the trigger, not scrub: an entrance replayed every time a
+           visitor scrolls back past it stops being an entrance. */
+        gsap.utils.toArray<HTMLElement>('.section-title').forEach((title) => {
+          SplitText.create(title, {
+            type: 'lines',
+            mask: 'lines',
+            autoSplit: true,
+            onSplit: (self) =>
+              gsap.from(self.lines, {
+                yPercent: 110,
+                duration: 0.95,
+                ease: 'power3.out',
+                stagger: 0.08,
+                scrollTrigger: { trigger: title, start: 'top 88%', once: true },
+              }),
+          })
+        })
+
+        /* ---- b3 · the annotations follow the heading in ----
+           Beat captions, specimen rows and trust chips: the small type that
+           frames every sheet. A short stagger, from below, once. These are
+           `from` tweens for the same reason everything here is: the CSS has
+           them present and legible, and only JavaScript ever hides them. */
+        gsap.utils
+          .toArray<HTMLElement>('[data-beat-caption], .specimen-row, .chip')
+          .forEach((el) => {
+            /* the hero runs its own intro on its own clock; doubling it here
+               would fight the preloader hand-off */
+            if (el.closest('#sheet-01')) return
+            gsap.from(el, {
+              y: 18,
+              autoAlpha: 0,
+              duration: 0.7,
+              ease: 'power2.out',
+              scrollTrigger: { trigger: el, start: 'top 90%', once: true },
+            })
+          })
 
         /* ---- c · ticker marquee ----
            Seamless infinite loop. We animate by the measured pixel width of
@@ -549,6 +801,24 @@ export function PageMotion() {
         let railTween: gsap.core.Tween | null = null
         if (desktop && cardsWrap && railSection) {
           cardsWrap.classList.add(s.isRail)
+          /* THE FIX FOR "THE CARD NAMES ARE CUT OFF".
+
+             The rail pins at 'top top', which means the section is laid out
+             at its full natural height and then held against the top of the
+             screen. Its natural height was taller than the viewport — section
+             padding, the title block, a tall photo plate, the card's name and
+             detail, the footer link and the title block — so for the entire
+             pin the bottom of every card sat BELOW the fold. The cards moved
+             sideways past a visitor who could not see what any of them were
+             called, which is the one job the rail has.
+
+             A pinned section has to be sized to the viewport, exactly as
+             Sheet 04's pin already is (.bespoke.isPinned). This class does
+             that for Sheet 05: compressed padding, centred content, and a
+             media height that yields to the space actually available. It
+             exists only while the pin does, so the stacked mobile layout and
+             the no-JS desktop layout are untouched. */
+          railSection.classList.add(s.isRailPinned)
           const dist = () => cardsWrap.scrollWidth - cardsWrap.offsetWidth
           railTween = gsap.to(cardsWrap, {
             x: () => -dist(),
@@ -576,8 +846,7 @@ export function PageMotion() {
            transitions, added on enter and only removed when the visitor backs
            out above the card, so a settled card keeps its shadow. */
         gsap.utils.toArray<HTMLElement>('[data-card]').forEach((card) => {
-          const media = card.querySelector<HTMLElement>('.ph')
-          const inner = media?.firstElementChild
+          const media = card.querySelector<HTMLElement>('[data-card-media]')
           const tl = gsap.timeline({
             scrollTrigger: {
               trigger: card,
@@ -589,68 +858,57 @@ export function PageMotion() {
                     end: 'left 50%',
                   }
                 : { start: 'top 88%', end: 'top 40%' }),
-              onEnter: () => media?.classList.add('is-lit'),
-              onLeaveBack: () => media?.classList.remove('is-lit'),
+              onEnter: () => {
+                if (media) media.dataset.lit = ''
+              },
+              onLeaveBack: () => {
+                if (media) delete media.dataset.lit
+              },
             },
           })
-          /* The turn stays on the card; the fade moved to the media panel.
-             A card-wide 0.4 dimmed every piece of text inside it below
-             4.5:1 (the audit flagged cardName at 2.36:1, and the nested
-             0.7-opacity specimen could never pass under any card floor).
-             The photo panel fading up + the perspective turn keeps the
-             entrance; the placard text stays legible from the start. */
+          /* The turn stays on the card, and ONLY the turn. The old version
+             also faded the media panel from 0.4; the plotter print now owns
+             every photograph's entrance, and two entrances on one element
+             would fight (the print's clip-path reveal under a fade reads as
+             a stutter). One effect, one owner.
+             A card-wide fade is separately forbidden: at 0.4 it dimmed every
+             piece of text inside the card below 4.5:1 (the audit flagged
+             cardName at 2.36:1). */
           tl.fromTo(
             card,
             { rotateY: 14, transformPerspective: 900 },
             { rotateY: 0, ease: 'power2.out' },
             0,
           )
-          if (media) {
-            tl.fromTo(media, { opacity: 0.4 }, { opacity: 1, ease: 'power2.out' }, 0)
-          }
-          if (inner) {
-            tl.fromTo(inner, { scale: 1.06 }, { scale: 1, ease: 'power2.out' }, 0)
-          }
         })
 
-        /* ---- e · dynamic accent ----
-           Each section declares its accent; crossing the viewport middle
-           tweens the global --accent, and every consumer (buttons, indexes,
-           tri, focus ring) follows through var(). overwrite: 'auto' kills the
-           previous colour tween mid-flight when someone scrolls fast. */
-        gsap.utils.toArray<HTMLElement>('[data-accent]').forEach((sec) => {
-          const toAccent = () => {
-            gsap.to(document.documentElement, {
-              '--accent': sec.dataset.accent,
-              duration: 0.6,
-              ease: 'power2.out',
-              overwrite: 'auto',
-            })
-          }
-          ScrollTrigger.create({
-            trigger: sec,
-            start: 'top 55%',
-            end: 'bottom 55%',
-            onEnter: toAccent,
-            onEnterBack: toAccent,
-          })
-        })
+        /* ---- e · (dead) dynamic accent ----
+           The per-section accent scrub was removed with the monochrome
+           palette (BLUEPRINT SS2.8): --accent is a constant white and the
+           only colour on the page lives in photos, pieces and the logo. */
 
-        /* ---- f · ghost numerals: slow parallax ----
-           The watermark drifts up 18% of its own height while its section
-           crosses the viewport, giving the flat sections one layer of depth. */
-        gsap.utils.toArray<HTMLElement>('.ghost-num').forEach((el) => {
-          gsap.to(el, {
-            yPercent: -18,
-            ease: 'none',
-            scrollTrigger: {
-              trigger: el.closest('section, header') ?? el,
-              start: 'top bottom',
-              end: 'bottom top',
-              scrub: 1,
+        /* ---- f · THE TIMELINE DRAWS ITSELF (Sheet 07) ----
+           The company's history is a vertical dimension line, so it arrives
+           the way a drawn line does: from the top, at the speed of the
+           scroll. CSS keeps it fully drawn by default, which is why this is
+           a fromTo and not a to. */
+        const timelineRule = document.querySelector<HTMLElement>('[data-timeline-rule]')
+        if (timelineRule) {
+          gsap.fromTo(
+            timelineRule,
+            { scaleY: 0 },
+            {
+              scaleY: 1,
+              ease: 'none',
+              scrollTrigger: {
+                trigger: timelineRule.closest('section') ?? timelineRule,
+                start: 'top 75%',
+                end: 'bottom 75%',
+                scrub: 1,
+              },
             },
-          })
-        })
+          )
+        }
 
         /* matchMedia cleanup: the async-built ticker tween, the resize
            listener and the rail class are the only things GSAP's context
@@ -659,12 +917,30 @@ export function PageMotion() {
           alive = false
           tickerTween?.kill()
           resizeCall?.kill()
+          /* the print passes are delayedCalls, which outlive a context revert
+             unless they are killed; and any frame caught mid-pass has to be
+             returned to the FINISHED state, never the blank one */
+          printCalls.forEach((c) => c.kill())
+          document.querySelectorAll<HTMLElement>('[data-print]').forEach((f) => {
+            delete f.dataset.unprinted
+            delete f.dataset.printing
+            delete f.dataset.striking
+          })
           window.removeEventListener('resize', onResize)
           cardsWrap?.classList.remove(s.isRail)
+          railSection?.classList.remove(s.isRailPinned)
           bespokeSec?.classList.remove(s.isPinned)
           delete stickyHost.dataset.heroView
           stageState.bespokeProgress = 0
           stageState.heroProgress = 0
+          /* back to the resting state the CSS and the 3D both describe: a
+             piece fully present. Crossing the 900px breakpoint reverts this
+             context and reruns it, and a piece left at arrival 0 would be
+             invisible until the next entrance that will never fire again. */
+          stageState.bespokeArrival = 1
+          document
+            .querySelectorAll<HTMLElement>('[data-drafting]')
+            .forEach((el) => delete el.dataset.drafting)
           preloaderCleanup?.()
         }
       },

@@ -67,8 +67,8 @@ is one beat, and every beat ends by pulling toward the next.
 | 03 | **THE DRAFTING TABLE** -- "Yours is drawn." | The adventure's centre. A blueprint draws itself, the craft-plane sweeps it real, and THEY pick the fabric (swatches). Dimension lines read real mm: built to your size. | "NEXT: WALK THE RANGE" cue by the title block. |
 | 04 | **THE RANGE** -- "Walk the collections." | The rail pin literally WALKS them sideways along the five collections (desktop); mobile strolls down the rack. Cards print (SS5.5). | The rail ends at a lit doorway edge: Sheet 05's aperture is already opening. |
 | 05 | **THE SHOWROOM** -- "Step through. Agrabad." | The aperture opens like a door; inside, the loadshedding cut lights the real showroom. Directions link = the real-world door. | "TAKE IT HOME FIRST" line points down. |
-| 06 | **YOUR ROOM** -- "See it in your place." | The piece leaves the studio with them: AR places it at real size in their own room. The adventure crosses INTO their house. | The maker's signature beat is promised: who builds this? |
-| 07 | **THE MAKER** -- "The man who signs it." | Quiet sheet. The MD's words, his portrait (grayscale until touched), the history drawn as one vertical measured line 2020->2026. Trust lands here. | The final ask is one scroll away. |
+| 06 | **YOUR ROOM** -- "See it in your place." | The piece leaves the studio with them: AR places it at real size in their own room. The adventure crosses INTO their house. | One question is left standing: who makes all this? The maker is next. |
+| 07 | **THE MAKER** -- "In his own words." | Quiet sheet. The MD's quote and portrait (grayscale until touched), the history drawn as one vertical measured line 2020->2026, closed by a TYPESET title block: ABUL KALAM BHUIYAN / MANAGING DIRECTOR / EST. 2020. No signature exists and none is fabricated; a typeset block fits a technical drawing better anyway. | The final ask is one scroll away. |
 | 08 | **THE ORDER** -- "Have yours drawn." | The order sheet: the one CTA, contact, the colophon title block `SHEET 08/08 -- END`. WhatsApp message is pre-written: signing the commission. | (End. The plot line ties off in a triangle.) |
 
 ### Wayfinding -- how the visitor is DIRECTED through the beats
@@ -91,6 +91,42 @@ is one beat, and every beat ends by pulling toward the next.
 
 Copy implication: `copy.ts` gains a `story` object (beat names, captions, NEXT strings)
 and the sheets render from it, so the plot is one editable list.
+
+---
+
+## 0.9 BRIEF ALIGNMENT AUDIT (re-read of the PDF, 2026-09-02)
+
+Checked sheet by sheet against the company brief. Aligned: one conversion page - one
+repeated WhatsApp CTA - hero uses the brief's own line "Furniture, Crafted Around You" -
+brand + category + Chattogram inside the first viewport (the 30-second rule) - collections
+snapshot not a catalog - bespoke has its own pinned moment (their #1 differentiator) -
+MD quote + milestones timeline - footer carries address, phone, socials - real photos
+only, touch-up within the brief's explicit allowance - mobile-first - perf gates.
+
+Four honest flags, two of them with fixes that are now part of this plan:
+
+1. **"Warm" vs monochrome (deliberate deviation, owner-directed).** The brief suggests a
+   warm palette; Saadman directed black-and-white with light. Mitigation is structural:
+   ALL warmth on the page comes from the furniture itself (photos + pieces are golden,
+   warm objects), and the loadshedding/print reveals hand them the colour stage. The
+   page is the dark studio; Heaven's work is the warm thing in it. Owned, not accidental.
+2. **"Elegant serif for headlines" (FIX, adopted).** Headlines stay Inter Tight (the
+   drawing voice), but the STORY BEAT CAPTIONS switch to Fraunces italic (the human
+   voice): '"The lights come on."' set in serif italic against mono annotations. The
+   brief's serif appears at every sheet head, and the machine/voice contrast is a
+   classic editorial move. The MD quote stays Fraunces as before.
+3. **Trust points arrive too late (FIX, adopted).** The brief wants "Why Choose Heaven"
+   fast to scan right after the intro; ours all sat in Sheet 07. Sheet 02 now carries a
+   compact TRUST ROW of the four fastest chips (Free design consultation - Fully
+   bespoke, never mass produced - Delivery & installation included - Easy payment
+   options) under the placard; the full seven remain on Sheet 07. Ad traffic sees trust
+   in the first two scrolls.
+4. **Placeholder 3D pieces at ship (decision rule).** If no Meshy scan lands by the
+   evening of 2026-09-03, the turntable ships with the Khronos placeholders: captions
+   stay CATEGORY-level (Heaven demonstrably sells these categories, so no false product
+   claim), the CC-BY credit stays in the footer, and ASSETS.md keeps the TEMPORARY flag.
+   The moment one real scan lands, it takes slot 1 and the real-mm dimension line makes
+   it the strongest frame on the page.
 
 ---
 
@@ -157,6 +193,22 @@ SQUARE    1 : 1                                               → small detail c
 Corners: **0px on all panels** (drafting paper has no rounded corners).
 Buttons/pills keep their radius — instruments, not sheets.
 Borders: 1px hairline `--line` on panels that need an edge; most rely on the ground shift.
+
+### 2.4b Photography reality (measured 2026-09-02, binds every sheet)
+
+- **1024 px is the HARD source ceiling.** All Gemini outputs cap at 1024 wide; the client
+  has no higher-resolution originals ("upscale to 4K" is a no-op). The pipeline's 1600
+  tier is an enlargement, not detail.
+- Consequence: photographs may not be relied on for large crisp desktop fills. The two
+  sheets that exceed the source (02's tall portrait bleed, 05's full-width panel) accept
+  softness BY DESIGN: both play under the loadshedding cut's dim grayscale zone, the
+  page-wide grain, and (05) constant Ken Burns motion — treatments that make soft pixels
+  read as atmosphere. Cap rendered photo panels at ~1100 CSS px wherever layout allows;
+  never letterbox-zoom a 1024 source past ~1.4x.
+- Most graded photos are TIGHTER than v2 assumed (Gemini cropped 1024x1024 to ~1024x625;
+  a top-3 redo with a keep-framing prompt is in flight). Sheet compositions must survive
+  tight, room-poor crops; the roomy look, where it matters, comes from layout whitespace,
+  not from the photo.
 
 ### 2.5 The structural background grid (replaces the old decorative grid)
 
@@ -297,6 +349,8 @@ DESKTOP                                      MOBILE
 │ TITLE BLOCK[1–2]└───────────┘             └──────────────┘
 └──────────────────────────────┘
 ```
+- NEW (SS0.9 fix 3): a TRUST ROW of four chips sits under the placard, columns [1-2],
+  fast-scan mono caps. The other three trust points stay on Sheet 07.
 - Split is **2+4** (asymmetric, per Müller-Brockmann), photo begins ON column-3's line and
   bleeds off the right viewport edge. Ticker strip below unchanged (it already IS a module).
 
@@ -341,8 +395,10 @@ DESKTOP RAIL (pinned, scrubs left)           MOBILE (vertical)
 
 ### SHEET 05 · SHOWROOM (dark, grid ON)
 - Full-width A-LAND panel `[1–6]` (aperture reveal kept), caption + directions link on the
-  baseline below, title block right. Media ladder unchanged: video when Saadman delivers
-  it → today the cropped wide photo.
+  baseline below, title block right. **STILLS-ONLY, final** (confirmed 2026-09-02: no
+  walkthrough video exists, none is coming, no visit possible): a slow Ken Burns pan over
+  the widest real showroom photograph plays inside the aperture, with the loadshedding
+  cut on top. There is no video branch to keep warm.
 
 ### SHEET 06 · AR — "Your Room" (ivory, grid ON)
 
@@ -537,28 +593,67 @@ tier ladder, watchdog, licences. This is a re-LAYOUT, not a rebuild.
 
 ---
 
-## 7. WHAT SAADMAN PROVIDES (unblocks, in value order)
+## 7. DEADLINE, SUBMISSION AND UNBLOCKS (confirmed 2026-09-02)
 
-1. **Gemini photo cleanups** — same 10 filenames into `assets-raw/photos/graded/`
-   (SAADMAN-TASKS.md Task 1/3 — prompts already written). Cropped versions are live today;
-   cleaned ones auto-upgrade each slot.
-2. **Showroom walkthrough video** (Task 6) → Sheet 05 panel upgrades from photo to video.
-3. **MD portrait + team photo** → Sheet 07 A-PORT slot.
-4. **Meshy scans** of real Heaven pieces (Task 6) → turntable pieces + real dimension
-   numbers become Heaven's actual furniture; CC-BY placeholder credit line comes out.
-5. WhatsApp group: the submission deadline (still unknown — this caps everything).
+**Deadline: 2-3 days — target ship 2026-09-04.** Submission = a LIVE URL + a video posted
+publicly on Facebook or LinkedIn + the organizer's form filled with that post link.
+Two direct consequences:
+
+- **Deploy is a DAY 1 task.** A live Vercel URL exists before polish, and every later
+  change iterates against it (FB in-app browser included).
+- **The judges meet the LINK CARD before the page.** Open Graph is a designed surface of
+  this project, not metadata housekeeping: a composed 1200x630 `og:image` (ink ground,
+  structural grid, the hero piece in its light pool with a drawn dimension line, the
+  wordmark, the statement) plus og:title, og:description and
+  `twitter:card = summary_large_image`. The card is the first frame of the story.
+
+What Saadman still provides (SAADMAN-TASKS.md v2 numbering):
+1. **Top-3 Gemini photo redos** (Task 2, keep-framing prompt) — cropped versions are live
+   today; each clean auto-upgrades one slot. `hero-sofa-01-frontal` is DONE and accepted.
+2. **MD portrait + team photo + official logo file** (Task 5) → Sheet 07 slot + the mark.
+3. **Meshy scans** (Tasks 3-4) → turntable pieces + real dimension numbers become
+   Heaven's actual furniture; the CC-BY placeholder credit line comes out. USDZ from the
+   same export unlocks iPhone AR — in scope, time-boxed to whatever Meshy delivers.
+4. ~~Showroom walkthrough video~~ — none exists, none is coming (Sheet 05 is stills-only).
+5. ~~MD signature~~ — does not exist; Sheet 07 closes with the typeset title block.
 
 ---
 
 ## 8. ACCEPTANCE CHECKS (the math is verifiable, so verify it)
 
-- [ ] `?grid=1` overlay: every panel edge on a column line, every text block on the
-      baseline — screenshot per sheet, mobile + desktop, kept in PROGRESS.md.
-- [ ] All panels report aspect within 0.5% of √2 or 1 (script reads getBoundingClientRect).
-- [ ] Only spacing values that are multiples of u appear in computed section styles.
-- [ ] Lighthouse mobile ≥ 90 / a11y 100 re-run after re-layout (contrast floors preserved).
-- [ ] **Monochrome audit:** a script walks every rendered element's computed color /
-      border-color / background and FAILS on any saturated value outside a photo, the 3D
-      canvas, a swatch chip or the logo triangle (SS2.8's three exceptions).
-- [ ] Real-phone pass by Saadman (the headless raster artifact makes his eyes the only
-      trustworthy check for the pinned sheets).
+Results, 2026-09-02. Full detail in PROGRESS.md.
+
+- [x] **Column alignment** — the `?grid=1` overlay was cut (BUILD-GUIDE SS5.0) in favour of a
+      console script that measures the real thing rather than drawing a second grid to
+      compare by eye. **34 of 35 placed blocks land within 1.5px of a column boundary** at
+      1280 and at 390. The single offender is Sheet 02's photograph, whose 64px overhang is
+      the deliberate bleed.
+- [x] **Panel aspect** — the hero stage measures 1.4133 against √2 = 1.41421, a 0.06%
+      deviation, inside the 0.5% tolerance. Every panel derives its height from the ratio
+      and never sets it, so the ratio cannot drift; where a short viewport cannot fit a
+      panel, the WIDTH gives way and the ratio is preserved (hero and pinned Sheet 03).
+- [x] **The module** — spacing is written as `calc(var(--u) * n)` throughout, so a
+      non-multiple of 8 cannot be expressed by accident.
+- [x] **Monochrome audit — 0 offenders.** Note the measure: the first version tested HSL
+      SATURATION and false-flagged the page's own `--ink` and `--paper`, because at near-black
+      and near-white the formula turns a 2-unit RGB spread into "12%". Chroma (max − min, 8/255
+      ceiling) is what the eye actually reads, and against it nothing on the page carries hue
+      outside the three exceptions.
+- [~] **Lighthouse: a11y 100, best practices 100, SEO 100. Performance ~48, and the ≥90 gate
+      is NOT met.** It is not reachable for this build: with the 3D disabled entirely the same
+      page scores 58, so the WebGL hero costs ~10 points and the remainder is the brand
+      preloader plus GSAP's parse. Contrast floors are preserved (a11y stayed at 100 through
+      the whole re-layout). Real wins taken instead of excuses: page weight 4.7 MB → 2.0 MB,
+      and slow-connection / Data-Saver / low-core visitors now get no preloader, no hero
+      animation and no 3D at all.
+- [ ] **Real-phone pass by Saadman** — still the only trustworthy check for the pinned sheets,
+      and still outstanding. It needs the Vercel deploy, which needs his permission.
+
+Additional checks run that this list did not ask for:
+- [x] Full-scroll journey reaches `scrollHeight - innerHeight` exactly, with 3 pin spacers,
+      the ticker running, all 6 print frames printed, both focus lights fully lit, and zero
+      console errors.
+- [x] The wheel survives a bottom → top → down round trip with zero watchdog warnings. It did
+      not before: see PROGRESS.md, bug 1.
+- [x] With JavaScript disabled the page is complete — headline, 8 CTAs, every contact fact,
+      the MD quote, zero `opacity: 0`, and no preloader in the HTML at all.

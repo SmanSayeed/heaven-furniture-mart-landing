@@ -14,13 +14,22 @@ export function Cta({
   label,
   shortLabel,
   message,
+  /* `lead` is the page's big primary shape (hero, bespoke, footer); the
+     compact instance exists only where the CTA sits beside other controls */
+  lead = true,
 }: {
   label: string
   shortLabel?: string
   message?: string
+  lead?: boolean
 }) {
   return (
-    <a className="btn" href={whatsappUrl(message)} target="_blank" rel="noopener noreferrer">
+    <a
+      className={`btn ${lead ? 'btn-lead' : 'btn-sm'}`}
+      href={whatsappUrl(message)}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
       <WhatsApp />
       {shortLabel ? (
         <>

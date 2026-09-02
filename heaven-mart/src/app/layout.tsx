@@ -35,14 +35,45 @@ const quote = Fraunces({
   variable: '--font-quote',
 })
 
+/* The share card is the FIRST thing most visitors see: this page's traffic
+   arrives from Facebook posts and WhatsApp links, where the card is the
+   whole advertisement. metadataBase makes every OG url absolute, which is
+   what Facebook's scraper requires; it reads the deployment's own origin so
+   preview builds advertise themselves rather than production. */
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : 'https://heaven-furniture-mart.vercel.app')
+
+const description =
+  'Bespoke furniture and interior styling in Chattogram. Custom sofas, beds, dining and office pieces, built around your space.'
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: 'Heaven Furniture Mart · Designed. Crafted. Customized.',
-  description:
-    'Bespoke furniture and interior styling in Chattogram. Custom sofas, beds, dining and office pieces, built around your space.',
+  description,
   openGraph: {
-    title: 'Heaven Furniture Mart',
-    description: 'Furniture, Crafted Around You. Bespoke furniture studio, Agrabad, Chattogram.',
+    title: 'Heaven Furniture Mart · Furniture, Crafted Around You.',
+    description,
     type: 'website',
+    siteName: 'Heaven Furniture Mart',
+    locale: 'en_US',
+    url: '/',
+    images: [
+      {
+        url: '/og/card.png',
+        width: 1200,
+        height: 630,
+        alt: 'Heaven Furniture Mart. Furniture, Crafted Around You. A bespoke sofa drawn to measure.',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Heaven Furniture Mart · Furniture, Crafted Around You.',
+    description,
+    images: ['/og/card.png'],
   },
 }
 
@@ -59,6 +90,16 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
     <html
       lang="en"
       className={`${display.variable} ${sans.variable} ${mono.variable} ${quote.variable}`}
+      /* The sticky WhatsApp pill hides while the hero is on screen, because
+         the hero has its own CTA and two calls to action in one viewport is
+         the one thing this page may not do. The flag STARTS here, in the
+         server HTML, rather than being set by PageMotion after hydration:
+         set from JS it flickered on first paint, and with JavaScript
+         disabled it never appeared at all, so a no-JS visitor met the pill
+         sitting on top of the hero's own button. PageMotion removes it when
+         Sheet 02 arrives; without JS it simply stays, and those visitors
+         still have eight in-page CTAs. */
+      data-hero-view="1"
     >
       {/*
         suppressHydrationWarning: browser extensions (Grammarly etc.) inject

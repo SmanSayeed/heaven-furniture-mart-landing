@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>OG card source</title>
+<!--
+  Source for public/og/card.png (1200 x 630). The judges, and everyone
+  Heaven's team shares the link with, meet this image BEFORE they meet the
+  page, so it is a designed surface in the page's own language: ink ground,
+  the structural grid, one piece in a pool of light, a drawn dimension line,
+  the title block. Not a screenshot of the site.
+
+  It is a build INPUT, not a shipped page: nothing here is loaded at runtime,
+  and the relative ../public/img path is why it is not served from public/.
+
+  TO REGENERATE (rarely, and by hand on purpose - rendering it needs a real
+  browser, and adding Playwright as a devDependency to this project would
+  cost ~300 MB for one image):
+    1. copy this file to public/og/__card-source.html, rewriting the img src
+       from ../public/img/... to /img/...
+    2. `npm run dev`, open http://localhost:3000/og/__card-source.html in a
+       1200 x 630 window at 2x zoom, and screenshot it
+    3. downscale the capture to exactly 1200 x 630 (sharp is already a
+       dependency: sharp(in).resize(1200, 630).png().toFile(out))
+    4. delete public/og/__card-source.html - it must never ship
+  The 2x-then-downscale step is not fussiness: rasterising a 1200 px design
+  1:1 on a display whose devicePixelRatio is below 1 produces a card that is
+  physically smaller than 1200 px and has to be upscaled, which is visible on
+  12 px mono type.
+-->
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@600&family=Geist+Mono:wght@400&family=Fraunces:ital@1&display=swap');
+
+  :root {
+    --ink: #070809;
+    --paper: #f2f3f4;
+    --filament: rgba(255, 255, 255, 0.55);
+    --marigold: #f0a62b;
+    --edge: 64px;
+    --gutter: 24px;
+    /* six columns across 1200 - 2*64 = 1072 of content */
+    --col: calc((1072px - 5 * var(--gutter)) / 6);
+  }
+
+  * { box-sizing: border-box; margin: 0; }
+
+  body {
+    width: 1200px;
+    height: 630px;
+    overflow: hidden;
+    position: relative;
+    background: var(--ink);
+    color: var(--paper);
+    font-family: 'Inter Tight', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* the structural grid, on the same lines the page paints */
+  .grid {
+    position: absolute;
+    top: 0; bottom: 0;
+    left: var(--edge); right: var(--edge);
+    background-image:
+      repeating-linear-gradient(to right,
+        transparent 0 calc(var(--col) + var(--gutter) - 1px),
+        rgba(232, 238, 246, 0.07) calc(var(--col) + var(--gutter) - 1px) calc(var(--col) + var(--gutter))),
+      repeating-linear-gradient(to bottom,
+        transparent 0 63px, rgba(232, 238, 246, 0.03) 63px 64px);
+    border-left: 1px solid rgba(232, 238, 246, 0.07);
+    border-right: 1px solid rgba(232, 238, 246, 0.07);
+  }
+
+  /* the one light: top left, 45 degrees, same law as the page */
+  .beam {
+    position: absolute;
+    top: -25%; left: 16%;
+    width: calc(var(--col) * 2 + var(--gutter));
+    height: 150%;
+    transform: rotate(45deg);
+    mix-blend-mode: screen;
+    background: linear-gradient(90deg, transparent,
+      rgba(255,255,255,.03) 22%, rgba(255,255,255,.08) 50%, rgba(255,255,255,.03) 78%, transparent);
+    -webkit-mask-image: linear-gradient(180deg, transparent, #000 22%, #000 72%, transparent);
+  }
+
+  .sheet {
+    position: relative;
+    z-index: 2;
+    height: 100%;
+    padding: 48px var(--edge) 40px;
+    display: grid;
+    grid-template-columns: repeat(6, var(--col));
+    column-gap: var(--gutter);
+    grid-template-rows: auto 1fr auto;
+    align-content: space-between;
+  }
+
+  .wordmark {
+    grid-column: 1 / span 2;
+    align-self: start;
+    display: inline-flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 10px 14px 11px;
+    border-radius: 10px;
+    background: #0c1312;
+    font-weight: 600;
+    font-size: 20px;
+    line-height: 1;
+    letter-spacing: 0.14em;
+    justify-self: start;
+    font-family: Inter, system-ui, sans-serif;
+  }
+  .wordmark small {
+    display: block;
+    font-family: 'Geist Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    opacity: 0.72;
+    margin-top: 4px;
+  }
+  .tri {
+    display: inline-block;
+    width: 0; height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-bottom: 10px solid var(--marigold);
+  }
+
+  h1 {
+    grid-column: 1 / span 3;
+    grid-row: 2;
+    align-self: center;
+    font-size: 62px;
+    line-height: 1;
+    font-weight: 600;
+    letter-spacing: -0.035em;
+    text-wrap: balance;
+  }
+  h1 em {
+    font-style: normal;
+    text-shadow: 0 0 18px rgba(255,255,255,.45), 0 0 64px rgba(255,255,255,.18);
+  }
+
+  .eyebrow {
+    grid-column: 1 / span 3;
+    grid-row: 2;
+    align-self: start;
+    padding-top: 6px;
+  }
+
+  .specimen {
+    font-family: 'Geist Mono', monospace;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    opacity: 0.62;
+  }
+
+  /* the piece and its measurement, as one placed block on columns 4-6 */
+  .stageCol {
+    grid-column: 4 / span 3;
+    grid-row: 2;
+    align-self: center;
+    display: grid;
+    gap: 12px;
+  }
+
+  /* the piece, in an A-LAND panel with crop marks and a pool of light */
+  .stage {
+    position: relative;
+    aspect-ratio: 1.41421 / 1;
+    border: 1px solid rgba(242,243,244,.1);
+    overflow: hidden;
+  }
+  .pool {
+    position: absolute; inset: 0;
+    background: radial-gradient(46% 40% at 50% 56%, rgba(238,244,252,.5), transparent 72%);
+    opacity: .5;
+  }
+  .stage img {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    filter: saturate(.9) contrast(1.06);
+  }
+  .crop { position: absolute; inset: 6px; }
+  .crop i {
+    position: absolute; width: 12px; height: 12px;
+    border: 0 solid var(--filament); opacity: .42;
+  }
+  .crop i:nth-child(1) { top:0; left:0; border-top-width:1px; border-left-width:1px }
+  .crop i:nth-child(2) { top:0; right:0; border-top-width:1px; border-right-width:1px }
+  .crop i:nth-child(3) { bottom:0; left:0; border-bottom-width:1px; border-left-width:1px }
+  .crop i:nth-child(4) { bottom:0; right:0; border-bottom-width:1px; border-right-width:1px }
+
+  /* the drawn dimension line under the piece */
+  .dim {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    color: var(--filament);
+  }
+  .dim b { width: 1px; height: 9px; background: currentColor; opacity: .65 }
+  .dim s { flex: 1; height: 1px; background: currentColor; opacity: .45 }
+  .dim span { color: var(--paper); }
+
+  .foot {
+    grid-column: 1 / span 6;
+    grid-row: 3;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 24px;
+    border-top: 1px solid rgba(242,243,244,.1);
+    padding-top: 14px;
+  }
+  .beat {
+    font-family: Fraunces, Georgia, serif;
+    font-style: italic;
+    font-size: 19px;
+    opacity: .8;
+  }
+</style>
+</head>
+<body>
+  <div class="grid"></div>
+  <div class="beam"></div>
+
+  <div class="sheet">
+    <span class="wordmark">
+      <span>HE<span class="tri"></span>VEN</span>
+      <small>FURNITURE MART</small>
+    </span>
+
+    <p class="eyebrow specimen">BESPOKE FURNITURE &amp; INTERIOR STYLING · CHATTOGRAM</p>
+    <h1>Furniture, <em>Crafted</em> Around You.</h1>
+
+    <div class="stageCol">
+      <div class="stage">
+        <span class="pool"></span>
+        <img src="../public/img/hero-sofa-01-frontal-1024.webp" alt="">
+        <span class="crop"><i></i><i></i><i></i><i></i></span>
+      </div>
+      <div class="dim">
+        <b></b><s></s><span class="specimen">DRAWN TO MEASURE</span><s></s><b></b>
+      </div>
+    </div>
+
+    <div class="foot">
+      <span class="beat">One piece, drawn for you.</span>
+      <span class="specimen">HEAVEN FURNITURE MART · AGRABAD ACCESS ROAD, CHATTOGRAM</span>
+    </div>
+  </div>
+</body>
+</html>

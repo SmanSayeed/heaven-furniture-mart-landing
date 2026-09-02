@@ -1,8 +1,10 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
-import { ar, hero } from '@/content/copy'
-import { Photo, hasPhoto } from '@/components/ui/Photo'
+import { useCallback, useEffect, useState, useSyncExternalStore } from 'react'
+import { getSwatch, onSwatch } from '@/lib/stage-state'
+import { ar } from '@/content/copy'
+import { PrintPhoto, hasPhoto } from '@/components/ui/Photo'
+import { CropMarks } from '@/components/ui/CropMarks'
 import { ArGlyph } from '@/components/ui/Icons'
 import s from '@/components/sections/sections.module.css'
 
@@ -10,10 +12,22 @@ import s from '@/components/sections/sections.module.css'
    request and one more thing to be blocked inside the Facebook in-app
    browser, which is where most of this page's traffic arrives (PLAN 1.7). */
 const MODEL_VIEWER_SRC = '/vendor/model-viewer-4.3.1.min.js'
-const AR_MODEL = `/models/${hero.pieces[0].id}.glb`
 const AR_POSTER = 'living-02-blue-pair'
 
-type ModelViewerConstructor = { dracoDecoderLocation?: string }
+/**
+ * THE PIECE THE VISITOR PLACES IS THE PIECE THE VISITOR CHOSE.
+ *
+ * Sheet 03 asks them to pick a fabric. Three sheets later this one offers to
+ * put the sofa in their room — and it would quietly undo that whole promise
+ * if the sofa arrived back in the default ivory. So the swatch store picks
+ * the file, and `ar-sofa-<id>.glb` is written at build time by
+ * scripts/export-ar-models.mjs from the SAME generator that draws the hero.
+ *
+ * These have to be real files rather than a blob built in the page, because
+ * Android falls through to Google's Scene Viewer, a separate app that fetches
+ * the model over the network and cannot read a tab's blob: URL.
+ */
+const arModelFor = (swatchId: string) => `/models/ar-sofa-${swatchId}.glb`
 
 type LoadState = 'idle' | 'loading' | 'ready' | 'failed'
 
@@ -30,16 +44,13 @@ function loadModelViewer(): Promise<void> {
     script.onerror = () => reject(new Error('model-viewer failed to load'))
     script.onload = () => resolve()
     document.head.appendChild(script)
+  }).then(() => {
+    /* No decoder configuration any more: the exported pieces are plain glTF
+       geometry, so model-viewer's Draco and KTX2 loaders — both of which
+       default to a Google CDN and both of which are blocked often enough on
+       a locked-down mobile network to matter — are never reached at all. */
+    return customElements.whenDefined('model-viewer').then(() => undefined)
   })
-    .then(() => customElements.whenDefined('model-viewer'))
-    .then((ctor) => {
-      /* Our GLBs are Draco-compressed, and model-viewer's default decoder
-         path is a Google CDN. Point it at the copy already in public/draco
-         (the same decoder the main scene uses) so AR needs no third party
-         either, and so it still works on a locked-down network. */
-      const element = ctor as unknown as ModelViewerConstructor
-      element.dracoDecoderLocation = '/draco/'
-    })
   return loader
 }
 
@@ -61,6 +72,10 @@ function loadModelViewer(): Promise<void> {
  */
 export function ArViewer() {
   const [state, setState] = useState<LoadState>('idle')
+
+  /* the fabric chosen on Sheet 03. Server snapshot is the default swatch, so
+     the markup is identical with and without JavaScript. */
+  const swatch = useSyncExternalStore(onSwatch, getSwatch, getSwatch)
 
   const start = useCallback(() => {
     if (state !== 'idle') return
@@ -87,8 +102,13 @@ export function ArViewer() {
            src/types/model-viewer.d.ts */
         <model-viewer
           className={s.arModel}
-          src={AR_MODEL}
-          alt={ar.alt}
+          /* key on the swatch: changing `src` on a live model-viewer is
+             supported, but re-keying guarantees a clean load rather than
+             relying on it, and the element is only ever mounted after a
+             deliberate press */
+          key={swatch.id}
+          src={arModelFor(swatch.id)}
+          alt={`${ar.alt} ${swatch.name}.`}
           ar
           ar-modes="webxr scene-viewer quick-look"
           /* furniture has to arrive at its real size or the preview lies */
@@ -97,23 +117,63 @@ export function ArViewer() {
           /* same rule as the hero turntable: the page keeps vertical
              gestures, the viewer gets the horizontal ones */
           touch-action="pan-y"
+          /*
+            THE FRAMING IS OURS, NOT THE DEFAULT.
+
+            model-viewer's own default is a head-on elevation at 75 degrees
+            polar, which for a piece two and a half times wider than it is
+            tall renders a grey rectangle — and until the visitor drags it,
+            that rectangle is the entire first impression of the feature.
+            These put it on the same three-quarter view the hero turntable
+            uses, so the two stages agree about what this sofa looks like.
+
+            The min/max clamps are the floor and the plan view: below 20
+            degrees the camera is under the ground plane and the piece is
+            lit from beneath by nothing; above 88 it is a top-down drawing,
+            which Sheet 04 already is.
+
+            THE 84% IS THE WHOLE FIX for the piece arriving as a stamp in
+            the corner of a big empty panel. `auto` radius frames the model's
+            bounding SPHERE inside the vertical field of view — correct for a
+            cube, wasteful for a sofa, which is two and a half times wider
+            than it is tall and therefore leaves most of a landscape frame
+            empty on every side. A percentage is a percentage of that auto
+            radius, so 84% simply walks the camera in until the piece fills
+            the frame the way it does on the hero stage. The min and max keep
+            a visitor's own zoom between "inside the upholstery" and "across
+            the room". An explicit field-of-view used to be here and made it
+            worse, because it fought the same auto framing it depended on.
+          */
+          camera-orbit="32deg 76deg 84%"
+          min-camera-orbit="auto 20deg 55%"
+          max-camera-orbit="auto 88deg 150%"
+          disable-pan
           shadow-intensity="1"
+          shadow-softness="0.8"
           exposure="0.9"
-          environment-image="/hdr/potsdamer_platz_1k.hdr"
+          /* model-viewer's own generated neutral studio, not a file. The
+             1.5 MB HDR this used to point at is gone for the same reason the
+             main scene stopped downloading one: it was a third of the page's
+             weight, fetched over Chattogram mobile data, to light one sofa. */
+          environment-image="neutral"
           loading="eager"
         />
       ) : (
         <>
-          <div className={`${hasPhoto(AR_POSTER) ? '' : 'ph'} ${s.arPoster}`}>
-            <Photo
+          {/* the panel IS a viewfinder, so it wears a viewfinder's marks */}
+          <div
+            className={`${hasPhoto(AR_POSTER) ? '' : 'ph'} panel panel-land ${s.arPoster}`}
+          >
+            <PrintPhoto
               name={AR_POSTER}
               alt=""
-              sizes="(min-width: 900px) 55vw, 92vw"
+              sizes="(min-width: 900px) 46vw, 92vw"
             />
+            <CropMarks />
           </div>
           <button
             type="button"
-            className={`btn ${s.arButton}`}
+            className={`btn btn-lead ${s.arButton}`}
             onClick={start}
             disabled={state === 'loading'}
           >

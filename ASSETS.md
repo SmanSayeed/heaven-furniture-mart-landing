@@ -41,10 +41,12 @@ heaven-mart/public/
 
 | Asset | Source | Tool(s) used | Licence / credit |
 |---|---|---|---|
-| `originals/*.jpg` (10 photos, 1024x1024, collected 2026-09-01) | Heaven Furniture Mart Facebook page (their own marketing posts; carry baked-in logo + campaign text overlays) | pending: Gemini (Nano Banana Pro) overlay removal + upscale | © Heaven Furniture Mart; AI touch-up allowed per brief |
-| `public/models/placeholder-chair.glb` **(TEMPORARY)** | Khronos glTF-Sample-Assets, "Sheen Chair" | `@gltf-transform/cli optimize` (Draco + WebP): 4.13 MB → 570 KB | © 2020 Wayfair LLC, **CC0 1.0 Universal** (public domain). Model by Eric Chadwick. **Must be replaced by the Meshy sofa before submission**; if it ever ships, this row stays and the footer credits it. |
-| `public/hdr/potsdamer_platz_1k.hdr` | Poly Haven, via the `drei` assets mirror (self-hosted to remove the runtime CDN dependency) | none | **CC0** (Poly Haven) |
-| `public/draco/*` | Draco decoder shipped inside `three` (`examples/jsm/libs/draco/gltf/`) | copied, self-hosted | **Apache 2.0**, Google |
+| `originals/*.jpg` (10 photos, 1024x1024, collected 2026-09-01) | Heaven Furniture Mart Facebook page (their own marketing posts; carry baked-in logo + campaign text overlays) | Gemini overlay removal (it CROPPED rather than repainted on most; a keep-framing redo of the top three is in flight) + `npm run crop` + `npm run photos`. **1024 px is the hard ceiling** - Gemini's output cap, and the client has nothing larger, so "upscale to 4K" is a no-op and the srcset now advertises 1024w truthfully. | © Heaven Furniture Mart; AI touch-up allowed per brief |
+| `src/components/three/piece-geometry.ts` **(every 3D piece on the page)** | **written for this project**, generated from real furniture dimensions | none: it is code | **Ours.** No third-party licence, no attribution obligation, and nothing to download. See §3a. |
+| `public/models/ar-sofa-*.glb` (3 files, 174 KB each) | exported from the generator above by `npm run ar-models` | `three`'s `GLTFExporter` under Node type-stripping | **Ours**, same as the generator |
+| ~~`public/models/{sofa-velvet,chair-damask,sofa-leather,placeholder-chair}.glb`~~ **REMOVED 2026-09-02** | were Khronos glTF-Sample-Assets by Eric Chadwick, CC BY 4.0 / CC0 | deleted | The CC-BY attribution obligation is **discharged**: none of these models ship any more, so the footer line no longer credits Eric Chadwick. 1.8 MB of GLB left the page with them. |
+| ~~`public/draco/*`~~ **REMOVED 2026-09-02** | was the Draco decoder from `three` | deleted | 752 KB. Nothing is Draco-compressed any more: the drawn pieces are built in the browser and the AR exports are plain glTF. |
+| ~~`public/hdr/potsdamer_platz_1k.hdr`~~ **REMOVED 2026-09-02** | was Poly Haven via the `drei` mirror | replaced by `three`'s `RoomEnvironment`, generated in-process | n/a. It was 1.5 MB, a third of the page's weight, downloaded by every visitor on Chattogram mobile data to be sampled at 0.3 intensity. The procedural studio does the same job for zero bytes and no network dependency. `model-viewer` likewise uses its own `neutral` environment. |
 | Fonts: Fraunces, Archivo, IBM Plex Mono | Google Fonts, self-hosted by `next/font` | none | **SIL Open Font License 1.1** |
 | Icons (7 glyphs, inlined SVG) | Phosphor Icons | hand-inlined, only the glyphs used | **MIT** |
 
@@ -70,25 +72,62 @@ heaven-mart/public/
 **TEMPORARY.** These are stand-ins so the hero is a real, spinnable 3D object today.
 They must be replaced by Meshy scans of Heaven's own pieces before submission
 (`SAADMAN-TASKS.md` Task 6). Nothing but the filename has to change: `copy.ts`
-`hero.pieces[].id` is the join between the caption and `public/models/<id>.glb`.
+`hero.pieces[].kind` is the join between the caption and a shape in
+`src/components/three/piece-geometry.ts`. There is no file to join to any more.
 
-| File | Source | Licence | Credit | Size |
-|---|---|---|---|---|
-| `public/models/sofa-velvet.glb` | Khronos glTF-Sample-Assets `GlamVelvetSofa` | **CC-BY-4.0** | Eric Chadwick, © 2021 Wayfair, LLC | 411 KB |
-| `public/models/chair-damask.glb` | Khronos glTF-Sample-Assets `ChairDamaskPurplegold` | **CC-BY-4.0** | Eric Chadwick, © 2021 Wayfair | 363 KB |
-| `public/models/sofa-leather.glb` | Khronos glTF-Sample-Assets `SheenWoodLeatherSofa` | **CC-BY-4.0** (improvements) + CC0-1.0 (original) | Eric Chadwick, © 2024 Darmstadt Graphics Group GmbH; original Fran Calvente, public domain | 1.04 MB |
+### 3a. Why the pieces are drawn instead of downloaded (2026-09-02)
 
-CC-BY-4.0 **requires attribution**, which is why the footer carries
-"3D placeholder models by Eric Chadwick, CC BY 4.0." That line is not decoration:
-removing it while these models ship would breach the licence. When the Meshy
-models land, swap the models AND the line together.
+The turntable used to run on three Khronos glTF sample assets. They are
+beautiful, free and correctly licensed, and they were the wrong choice for a
+competition entry, for one reason that no amount of polish fixes: **a
+competing entry in this same hackathon shipped the identical blue
+`GlamVelvetSofa`.** It is the most-used free 3D sofa on the internet. A hero
+object somebody else can also have is not a hero object.
 
-Optimised with:
+Swapping in a different free asset would only have moved the collision. So
+every piece is now generated from a parametric design language written for
+this project — see the header comment in `piece-geometry.ts` for the design
+rules. What that bought, beyond uniqueness:
 
-```
-npx @gltf-transform/cli optimize <in>.glb <out>.glb \
-  --compress draco --texture-compress webp --texture-size 1024 --simplify false
-```
+| | before | after |
+|---|---|---|
+| 3D payload | 1.8 MB GLB + 752 KB Draco decoder | **0 bytes** |
+| time to first piece | a download, a WASM decode, a Suspense boundary | ~1 ms, on the frame it is asked for |
+| licence obligations | CC-BY attribution in the footer, permanently | none |
+| dimension lines | whatever a scan happened to measure | **real furniture dimensions** (2100 mm is a width a workshop could cut to) |
+| fabric swatch | Sheet 04 only, tinting an authored material | authored by us, so the hero and AR carry it too |
 
-`--simplify false` on purpose: decimation on upholstery produced visible faceting
-on the arms. Draco plus WebP textures already gets each piece under budget.
+The pieces stay *placeholders in intent*: they are drawings of the kind of
+piece Heaven makes, captioned at category level, never named as a specific
+product. A Meshy scan of a real Heaven piece is still the goal, and dropping
+one in is adding a url beside a `kind` — no copy and no layout changes.
+
+### 3b. The AR exports
+
+`npm run ar-models` runs the SAME generator through `three`'s `GLTFExporter`
+under Node's type stripping, and writes one 174 KB GLB per fabric into
+`public/models/`. Re-run it after any change to `piece-geometry.ts` or to
+`bespoke.swatches`, and commit the result.
+
+Three things that are easy to get wrong here and are already handled:
+
+* **They must be real files, not a Blob built in the page.** Android falls
+  through to Google's Scene Viewer, a separate app that fetches the model over
+  the network; it cannot read a browser tab's `blob:` URL. WebXR would have
+  worked and Scene Viewer would have failed silently.
+* **One file per swatch**, because the visitor picks a fabric on Sheet 04 and
+  presses "see it in your room" on Sheet 07. Arriving there to find the sofa
+  back in ivory would undo the page's one promise.
+* **Node has no `FileReader`**, which `GLTFExporter` uses to read its assembled
+  Blob. The script shims it in nine lines from `Blob.arrayBuffer()`. Nothing
+  about that shim reaches a browser.
+
+Geometry is welded before export (`mergeVertices` in `roundedBox`): unwelded,
+the same sofa exported at 804 KB. Nothing is Draco-compressed - a 174 KB plain
+glTF beats 40 KB plus a 200 KB WASM decoder fetched over Chattogram mobile
+data, and it keeps `model-viewer` off Google's CDN entirely.
+
+**Still missing: USDZ.** Without it iPhones get a 3D viewer they can turn but
+cannot place in a room, and `ar.support` says exactly that rather than offering
+a dead button. `GLTFExporter` cannot produce USDZ; the options are Meshy's own
+USDZ export (Task D) or Apple's Reality Converter on a Mac.

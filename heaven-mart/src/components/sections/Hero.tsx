@@ -3,6 +3,8 @@ import { Cta } from '@/components/ui/Cta'
 import { ArHook } from '@/components/ui/ArHook'
 import { Turntable } from '@/components/ui/Turntable'
 import { Photo, hasPhoto } from '@/components/ui/Photo'
+import { SheetBlock, BeatCaption } from '@/components/ui/SheetBlock'
+import { FloodBeam } from '@/components/ui/FloodBeam'
 import { heroBlurDataUrl } from '@/content/hero-blur.generated'
 import s from './sections.module.css'
 
@@ -14,18 +16,18 @@ import s from './sections.module.css'
 const HERO_PHOTO = 'hero-backdrop'
 
 /**
- * S1 "The Turntable" (PLAN S1b, revised). Four layers, all server-rendered,
- * complete with JavaScript disabled:
- *   0 the room  - full-bleed photograph + ink scrim (this is the LCP element)
- *   1 the piece - the plinth the 3D furniture stands and spins on
- *   2 the type  - eyebrow, statement, tagline, the single CTA
- *   3 the hook  - the AR invitation pill
+ * SHEET 01 · "THE WINDOW" — the first beat of the story (BLUEPRINT SS0.5).
  *
- * The earlier version framed the 3D in a bordered "vitrine" panel. It read as
- * a broken image for as long as the model took to arrive, and on desktop the
- * statement overlapped it; both are gone. The piece now stands in light, and
- * the layout is a real two-column grid from 900px so nothing can overlap at
- * any width.
+ * A piece waits, lit, inside a drawn A-LAND panel on columns 4-6, with the
+ * brand's own words on columns 1-3. Six layers, all server-rendered, all
+ * complete with JavaScript disabled:
+ *
+ *   L0 ground   - the defocused room photograph + ink scrim (the LCP element)
+ *   L1 grid     - the drawn column lines (data-grid)
+ *   L2 type     - eyebrow, statement, tagline, the single CTA
+ *   L3 panel    - the A-LAND stage the piece stands in
+ *   L4 object   - the 3D piece (arrives later, into a finished composition)
+ *   L5 notes    - dimension line, crop marks, title block, beat caption
  *
  * PageMotion adds the scroll choreography (the hold, the piece changes, the
  * exit); every initial state it needs is set from JS, so this markup is the
@@ -33,8 +35,8 @@ const HERO_PHOTO = 'hero-backdrop'
  */
 export function Hero() {
   return (
-    <header className={`dark ${s.hero}`} data-accent="#C8A96A" data-grid>
-      {/* ---- layer 0: the room ---- */}
+    <header id="sheet-01" className={`dark sheet-grid ${s.hero}`} data-grid>
+      {/* ---- L0: the room ---- */}
       <div className={s.heroPhotoWrap} aria-hidden="true" data-hero-photo>
         {hasPhoto(HERO_PHOTO) ? (
           <Photo name={HERO_PHOTO} alt="" priority sizes="100vw" className={s.heroPhoto} />
@@ -50,11 +52,14 @@ export function Hero() {
         )}
       </div>
       {/* the scrim carries text contrast: opaque at the top, clearing at the
-          bottom so the vitrine's glow reads against the room */}
+          bottom so the stage's glow reads against the room */}
       <div className={s.heroScrim} aria-hidden="true" data-hero-scrim />
 
-      {/* ---- layer 2 (chrome): wordmark. The Index nav mounts over this. ---- */}
-      <div className={s.heroTop}>
+      {/* ---- L1: the light. One shaft, top left, 45 degrees. ---- */}
+      <FloodBeam />
+
+      {/* ---- L6 chrome: wordmark [1-2]. The Index nav mounts over this. ---- */}
+      <div className={s.heroTop} data-col="1-2">
         {/* the stylized "HE(triangle)VEN" letters are aria-hidden and the
             real name lives in an sr-only span: an aria-label that differs
             from the visible letters fails label-content-name-mismatch */}
@@ -65,51 +70,60 @@ export function Hero() {
             <span className={s.wordmarkSub}>FURNITURE MART</span>
           </span>
         </a>
-        {/* No location chip here. The Index nav pill is fixed to this corner
-            and the two collided; the location already appears in the eyebrow,
-            the hero specimen row, the showroom section and the footer. */}
       </div>
 
-      {/* ---- layer 1: the turntable ----
-          The piece itself, grabbable and spinnable, changing as the hero is
-          scrolled. Not a framed panel: an object standing in light. */}
-      <Turntable />
-
-      {/* ---- layer 2: the type ---- */}
-      <div className={s.heroMain}>
+      {/* ---- L2: the type, columns 1-3 ----
+          Split from the actions on purpose. On a phone the reading order the
+          blueprint asks for is promise, then piece, then act: the visitor
+          meets the brand's sentence, meets the object it is about, and only
+          then is asked for anything. Two blocks are what let the stage sit
+          BETWEEN them at three columns and beside them at six. */}
+      <div className={s.heroMain} data-col="1-3">
         <p className="specimen" data-hero-fade>
           {/* one line at 390px, full category line from 480px up */}
           <span className="only-narrow">{hero.eyebrowShort}</span>
           <span className="only-wide">{hero.eyebrow}</span>
         </p>
-        {/* one gradient keyword max per statement (globals.css .grad-word) */}
+        {/* one lit keyword max per statement (globals.css .grad-word) */}
         <h1 className="statement" data-hero-statement>
           Furniture, <span className="grad-word">Crafted</span> Around You.
         </h1>
-        {/* the golden thread's start: a short brass rule PageMotion draws
+        {/* the plot line's start: a short filament rule PageMotion draws
             left-to-right once the headline lands. Static (fully drawn) no-JS. */}
         <span className={s.heroRule} aria-hidden="true" data-hero-rule />
         <p className={s.heroSub} data-hero-fade>{hero.sub}</p>
+      </div>
+
+      {/* ---- L3/L4/L5: the stage panel, columns 4-6 ---- */}
+      <Turntable />
+
+      {/* ---- the one action, and the one invitation ---- */}
+      <div className={s.heroActions} data-col="1-3">
         <div className={s.heroCtaRow} data-hero-fade>
           <Cta label={hero.cta} shortLabel={hero.ctaShort} />
         </div>
-        {/* ---- layer 3: the AR hook ---- */}
         <div data-hero-fade>
           <ArHook />
         </div>
       </div>
 
-      <div className={s.heroBottom}>
+      {/* ---- the foot of the sheet ---- */}
+      <div className={s.heroBottom} data-col="1-4">
         <span className={s.scrollHint}>
           <span className="tri" aria-hidden="true" />
           <span className="specimen">SCROLL</span>
         </span>
+        {/* the story opens here, in the human voice, beside the cue that
+            asks the visitor to begin it */}
+        <BeatCaption no="01" />
         <div className={`specimen-row ${s.heroSpecimens}`}>
           {hero.specimens.map((sp) => (
             <span key={sp} className="specimen">{sp}</span>
           ))}
         </div>
       </div>
+
+      <SheetBlock no="01" />
     </header>
   )
 }

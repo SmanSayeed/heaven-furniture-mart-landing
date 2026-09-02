@@ -6,17 +6,19 @@ import { Collections } from '@/components/sections/Collections'
 import { Showroom } from '@/components/sections/Showroom'
 import { Ar } from '@/components/sections/Ar'
 import { Proof } from '@/components/sections/Proof'
+import { Team } from '@/components/sections/Team'
 import { Footer } from '@/components/sections/Footer'
 import { StickyCta } from '@/components/ui/StickyCta'
 import { PageMotion } from '@/components/motion/PageMotion'
 import { StageLoader } from '@/components/three/StageLoader'
 import { IndexNav } from '@/components/ui/IndexNav'
+import { SocialDock } from '@/components/ui/SocialDock'
 
 /**
  * The whole page, as a Server Component. This file is deliberately boring:
- * eight sections in narrative order (PLAN.md Part 2), fully readable and
- * convertible with JavaScript disabled. Motion and 3D are layered on top in
- * later sprints without touching this structure.
+ * nine sheets in narrative order (copy.ts `story`), fully readable and
+ * convertible with JavaScript disabled. Motion and 3D are layered on top
+ * without touching this structure.
  */
 /* Structured data so Google understands this as a real local furniture store
    (SEO beyond Lighthouse: rich results, local pack eligibility). */
@@ -47,14 +49,22 @@ export default function Page() {
       />
       <Hero />
       <Brand />
+      {/* SHEET 03, and it used to be seventh. "Who is behind this" is a
+          bespoke buyer's second question, not their seventh, and answering it
+          here is what lets everything after it be read as a promise someone
+          in particular is making. */}
+      <Proof />
       <Ticker />
       <Bespoke />
       <Collections />
       <Showroom />
       <Ar />
-      <Proof />
+      {/* SHEET 08: the people, immediately before the ask. Renders nothing
+          until the team photograph exists — see Team.tsx. */}
+      <Team />
       <Footer />
       <StickyCta />
+      <SocialDock />
       {/* the page's only chrome: renders after hydration only, so the no-JS
           path is the Footer's plain category list (PLAN S1d) */}
       <IndexNav />

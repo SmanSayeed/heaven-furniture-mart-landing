@@ -24,61 +24,77 @@
 
 ---
 
-## TASK 1 · WhatsApp group (~5 min) — **DO FIRST: the deadline caps everything**
+## TASK 1 · WhatsApp group — **DONE 2026-09-02**, answers recorded
 
-Join: https://chat.whatsapp.com/FTk1VXPtsG8J3yJSiTHmZy — paste (Bangla is fine there):
+All six questions are answered; do not re-ask. Full detail in PROGRESS.md.
 
-```
-আসসালামু আলাইকুম! Heaven Furniture Mart-এর ল্যান্ডিং পেজ নিয়ে কয়েকটা প্রশ্ন:
-1. Submission-এর exact deadline কবে, কয়টায়?
-2. কী কী জমা দিতে হবে - GitHub repo link, live URL, নাকি শুধু video?
-3. Agrabad showroom-এর ভিতরের ১-২ মিনিটের ধীরগতির walkthrough video কি পাওয়া যাবে?
-4. Facebook/Instagram-এর চেয়ে ভালো resolution-এর product ছবি কি শেয়ার করা সম্ভব?
-5. Official logo file (transparent PNG বা SVG) কি দেওয়া যাবে?
-6. Managing Director স্যারের হাতের signature-এর একটা ছবি কি পাওয়া সম্ভব? ওনার quote-এর নিচে ব্যবহার করতে চাই।
-```
+| # | Question | Answer |
+|---|---|---|
+| 1 | Deadline | **2-3 days** (target ship 2026-09-04). Exact clock time never given. |
+| 2 | Submission | **Live URL** + video posted publicly on **Facebook or LinkedIn** + fill the organizer's form with that post link. |
+| 3 | Showroom walkthrough video | **None exists**, and a showroom visit is not possible. Sheet 05 ships stills-only (slow Ken Burns pan on a real photo). |
+| 4 | Higher-resolution photos | **No.** The ten Facebook originals are everything we get. |
+| 5 | Official logo file | **Yes, available** — still to be collected into `assets-raw/logo/`. |
+| 6 | MD's signature image | **No.** |
 
-Record every answer (especially the deadline) and report back so PROGRESS.md is updated.
-(The signature matters: the page's Sheet 07 is literally titled "The man who signs it.")
+**Consequence for Sheet 07 ("The man who signs it"):** there is no signature and we will not
+fabricate one. DECISION (Saadman, 2026-09-02): keep the sheet, drop the signature. The MD's
+quote and portrait carry it, closed by a typeset attribution set as a technical-drawing title
+block (`ABUL KALAM BHUIYAN / MANAGING DIRECTOR / EST. 2020`). The sheet title must be renamed
+so it no longer promises a signature.
 
-## TASK 2 · Gemini: clean ALL 10 photos (~25 min)
+## TASK 2 · Gemini photo cleans — **RUN ONCE, RESULT MEASURED, NEEDS A TARGETED REDO**
 
-Tool: gemini.google.com, image mode (paid plan → Nano Banana Pro quality).
-Every collected photo is a Facebook ad graphic (logo + "CRAFTED for LUXURY LIVING" +
-address bar burned in). The build currently uses auto-CROPPED versions; a Gemini clean
-of the FULL frame is better (more image survives). One photo at a time:
+**What actually happened (2026-09-02).** Saadman ran the v1 prompt on all ten photos. The
+overlays are gone and the furniture survived intact, but two prompt assumptions were WRONG
+and are now measured facts:
 
-1. Attach the file from `assets-raw/photos/originals/`.
-2. Prompt (adjust only the furniture words in the middle sentence per photo):
+1. **"Upscale to 4K" does nothing.** Every one of the ten came back at **1024 px wide**.
+   Gemini's image output caps there. **1024 px is our hard source ceiling** — the design and
+   the `WIDTHS = [480, 960, 1600]` pipeline must be built knowing the 1600 tier is an
+   enlargement, not real detail. Delete this sentence from the prompt; it only wastes a retry.
+2. **Gemini removed the text by CROPPING, not by repainting.** Originals are 1024x1024;
+   nine of the ten graded files came back **1024x625** — it zoomed in until the overlay fell
+   outside the frame. `living-01-beige-set` lost the wall panelling, the chandelier, the
+   flower vase, the framed painting and the top edge of the sofa. That is the room context,
+   and the room context IS the "luxury interior studio" the brief scores first.
+   Only `hero-sofa-01-frontal` survived at a true 1:1 and it is excellent — accepted.
 
-```
-Remove all overlaid text, the logo graphic, and the address bar from this
-photo. Reconstruct the background naturally where they were. Do not change
-the [sofa and its carved golden frame], fabric, colors, or proportions in
-any way. Keep the room exactly as it is. Upscale to 4K with clean sharp
-detail. The result must look like an original untouched photograph.
-```
-
-3. Quality gates (retry if ANY fails): carving pattern IDENTICAL · cushion count
-   unchanged · **colours unchanged** (the site depends on true colours) · no smudges
-   where text was.
-4. Save to `assets-raw/photos/graded/` with the SAME filename. Files:
+**The fix is one added sentence.** Use this prompt, not the v1 one:
 
 ```
-hero-sofa-01-frontal.jpg   living-01-beige-set.jpg   living-02-blue-pair.jpg
-living-03-wood-set.jpg     bedroom-01-royal-bed.jpg  dining-01-cream.jpg
-dining-02-peach.jpg        office-storage-01-black-cabinet.jpg
-bespoke-chairs-01.jpg      detail-01-blue-sofa.jpg
+Remove all overlaid text, the logo graphic and the address bar from this
+photo. KEEP THE ORIGINAL SQUARE 1:1 FRAMING EXACTLY - do not crop, do not
+zoom in, do not reframe. Reconstruct the wall, ceiling and floor naturally
+in the areas where the text and logo used to be, matching the existing
+room. Do not change the [sofa and its carved golden frame], its fabric,
+colors or proportions. Keep the whole room visible exactly as in the input.
 ```
 
-Then tell the main session: it runs `npm run photos` and every slot upgrades.
-Priority order if short on time: `hero-sofa-01-frontal`, `living-03-wood-set`,
-`living-02-blue-pair` (these carry Sheets 01/02/05 — the two "loadshedding light"
-moments), then the five collection-card photos.
+**Scope (Saadman's decision, 2026-09-02): redo the TOP 3 ONLY, then reassess.**
+```
+living-03-wood-set.jpg    living-02-blue-pair.jpg    bedroom-01-royal-bed.jpg
+```
+These three carry the sheets where a photo is shown large. Roughly 7 minutes. If the output
+comes back a true 1024x1024 with the room intact, do the remaining six the same way; if
+Gemini crops again despite the instruction, stop and ship the cropped versions — they are
+clean and usable, just tighter.
+
+**Quality gates (retry if ANY fails):** output is **1024x1024, not cropped** · carving pattern
+IDENTICAL · cushion count unchanged · **colours unchanged** (the page is monochrome; the photos
+carry ALL of its colour) · no smudges where the text used to be.
+
+Save into `assets-raw/photos/graded/` under the SAME filename. Then tell the main session so it
+runs `npm run photos`. `hero-sofa-01-frontal` is DONE — do not touch it again.
+
+**Housekeeping:** `graded/old-hero-sofa-01-frontal.jpg` is a stray earlier attempt. The pipeline
+keys on the filename, so it currently registers as an eleventh photo. Delete it (asked).
+`graded/hero-sofa-01-frontal.jpeg` keeping the `.jpeg` extension is fine — `key()` in
+`optimize-photos.mjs` strips the extension, so no rename is needed.
 
 ## TASK 3 · Gemini: 4 views of the hero sofa for Meshy (~10 min)
 
-Attach the CLEANED `hero-sofa-01-frontal.jpg` from Task 2. Run 4 times, changing only
+Attach the CLEANED `assets-raw/photos/graded/hero-sofa-01-frontal.jpeg` (verified good). Run 4 times, changing only
 the bracketed words:
 
 ```
@@ -128,18 +144,18 @@ From facebook.com/HeavenFurnitureMart albums, max size, into
 - blue bed with gold throw → `bedroom-02-blue-gold.jpg`
 - MD Abul Kalam Bhuiyan's portrait, largest → `assets-raw/photos/people/md-portrait.jpg`
 - team group photo → `assets-raw/photos/people/team-01.jpg`
-  (Sheet 07: the portrait sits grayscale next to his quote and colours on touch — it
-  needs a clean, front-facing file. Clean overlays with the Task 2 prompt if present.)
+  (Sheet 07: the portrait sits grayscale next to his quote and colours on touch - it needs a
+  clean, front-facing file. Clean overlays with the Task 2 prompt if present. There is NO
+  signature to sit under it; a typeset title block closes the sheet instead.)
 - logo, largest (profile picture) → `assets-raw/logo/logo.png`
-- any showroom walkthrough VIDEO (download or URL) → `assets-raw/video/`
+- (REMOVED: there is no walkthrough video on the page and none is coming - see Task 1 answer 3)
 
-## TASK 6 · Showroom video (~15 min, if the group/page has none)
+## TASK 6 · Showroom video — **CANCELLED** (Saadman, 2026-09-02)
 
-If Task 1's group provides a video, done. Otherwise, if a showroom visit is possible:
-phone HORIZONTAL, walk SLOWLY (half normal walking speed), one continuous 40–60s pass
-down the main aisle, no talking, lights on, avoid windows behind you. Save to
-`assets-raw/video/showroom-walk.mp4`. This becomes Sheet 05's living background
-(the build compresses it; do not edit or add music).
+No walkthrough video exists and a showroom visit is not possible inside the 2-3 day window.
+Sheet 05 ships stills-only: a slow Ken Burns pan over the widest real showroom photograph,
+which is exactly the kind of restrained motion the design already calls for. Nothing here is
+blocked; do not keep this task open.
 
 ## TASK 7 · Phone check (2 min, whenever asked)
 

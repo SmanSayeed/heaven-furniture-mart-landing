@@ -89,9 +89,17 @@ export function SmoothScroll({ children }: { children: React.ReactNode }) {
       the page scrolls normally. ScrollTrigger is switched back to listening to
       the real scroll event, so the section animations survive too.
 
-      It cannot misfire: the check only runs after a real wheel event on a
-      document that is actually taller than the viewport, and any movement at
-      all (Lenis animates within a frame or two) clears it.
+      It must not misfire, and the first version DID. "The document is taller
+      than the viewport" is not the same as "this gesture can move the page":
+      at the very bottom, scrolling down moves nothing, and so does scrolling
+      up at the very top. A visitor who reaches the footer and keeps scrolling
+      - one of the most ordinary gestures there is - therefore tripped the
+      watchdog, lost smooth scrolling for the rest of the session and got the
+      level-2 manual handler installed on a page that was working perfectly.
+      Reproduced by driving 200 wheel events into the footer.
+      So the guard is now DIRECTIONAL: the check only arms when there is
+      actually room to move the way the visitor asked. Any movement at all
+      (Lenis animates within a frame or two) still clears it.
 
       Two levels, because destroying our own instance is not always enough.
       The failure seen in development is a ZOMBIE: a hot reload (or any future
@@ -125,9 +133,18 @@ export function SmoothScroll({ children }: { children: React.ReactNode }) {
       window.addEventListener('wheel', manualWheel)
     }
 
+    /* Is there room to move the way this gesture asked? A 1px tolerance
+       covers fractional scroll positions, which Lenis produces constantly. */
+    const canMove = (deltaY: number) => {
+      const max = document.documentElement.scrollHeight - window.innerHeight
+      if (max <= 1) return false
+      return deltaY > 0 ? window.scrollY < max - 1 : window.scrollY > 1
+    }
+
     const onWheel = (event: WheelEvent) => {
       if (pending !== undefined || event.deltaY === 0) return
-      if (document.documentElement.scrollHeight <= window.innerHeight + 1) return
+      /* at an edge, "no movement" is the correct outcome, not a failure */
+      if (!canMove(event.deltaY)) return
       const startY = window.scrollY
       const wasDead = fallenBack
       pending = window.setTimeout(() => {

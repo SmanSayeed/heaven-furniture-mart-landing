@@ -27,6 +27,7 @@
  * been beheaded. Values were set by inspecting the output, not guessed.
  */
 import { readdir, mkdir } from 'node:fs/promises'
+import { existsSync } from 'node:fs'
 import { join, parse } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import sharp from 'sharp'
@@ -70,6 +71,14 @@ async function main() {
 
   for (const file of files) {
     const { name } = parse(file)
+    /* A real (Gemini-cleaned) graded file beats this crop, whatever its
+       extension. Without this guard a re-run would write <name>.jpg next to
+       a cleaned <name>.jpeg, and optimize-photos keys on the extensionless
+       name, so the crop would silently win. Never overwrite a clean. */
+    if (['.jpg', '.jpeg', '.png', '.webp'].some((ext) => ext !== parse(file).ext.toLowerCase() && existsSync(join(OUT, name + ext)))) {
+      console.log(`  KEEP  ${name}: a cleaned graded file already exists, crop skipped`)
+      continue
+    }
     const { top, bottom } = CROPS[name] ?? DEFAULT_CROP
     const image = sharp(join(SRC, file), { failOn: 'error' })
     const meta = await image.metadata()

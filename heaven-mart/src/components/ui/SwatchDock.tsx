@@ -1,9 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import gsap from 'gsap'
 import { setSwatch, type SwatchChoice } from '@/lib/stage-state'
-import { prefersReducedMotion } from '@/lib/device'
 import { whatsappUrlWithSwatch } from '@/lib/whatsapp'
 import s from '@/components/sections/sections.module.css'
 
@@ -27,13 +25,10 @@ export function SwatchDock({ swatches }: { swatches: readonly SwatchChoice[] }) 
   const choose = (sw: SwatchChoice) => {
     setActiveId(sw.id)
     setSwatch(sw)
-    gsap.to(document.documentElement, {
-      '--accent': sw.accent,
-      /* reduced motion: apply instantly, never animate */
-      duration: prefersReducedMotion() ? 0 : 0.6,
-      ease: 'power2.out',
-      overwrite: 'auto',
-    })
+    /* SS2.8: the fabric recolours the FABRIC (the 3D piece, via setSwatch)
+       and nothing else. The old accent tween that repainted the page's UI
+       in the swatch colour is dead: the page is monochrome; the material
+       is the only thing that changes colour. */
     /* only the bespoke CTA carries the fabric; hero/footer/sticky keep the
        generic message (they sit outside the customization story) */
     const cta = document.querySelector<HTMLAnchorElement>('[data-bespoke-cta] a')
@@ -46,7 +41,9 @@ export function SwatchDock({ swatches }: { swatches: readonly SwatchChoice[] }) 
         <button
           key={sw.id}
           type="button"
-          className={s.swatch}
+          /* the same button object as every other control, at chip size:
+             one ring, one pool of light under it (globals .btn) */
+          className={`btn btn-sm ${s.swatch}`}
           aria-pressed={activeId === sw.id}
           onClick={() => choose(sw)}
         >

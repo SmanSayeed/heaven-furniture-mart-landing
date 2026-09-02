@@ -86,23 +86,39 @@ export function StageLoader() {
     }
     const cleanup = () => {
       events.forEach((ev) => window.removeEventListener(ev, start))
-      cancelIdle(idle)
+      window.clearTimeout(delayed)
+      if (idle) cancelIdle(idle)
     }
     events.forEach((ev) => window.addEventListener(ev, start, { passive: true }))
 
     /*
-      ...AND an idle backstop, which interaction-only mounting did not have.
+      ...AND a backstop, which interaction-only mounting did not have.
 
-      The hero's subject is now the 3D piece itself (PLAN S1b revised), so
-      "nothing until the visitor gestures" is no longer an acceptable resting
-      state: someone who lands, reads, and scrolls with the keyboard would see
-      the plinth stay empty. requestIdleCallback keeps the old property that
-      mattered, which is that this never competes with first paint or LCP: it
-      runs only once the main thread has actually gone quiet, and the timeout
-      is the ceiling, not the schedule. A gesture still wins the race whenever
-      one arrives first, which on a real visit is nearly always.
+      The hero's subject is the 3D piece itself, so "nothing until the visitor
+      gestures" is not an acceptable resting state: someone who lands, reads,
+      and scrolls with the keyboard would watch the plinth stay empty.
+
+      THE TIMER IS NOT DECORATION - READ BEFORE REMOVING IT. This used to be
+      `requestIdleCallback(start, { timeout: 2500 })` alone, on the belief
+      that idle "never competes with first paint or LCP". That belief is
+      wrong. requestIdleCallback fires at the FIRST quiet moment, and the
+      first quiet moment on this page is about a second in, right after first
+      paint - the timeout is a deadline, not a delay. So the "backstop" was in
+      practice an immediate load, and three.js was being parsed (8s of
+      scripting on a throttled mid-range Android) directly on top of the
+      headline the visitor is trying to read. Measured: total blocking time
+      7.6s with it, 1.1s without.
+
+      So: a real wall-clock delay FIRST, and only then wait for quiet. The
+      page gets its own two and a half seconds to paint, settle and become
+      readable; the piece arrives into a finished page rather than fighting
+      it. A gesture still wins the race instantly, which on a real visit is
+      nearly always what happens.
     */
-    const idle = requestIdle(start, 2500)
+    let idle = 0
+    const delayed = window.setTimeout(() => {
+      idle = requestIdle(start, 3000)
+    }, 2500)
     return cleanup
   }, [])
 

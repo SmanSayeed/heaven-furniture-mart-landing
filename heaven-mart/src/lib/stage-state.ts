@@ -23,6 +23,28 @@ export type SwatchChoice = {
    0..1 across the whole pinned S3 sequence. */
 export const stageState = {
   bespokeProgress: 0,
+  /*
+    THE ARRIVAL, and it is separate from the progress above on purpose.
+
+    Sheet 04's whole story is scrubbed: the blueprint, the sweep, the fabric
+    are all a pure function of bespokeProgress, which is exactly what a
+    scroll-told story should be. What that could not do was ANSWER THE
+    VISITOR AT THE MOMENT THEY ARRIVE. The section pins at 'top top', so
+    progress is 0 for the entire time it takes to settle, and scrub adds a
+    second of lag on top; someone who scrolled quickly through four sheets
+    got a near-empty panel and, reasonably, read it as broken.
+
+    So arrival is its own number, tweened 0 -> 1 by a one-shot trigger that
+    fires BEFORE the pin (at 'top 85%'), and multiplied into the blueprint's
+    opacity and the piece's rise. The drawing now draws itself the instant
+    the sheet comes into view, whatever the scroll is doing. Scrub owns the
+    story; this owns the greeting.
+
+    Starts at 1 so that anything which never runs the motion layer — no JS,
+    reduced motion, a thrown tween — sees a fully present piece rather than
+    an invisible one. Same inversion law as the CSS.
+  */
+  bespokeArrival: 1,
   /* 0..1 across the hero's pinned exit: the piece yaws and recedes on the
      turntable as the ivory curtain rises (PLAN S1b choreography) */
   heroProgress: 0,
@@ -34,6 +56,20 @@ export const stageState = {
      that through a re-render would drop frames for no benefit. */
   heroSpin: 0,
   heroSpinVelocity: 0,
+  /*
+    THE SECOND AXIS.
+
+    heroSpin turns the PIECE about y. This one moves the CAMERA up and down,
+    and the distinction is the whole reason it is a separate number rather
+    than a second rotation on the same group: tipping a sofa about its own x
+    axis lays it on its back, which is not what "look at it from above"
+    means. A turntable has one rotating thing and one orbiting thing.
+
+    Radians from the horizon, positive looking down. Clamped in StageCamera,
+    not here, because the clamp is a framing decision and framing belongs to
+    the camera — the floor plane is what it must never go under.
+  */
+  heroTilt: 0,
   /* true while a pointer is actually held down on the stage: the idle sway
      and the auto-turn both yield to a visitor's hand */
   heroGrabbed: false,
@@ -110,6 +146,42 @@ export function onStageReady(listener: (ready: boolean) => void): () => void {
   readyListeners.add(listener)
   return () => {
     readyListeners.delete(listener)
+  }
+}
+
+/* ---- the piece's REAL size (BLUEPRINT SS5.2) ----
+   The dimension lines drawn around a stage are not decoration and they are
+   not made up: they are the model's own bounding box in millimetres, read
+   off the GLB at load and published here. Placeholder pieces show THEIR true
+   size; the day a Meshy scan of a Heaven sofa replaces one, the numbers on
+   screen change by themselves, because nothing about them was ever typed.
+   null = nothing measured yet, and the annotation must then not exist: a
+   drawn dimension with no model behind it would be the page telling a lie. */
+export type PieceSize = { w: number; h: number; d: number }
+/** the two stages that can hold a measurable object */
+export type StageKey = 'hero' | 'bespoke'
+
+const pieceSizes: Record<StageKey, PieceSize | null> = { hero: null, bespoke: null }
+const sizeListeners = new Set<(key: StageKey) => void>()
+
+export function getPieceSize(key: StageKey): PieceSize | null {
+  return pieceSizes[key]
+}
+
+export function setPieceSize(key: StageKey, next: PieceSize | null): void {
+  const prev = pieceSizes[key]
+  if (prev === next) return
+  if (prev && next && prev.w === next.w && prev.h === next.h && prev.d === next.d) return
+  pieceSizes[key] = next
+  sizeListeners.forEach((l) => l(key))
+}
+
+/** subscribe to every stage; the listener filters by key. One listener set
+    keeps this a two-line store instead of a registry of stores. */
+export function onPieceSize(listener: (key: StageKey) => void): () => void {
+  sizeListeners.add(listener)
+  return () => {
+    sizeListeners.delete(listener)
   }
 }
 

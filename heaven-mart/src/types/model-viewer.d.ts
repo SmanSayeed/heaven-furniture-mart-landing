@@ -25,6 +25,17 @@ interface ModelViewerAttributes
   exposure?: string
   'environment-image'?: string
   loading?: 'auto' | 'lazy' | 'eager'
+  /** azimuth, polar, radius — the framing the piece ARRIVES in. Left to its
+      own devices model-viewer picks a head-on elevation, which flattens a
+      sofa into a rectangle; these three put it on the same three-quarter
+      view as the hero turntable so the two stages agree. */
+  'camera-orbit'?: string
+  'min-camera-orbit'?: string
+  'max-camera-orbit'?: string
+  'field-of-view'?: string
+  /** dragging should orbit, never slide the piece out of frame */
+  'disable-pan'?: boolean
+  'shadow-softness'?: string
 }
 
 /* React 19 removed the global JSX namespace; the intrinsic element list now
