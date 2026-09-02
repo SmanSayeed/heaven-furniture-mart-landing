@@ -643,3 +643,20 @@ arrows measured 40px and were raised) · zero console errors.
   start on a button/link now skip the drag. Dock container was hit-testable across its
   invisible folded-fan column and sat over the next arrow on desktop — pointer-events none
   on the container, auto on trigger/open links. Both verified by driving the page.
+
+## PLANNED NEXT (client-approved direction, not yet built): "THE PAIR" hero
+Goal: the real photograph in the hero must be BIG - the 2.75rem caption thumb is proof
+nobody can see. Layout:
+- DESKTOP (>=900): headline tightens to cols 1-2; cols 3-6 become THE PAIR - the 3D stage
+  (~55% of the pair, keeps arrows/orbit/dimension line) and a tall real-photo plate
+  (~45%) side by side on one shared baseline. Captions under each: left "THE DRAWING ·
+  <piece name>", right "THE REAL WORK · AGRABAD" linking to the category page. Both
+  crossfade together on piece change (photo plate = 5 stacked PrintPhoto frames, opacity
+  toggle, same trick as the thumb). The in-caption thumb DIES once the plate exists.
+- MOBILE: "adjusted top-bottom" per client: first viewport stays exactly what fits 844
+  today (wordmark, headline, stage, CTA - CTA above the fold is the unbreakable rule);
+  the big photo plate goes AFTER heroActions in the DOM, so the hero grows to ~120dvh
+  and the real photograph is the first thing scrolling reveals. No height budget war.
+- Implementation: Turntable.tsx renders the plate (share the piece store), Hero.tsx grid
+  slots, sections.module.css pair layout. Copy/photos already exist (hero.pieces[].photo).
+  Est. 1.5-2h. Photo sizes: plate uses (min-width:900px) 30vw, 100vw.
