@@ -41,3 +41,7 @@ assets-raw/
 # playwright artifacts
 .playwright-mcp/
 design-refs/
+
+# local snapshot of the v2 source, kept on disk only: 6.5 MB of dead code
+# that would ship in every clone and every Vercel build for no benefit
+backup-v2-*/

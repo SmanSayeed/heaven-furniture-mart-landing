@@ -12,6 +12,7 @@ import {
 } from '@/lib/stage-state'
 import { prefersReducedMotion } from '@/lib/device'
 import { CropMarks } from './CropMarks'
+import { Bulb } from './Bulb'
 import { DimensionLine } from './DimensionLine'
 import { Photo, hasPhoto } from './Photo'
 import { ArrowRight } from './Icons'
@@ -176,7 +177,7 @@ export function Turntable() {
   }, [used])
 
   return (
-    <div className={s.turntable} data-turntable data-col="4-6">
+    <div className={s.turntable} data-turntable data-col="3-4">
       {/*
         data-stage-hero is the rect drei's View tracks. It is decorative:
         the piece's identity is the caption below, which is real text and is
@@ -208,6 +209,9 @@ export function Turntable() {
         <span className={s.stageMark} />
         {/* the panel is a placed plate on a drawing, and says so */}
         <CropMarks />
+        {/* the light the piece is built for: one warm bulb on a cord, top
+            left per the One Light Law, swinging very slightly */}
+        <Bulb />
 
         {/*
           THE ARROWS LIVE ON THE STAGE NOW, not in a row of their own.
@@ -274,48 +278,6 @@ export function Turntable() {
               index doubles as the pager's counter now that the arrows live
               on the stage itself */}
           <p className={s.pieceName} aria-live="polite" data-piece-name>
-            {/*
-              THE PROOF CHIP - the real photograph beside the drawn piece.
-
-              The turntable's piece is generated geometry, and the hero was
-              the only screen on the site with nothing real on it. Backwards,
-              for a customer: the drawing is how a bespoke order STARTS; the
-              photograph of built, delivered work is why anyone places one.
-              Each drawn piece carries a thumbnail of Heaven's real work in
-              the same category, linking to that category's page.
-
-              IN THE CAPTION ROW, third position. It has now been tried in
-              both of the stage's corners: bottom-left put it under the
-              executive desk's feet, top-left under the royal sofa's crest -
-              on a phone the camera fits the piece to 96% of the frame and
-              there IS no safe corner, and the fixed 3D canvas always paints
-              over what it hits (z-index cannot win against a page-level
-              layer). Inline in the caption it can never collide with
-              anything, and a 2.75rem thumb adds zero height to a row the
-              hint already reserves. All five photographs stay stacked in the
-              DOM; the active one crossfades by opacity.
-            */}
-            <a
-              href={current.href}
-              className={s.realChip}
-              aria-label={`${current.category}: see the real pieces`}
-            >
-              <span className={s.realFrames} aria-hidden="true">
-                {hero.pieces.map(
-                  (p, i) =>
-                    hasPhoto(p.photo) && (
-                      <span
-                        key={p.photo}
-                        className={s.realFrame}
-                        data-active={i === piece ? '' : undefined}
-                      >
-                        <Photo name={p.photo} alt="" sizes="6rem" className={s.realImg} />
-                      </span>
-                    ),
-                )}
-              </span>
-              <span className={`specimen ${s.realLabel}`}>{hero.real.label}</span>
-            </a>
             <span className="index">
               {String(piece + 1).padStart(2, '0')}/{String(hero.pieces.length).padStart(2, '0')}
             </span>
@@ -332,6 +294,71 @@ export function Turntable() {
           )}
         </div>
       </div>
+    </div>
+  )
+}
+
+/**
+ * THE PAIR's second half: Heaven's real, delivered work, at plate size.
+ *
+ * The proof used to be a 2.75rem thumbnail in the caption row - visible in a
+ * code review and invisible to a human being (client, verbatim: "what is
+ * need of too small that user can not see"). The drawing is how a bespoke
+ * order starts; the photograph of built work is why anyone places one, and
+ * evidence does not work at postage-stamp size. So the hero now holds two
+ * plates of equal rank: THE DRAWING (the turntable, columns 3-4) and THE
+ * REAL WORK (this, columns 5-6), changing together off the same piece store.
+ *
+ * It is rendered by Hero.tsx AFTER the CTA block, which is the whole mobile
+ * story: the first viewport keeps exactly the composition that fits an 844px
+ * phone today (statement, stage, CTA above the fold - unbreakable), and the
+ * photograph is the first thing a scroll reveals. On desktop the grid lifts
+ * it back up beside the stage; DOM order and visual order part ways there on
+ * purpose.
+ *
+ * All five photographs stay stacked and the active one is chosen by opacity,
+ * so a piece change crossfades here in the same breath as the 3D. The plate
+ * is one link to the active piece's category page: a visitor convinced by
+ * the evidence goes straight to more of it.
+ */
+export function HeroReal() {
+  const piece = useSyncExternalStore(onHeroPiece, getHeroPiece, () => 0)
+  const current = hero.pieces[piece] ?? hero.pieces[0]
+
+  return (
+    <div className={s.heroReal} data-col="5-6" data-hero-real>
+      <a
+        href={current.href}
+        className={`panel arch ${s.heroRealPanel}`}
+        aria-label={`${current.category}: see the real pieces`}
+      >
+        {hero.pieces.map(
+          (p, i) =>
+            hasPhoto(p.photo) && (
+              <span
+                key={p.photo}
+                className={s.heroRealFrame}
+                data-active={i === piece ? '' : undefined}
+                aria-hidden={i === piece ? undefined : true}
+              >
+                <Photo
+                  name={p.photo}
+                  alt=""
+                  sizes="(min-width: 900px) 30vw, 92vw"
+                  className={s.heroRealImg}
+                  priority={i === 0}
+                />
+              </span>
+            ),
+        )}
+        <CropMarks />
+      </a>
+      {/* the plate's own caption, mirroring the drawing's: what this half of
+          the pair IS, and where the work stands */}
+      <p className={s.heroRealCaption} aria-live="polite">
+        <span className={`specimen ${s.heroRealTag}`}>{hero.real.label}</span>
+        <span className="specimen">{current.category.toUpperCase()} · AGRABAD</span>
+      </p>
     </div>
   )
 }

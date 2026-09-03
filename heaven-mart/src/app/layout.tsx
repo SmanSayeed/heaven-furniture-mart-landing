@@ -1,39 +1,28 @@
 import type { Metadata } from 'next'
 import Script from 'next/script'
-import { Inter, Inter_Tight, Geist_Mono, Fraunces } from 'next/font/google'
-import { SmoothScroll } from '@/components/motion/SmoothScroll'
+import { Inter_Tight } from 'next/font/google'
+import { SmoothScrollIdle } from '@/components/motion/SmoothScrollIdle'
 import './globals.css'
 
-/* Type system, v3 "MONOLITH" (PLAN Part 1.5 v3): the premium comes from the
-   SETTING (enormous sizes, negative tracking, tight leading), not from an
-   exotic face. Apple's SF Pro cannot be licensed for the web; Inter Tight is
-   its closest legal relative. All self-hosted through next/font. */
+/* Type system, THE SLIDES (PLAN-V5): the Apple look, licensed. SF Pro
+   Display cannot be self-hosted; Inter Tight is the same idea - a grotesk
+   drawn tight for display sizes - and at 600 with -0.035em tracking it sets
+   the plate titles the way the MacBook page sets its headlines. The four
+   competing entries all chose Cormorant or Playfair; a sans on a luxury
+   furniture page is itself the differentiator. All self-hosted via next/font. */
 const display = Inter_Tight({
   subsets: ['latin'],
-  weight: ['600'],
+  weight: ['500', '600', '700'],
   variable: '--font-display',
 })
 
-const sans = Inter({
-  subsets: ['latin'],
-  weight: ['400', '600'],
-  variable: '--font-sans',
-})
-
-const mono = Geist_Mono({
-  subsets: ['latin'],
-  weight: ['400'],
-  variable: '--font-mono',
-})
-
-/* the one serif left on the page: the MD's quote, so the client brief's
-   "elegant serif" intent still appears somewhere real */
-const quote = Fraunces({
-  subsets: ['latin'],
-  weight: ['400'],
-  style: ['italic'],
-  variable: '--font-quote',
-})
+/* NO BODY WEBFONT. Body copy, tags and buttons set in the visitor's own
+   system sans (SF on Apple, Segoe on Windows, Roboto on Android) - the same
+   call apple.com makes. Inter and Geist Mono were 54 KB of preloaded woff2
+   competing with the hero photograph for the first two seconds, to render
+   twelve-pixel captions nobody could tell apart. --font-sans and --font-mono
+   are left undeclared on purpose: every rule that reads them falls through
+   to its system stack. */
 
 /* The share card is the FIRST thing most visitors see: this page's traffic
    arrives from Facebook posts and WhatsApp links, where the card is the
@@ -54,7 +43,7 @@ export const metadata: Metadata = {
   title: 'Heaven Furniture Mart · Designed. Crafted. Customized.',
   description,
   openGraph: {
-    title: 'Heaven Furniture Mart · Furniture, Crafted Around You.',
+    title: 'Heaven Furniture Mart · Furnished to you.',
     description,
     type: 'website',
     siteName: 'Heaven Furniture Mart',
@@ -89,7 +78,7 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
     <html
       lang="en"
-      className={`${display.variable} ${sans.variable} ${mono.variable} ${quote.variable}`}
+      className={display.variable}
       /* The sticky WhatsApp pill hides while the hero is on screen, because
          the hero has its own CTA and two calls to action in one viewport is
          the one thing this page may not do. The flag STARTS here, in the
@@ -106,10 +95,11 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
         attributes into <body> before React hydrates. Scope: this element only,
         one level deep. Never use it to hide a real mismatch of our own.
       */}
-      {/* SmoothScroll is the only client code at layout level: Lenis + the
-          GSAP ticker handshake. The layout itself stays a Server Component. */}
+      {/* the layout stays a Server Component; smooth scrolling is a null-
+          rendering island that loads Lenis on idle, on desktops only */}
       <body suppressHydrationWarning>
-        <SmoothScroll>{children}</SmoothScroll>
+        {children}
+        <SmoothScrollIdle />
         {metaPixelId && (
           <>
             {/* standard Meta Pixel bootstrap; afterInteractive keeps it off

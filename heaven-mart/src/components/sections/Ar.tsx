@@ -19,7 +19,7 @@ export function Ar() {
   return (
     <section
       id="ar"
-      className={`light section sheet-grid ${s.ar}`}
+      className={`light section sheet-grid room ${s.ar}`}
       data-grid
       aria-label="Augmented reality preview"
     >

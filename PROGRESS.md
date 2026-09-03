@@ -660,3 +660,382 @@ nobody can see. Layout:
 - Implementation: Turntable.tsx renders the plate (share the piece store), Hero.tsx grid
   slots, sections.module.css pair layout. Copy/photos already exist (hero.pieces[].photo).
   Est. 1.5-2h. Photo sizes: plate uses (min-width:900px) 30vw, 100vw.
+
+## 2026-09-02 (session: THE PAIR built + AR dark stage)
+- Done: "THE PAIR" hero, exactly per the recorded plan. Desktop >=900: statement
+  tightens to cols 1-2 (4.4rem), THE DRAWING (turntable) cols 3-4 at 1.05:1,
+  THE REAL WORK (new HeroReal in Turntable.tsx) cols 5-6 at 0.88:1 - taller on
+  purpose so both panels' TOP edges land on one line (verified 215 vs 214px at
+  1440x900) and the photo runs down into the caption row. Mobile: HeroReal sits
+  AFTER heroActions in DOM, hero = 1085px, CTA bottom 680 < 844 (above fold),
+  the plate's top edge peeks 84px into the first viewport as the scroll teaser.
+  All five photos stacked, crossfade off the same piece store as the 3D. The
+  2.75rem caption thumb is dead; its CSS block replaced by the PAIR block.
+- Done: AR viewer dark stage. Sheet 07 is ivory, the canape is ivory + gilt,
+  model-viewer's canvas was transparent = white sofa on white page. .arModel
+  now carries the hero's own plate: var(--ink) ground + glow-cool radial pool,
+  graphite border. Pixel-verified via mv.toDataURL: seat (245,237,220) opaque,
+  crest gilt (139,112,60), corners transparent showing the pool through.
+- Gates: tsc clean, eslint clean, build 13 routes, overflowX 0 at both
+  viewports, console 0 errors.
+- Not committed: awaiting Saadman's git permission (per global rule).
+- Next: Maker portrait below title on mobile (user msg, still queued); his
+  side: USDZ for iPhone AR, team photo, real logo, VPS deploy.
+
+## 2026-09-02 (session: THE LIGHT STORY, pass 1 - applied on Saadman's word)
+- Research: 4 competitor entries autopsied (CONCEPT-V2.md Part 1). Zero canvases,
+  zero lighting, 3/4 used the brief's example headline verbatim (so did we).
+  Awwwards: cursor-light reveal on dark ground is award-current (Hubtown SOTM
+  Apr 2026). Saadman: "keep current as backup, plan a fast theme and apply".
+- Done: warm night palette (--ink #0d0906 brown-black, --paper #f4eee3 warm
+  ivory, --accent brass #d9b46a, tungsten light tokens). Every stage/pool/
+  filament re-lit warm through the tokens alone.
+- Done: Fraunces (variable, opsz axis) replaces Inter Tight for .statement and
+  .section-title; Noto Sans Bengali (300, bengali subset) for the one Bangla
+  word. next/font gotcha: axes require weight 'variable'.
+- Done: new headline "Built for the moment the lights come on." (brief example
+  line retired), CTA unified to "Request a Quote" everywhere (7 copy keys +
+  sticky pill "Quote"), OG title updated.
+- Done: THE BULB (Bulb.tsx) - cord + tungsten bulb + screen-blended cone on
+  the hero stage, CSS pendulum swing, reduced-motion static.
+- Done: THE BLACKOUT (Blackout.tsx + PageMotion) - 3.4s after the hero lands:
+  cut to ink above everything (z 96), "আলো আসবে" rises in tungsten, catch/fail/
+  hold return. Own session flag (hfm-blackout): keyed to the preloader's flag it
+  never fired in dev because StrictMode's first mount consumed it.
+- Done: THE TORCH (Torch.tsx) - fixed 640px warm pool follows the pointer,
+  transform-only, hover+fine pointer only, z 5 (above the 3D canvas).
+- Done: THE ARCH (.arch / .panel.arch) on the hero real-work plate and the AR
+  poster; THE ROOMS (.room) - Brand, Proof, Showroom, Ar, Footer overlap the
+  previous sheet with a 32px radiused top (never the two 3D sheets).
+- Verified: Fraunces computed on h1/h2, arch radius 50%/38%, rooms mt -32px,
+  2 pin-spacers alive, overflowX 0 desktop+mobile, mobile CTA bottom 683 < 844,
+  blackout opacity peak 1 then hidden, torch data-on after pointer move.
+  tsc/eslint clean, production build 13 routes.
+- Known: headless screenshots render black past ~4000px and miss fixed layers
+  mid-animation; DOM measurement + forced-state shots are the honest tools.
+- NOT committed (git needs Saadman's permission). Dev server running on :3000.
+- Next (pass 2): quote builder (D6 questions -> composed WhatsApp message),
+  overlap choreography on scroll (rooms sliding), arch on Collections cards,
+  re-record screen video, Lighthouse mobile, real-phone check. Saadman's D1-D7
+  answers still refine the copy (headline/word/detail).
+- Bulb v2 (client feedback, same day): moved to the stage's TOP-LEFT CORNER
+  (left 7%, cord 9%), cone thrown DIAGONALLY (--beam-angle 135deg desktop /
+  122deg on the wider phone stage), then widened on a second note ("more
+  covered"): +-34deg wedge + 260px radial spill at the bulb, 860px mask
+  falloff, opacity .3. Verified at 1440x900 and 390x844: the wash crosses the
+  piece corner to corner.
+- Bulb v3 (three client notes in a row: wider -> "a bit lesser" -> "too much
+  light, reads as another layer"): ONE quiet wedge, +-14deg core with 16deg
+  soft ramps, opacity .15, 620px falloff, NO radial spill (the spill was what
+  read as a flat sheet), and .stage now clips (overflow hidden; arrows sit
+  12px inside the edge, verified). Corner source, diagonal beam, quiet floor.
+
+## 2026-09-03 (session: PLAN-V5 "THE SLIDES" built)
+- Backup: backup-v2-2026-09-02/heaven-mart (118 files, no node_modules).
+- Rejected on the way: PLAN-V3 (clean brochure = the competitors' structure,
+  Saadman: "looks like other submissions"), CONCEPT "The Room" (sticky stage +
+  chapters). Approved: PLAN-V5 after references (sorenrose.com full-screen
+  slides, Apple type, arteriors tone). Prototype artifact kept at
+  https://claude.ai/code/artifact/1a2df4b2-eb61-44bf-8564-4aa82d20a5a5
+- Built: src/components/deck/* (Plate, Header, Modal, CollectionModal,
+  ArModal, QuoteModal, Swatches, DeckFooter, deck.module.css), motion/
+  DeckMotion + DeckMotionIdle + IdleMount + SmoothScrollIdle, lib/lenis-store,
+  ui/shared.module.css (630 lines extracted from the 3,300-line sheet CSS for
+  the shared islands), copy.ts `deck` block, page.tsx + layout.tsx rewritten.
+  Nine sticky 100svh plates (z 1 / 2 / 5 around the fixed canvas at z 4),
+  hero with NO 3D and NO AR button, one 3D plate (Bespoke, R3F view retargeted),
+  AR + category pieces + quote builder in one <dialog> Modal (hash-synced so
+  the phone's back button closes it), Inter Tight display, system body font.
+- Verified: tsc/eslint clean, build 13 routes, 0 page errors; 390x844 CTA
+  bottom 724 (above fold), 360x740 checked, overflowX 0; sticky pill hidden on
+  the hero (StrictMode double-mount bug fixed in DeckMotion cleanup); modal
+  opens/closes with hash; counter, header solid, plate reveals all firing.
+- Lighthouse (production build, local): DESKTOP 100/100/100/100. MOBILE
+  85-89 perf (FCP=LCP 2.0s, TBT ~400ms, CLS 0) / 100 / 100 / 100. Wins along
+  the way: hero text no longer hidden by GSAP (LCP 3.1->2.0s, CLS .056->0),
+  Inter+Geist dropped (fonts 102->44 KB), inlineCss (no render-blocking
+  CSS), DeckMotion on first gesture, Lenis desktop-only on idle, three.js
+  only when Bespoke is 1.5 screens away, shared CSS extracted. Remaining gap
+  is LH trace overhead: real Chromium at 4x CPU paints at 0.55s.
+- Not committed: awaiting Saadman's git permission.
+- Next: Saadman's phone pass; D3 headline ("Furnished to you." is the
+  placeholder), D5 evening showroom photo for the hero, cut-out MD PNG
+  (the JPEG is keyed with a mask + grade for now), real logo; regenerate
+  photos at 1600w (currently 1024 max) for large desktops; screen recording.
+- Entrances (Saadman: "all coming bottom to top, randomize, some 3d, some
+  left to right, framer motion ideas"): Plate.tsx gained `enter` (rise |
+  wipe-r | wipe-l | iris | shutter | zoom | tilt) and `text` (mask | blur |
+  slide-l | slide-r) + PlateTitle (words in line masks, --i stagger = CSS
+  staggerChildren). Assignment in page.tsx ROOM_ENTER: Living wipe-r/slide-l,
+  Bedroom iris/blur, Dining tilt/mask, Office wipe-l/slide-r, Bespoke 3D
+  drawing->sofa + blur, Maker zoom + DIM, Showroom shutter/slide-l, Quote
+  rise/blur. Fixed order, not random (a direction, not a slot machine).
+  DEPTH scrub in DeckMotion: covered plate's img -> scale .94 + shade .6 as
+  the next rises (img, not the media layer, to avoid fighting the CSS
+  transition). All transform/opacity/clip-path.
+
+## 2026-09-03 (later) — LIFE pass ("make sure it is not boring")
+- Diagnosis: nine plates with the same bottom-left caption read as a slideshow,
+  whatever the entrance. Fixed with composition + pulse, not more effects.
+- Added (deck.module.css `LIFE` block, Plate.tsx, DeckMotion.tsx, page.tsx):
+  · `side` per plate: L, L, R, MIDDLE, R, CENTER, L, R, MIDDLE. Middle plates
+    (Dining, Quote) sit dead-centre; their VIEW pill drops to bottom-centre.
+  · `no`: outlined chapter number (01-04, 07) the size of the plate, opposite
+    the caption, rises in with the plate.
+  · `Measure`: a dimension line that draws itself under the title ("to your
+    wall / room / seats / alcove / measurements / drawn to your room"). No
+    numbers, by rule: only the 3D piece prints measured numbers.
+  · `drift`: the LIVE plate's photograph creeps 1 -> 1.08 over 26 s (CSS
+    `scale`, composes with the GSAP depth `transform`); paused on every other
+    plate (DeckMotion stamps data-live on the plate at 50%).
+  · `power`: the hero's blackout beat is CSS now: dark, two stutters, then
+    the lights come up (opacity over ink = compositor only, plays from the
+    first paint, text untouched). Moved out of DeckMotion because that file
+    mounts on first gesture, which put the blackout under the first scroll.
+  · scroll cue on the hero (hairline + running brass dot, desktop only, fades
+    once the hero leaves).
+  · counter digit rolls on change.
+  · cursor ring on (pointer: fine): follows the pointer, grows to 76px and
+    says View over a room's photograph; a click on the photograph (any
+    device) forwards to that room's VIEW pill -> modal. Ring ignores captions.
+  · swatch tap re-lights the bespoke stage (--stage-glow -> .stage3d colour)
+    and still rewrites the CTA with the fabric name.
+  · brass hairline on every rising plate's top edge.
+- Verified (Playwright, dev): 1440x900: sides/numbers/measures positioned,
+  bespoke AR pill kept at right-middle (a centred-side rule had dropped it
+  onto the swatch row; fixed), ring show/on/76px + click -> "Living Room"
+  modal + #hash + back closes; live plate switches (hero paused, living
+  running); swatch -> stage colour rgb(93,116,214) + CTA "Royal Blue".
+  390x844 + 360-class: all titles fit, overflowX 0, hero CTA bottom 724,
+  sticky pill after hero, VIEW pills at y 716 (above the 88px reserve).
+  tsc/eslint clean, production build OK, 0 console errors.
+- Lighthouse (production, :3100, two mobile runs): MOBILE 86-87 / 100 / 100
+  / 100 (FCP 1.3-1.5s, TBT 120-170ms, CLS 0; simulated LCP 3.5s but the
+  OBSERVED LCP = FCP = 1.7s: lantern now counts every script as an LCP
+  dependency because the page's JS finishes loading (load event 0.3s)
+  before the first paint, which it did not when the build was heavier -
+  an artifact of getting faster, not a regression on a device). DESKTOP
+  98 / 100 / 100 / 100 (FCP 0.4s, LCP 0.8s, TBT 20ms).
+- Not committed: awaiting Saadman's git permission (whole V5 build + LIFE).
+- Next: Saadman's phone pass on the LIFE pass (drift speed, ring, blackout
+  beat); D3 headline; D5 evening hero photo; cut-out MD PNG; logo; screen
+  recording; deploy.
+
+## 2026-09-03 (night) — PLAN-V6 "A Night at Heaven" BUILT
+- Saadman rejected the V5 deck mechanic ("all coming from top to bottom - no"),
+  asked for the 3D skeleton-to-sofa section back, horizontal sliders, mixed
+  section heights, a floodlit hero with view changes, GSAP, a zoom-into-next
+  transition, and a story / adventure feel. PLAN-V6.md + storyboard artifact
+  https://claude.ai/code/artifact/2df851c2-a627-46e3-9dd2-192fc7cac38e
+  approved (D-A hero views as proposed, D-B my call = snap carousel on
+  phones, D-C portal into the fabric, D-D floor-plan map).
+- Built: src/components/night/* (night.module.css, Words, Narrator/ChapterTag,
+  Map, Hero, Studio, Floor, Stage (poster/dimension/inspect islands), Table,
+  Maker, Home, Ask), motion/NightMotion + NightMotionIdle, IdleMount `mode`
+  (idle, 1.5 s cap: a pinned hero cannot wait for a gesture), copy.ts
+  `night` block, page.tsx rewritten, Header nav/counter props, modals
+  `inline` prop, Photo `eager` prop. Deck modals/footer/header kept.
+  BUG FIXED on the way: StageCanvas only reported ready from the hero view,
+  so since V5 the bespoke sofa rendered into a wrapper held at opacity 0;
+  BespokeStage now calls onReady.
+- Chapters: 1 room (pinned 250vh: flood -> iris -> slide -> zoom portal
+  through the fabric; beam sweep + night-lift CSS on load; Torch on
+  pointer), 2 studio (paper; hand-off: html[data-night] pulls the studio
+  up one viewport under the opened portal, hero z toggled on leave),
+  3 floor (desktop pinned rail, measured travel, cards rotateY 16->0 via
+  containerAnimation, bar; phones: native scroll-snap + dots), 4 drafting
+  table (pinned 300vh, bespokeProgress scrub, steps lit, dock reveal, 360
+  inspect arms, DimensionLine prints real mm off the mesh: 2100 x 820 x 950),
+  5 maker (dim beat), 6 take it home (AR card + shutter film), 7 ask (beam
+  wide). Map (SVG floor plan, right-middle desktop / top-right phone) lights
+  rooms + moves the dot; narrator line per chapter; generic data-reveal
+  system (rise/blur/shutter/wipe/beam/words).
+- Verified with a real mouse wheel via Playwright run_code (synthetic wheel
+  events trip SmoothScrollIdle's watchdog - harness artifact, not a bug):
+  hero timeline, portal opens at .68-1 and the studio is at viewport top at
+  pin end; hdrPaper + data-on-paper on the studio; timeline draws; rail
+  pins and travels -589px with bar + card face-in; table pins, canvas
+  opacity 1, steps 1/.28/.28 -> .28/1/.28 -> .28/.28/1, dock 0->1, inspect
+  armed; map here/lit through all 7; 390x844: titles fit, hero CTA y 663,
+  map top-right, table pinned fits (inner 643/844), snap track + dots;
+  overflowX 0; tsc/eslint/build clean; 0 console errors.
+- Fixes during the pass: CSS Modules pure-selector rule (:global on the
+  data-reveal rules), word spacing in Words (space outside the inline
+  block), rail track width (grid item grew to 2080px -> dist 0), brass on
+  paper contrast (2.0 -> darkened #8a6a2b), AR card art.
+- Lighthouse (production, :3100): MOBILE 81-82 / 96->100 (contrast fixed
+  after the run) / 100 / 100 - FCP 1.2-1.3s, TBT 290ms, CLS 0, simulated
+  LCP 3.7s with OBSERVED LCP 0.65s (lantern counts the idle-mounted GSAP
+  chunk as an LCP dependency; the pinned hero needs it on idle, not on
+  gesture, so this is the trade). One run at 60 was the machine building
+  at the same time; re-run idle = 81. DESKTOP 97 / 100 / 100 / 100
+  (FCP 0.4s, LCP 0.8s, TBT 40ms).
+- Not committed: awaiting git permission.
+- Saadman's screenshot review (late 09-03): hero->studio hand-off overlaps
+  (the -100svh margin), studio/floor content hidden (reveals), AR modal wheel
+  dead under Lenis, nav anchors broken with pins; wants the previous 3D
+  turntable pieces back, a gallery-wall categories chapter, a GSAP timeline
+  moment, a mega menu with images, animated category pages.
+  PLAN-V6.md PART B (B1-B6) written; next session starts at B1.
+
+## 2026-09-03 (PART B build: the screenshot review, all of B1-B5)
+- Done: PLAN-V6 PART B, in the B6 order, one session.
+  B1 bugs: (1) the hero->studio hand-off no longer overlaps anything - the
+  portal (fixed sheet) stays open after the hero's pin (+=200% now) while
+  the hero scrolls away UNDER it, and is hidden the moment #studio reaches
+  top top; portal visibility is a pure function of scroll (syncPortal on
+  the hero timeline's onUpdate + the studio trigger's onEnter/onLeaveBack/
+  onRefresh), so a nav jump or a deep reload can never leave the white sheet
+  standing (that sheet WAS the "Showroom -> white screen" bug). The -100svh
+  margin, the studio z-index and data-above are gone. (2) reveal system ->
+  IntersectionObserver (lib/reveal.ts, rootMargin -18% bottom, once, plus a
+  reveal-all at the end of the scroll): hidden titles gone. (3) floor title
+  no longer cut. (4) data-lenis-prevent on the <dialog>: modal wheel works
+  (measured scrollTop 94, page unmoved). (5) nav scroller: every a[href^=#]
+  goes through lenis.scrollTo / window.scrollTo smooth to the section's
+  PIN START when pinned (Showroom -> #home top -1px; Bespoke -> pinned table
+  at 0); hash landings (a room page's "Back to the floor") re-placed after
+  refresh (floorTop 0).
+  B2 "The pieces" chapter (ch.3, pinned 200%): the previous build's
+  turntable restored - five drawn pieces (royal sofa, bed, dining set, desk,
+  armchair) pass on scroll (setHeroPiece per fifth, heroProgress yaws each a
+  quarter turn), drag to spin (PiecesStage.tsx), five tabs, caption, real
+  mm off the mesh (Dimension stage='hero': "2100 MM · 1190 MM · 880 MM"),
+  the real photograph as a small plate beside the caption, a slow window
+  display clock when not pinned. No-3D truth = the five photographs in the
+  stage. StageLoader now observes both stages. Chapters renumbered 1-8, map
+  has 8 rooms.
+  B3 the gallery wall (Wall.tsx): five frames of different ratios hung at
+  different heights (measured tops 269/332/287/348/292), ivory mat + brass
+  frame + crop marks + brass plaque, pointer tilt + light pool + drift +
+  "Open the room" rising out of a mask (pointer: fine only), frame = link to
+  the room page, pill = quick look modal. Same component as the /collections
+  index (mode="grid").
+  B4 the timeline: one scrubbed GSAP timeline - the line draws with a brass
+  dot at its tip, ticks light brass as the dot passes, milestones slide in
+  out of a blur, years count up (textContent + snap). Phone: svg hidden,
+  slide + count still run.
+  B5 mega menu (deck/MegaMenu.tsx): "Rooms" opens a full-width panel (clip
+  drop) with five big titles + one large crossfading photograph + "All
+  pieces"/"Walk the floor"; Escape/outside/scroll close. Phone: burger ->
+  full-screen <dialog> (hash #menu, Back closes), room tiles + anchors +
+  CTA; anchors inside the sheet travel through the scroller after the sheet
+  shuts (night:goto event). Room pages redesigned in the night system
+  (components/night/Room.tsx): dark, chapter heading, cover in the wall's
+  frame, masonry plates (PieceModal.tsx: sheet with photo, specs, CTA naming
+  the piece), print-in entrance via CSS @starting-style (no JS, nothing
+  hidden without it), Next room / All rooms / Back to the floor. Page
+  transition: cross-document View Transitions (@view-transition in
+  globals.css; view-transition-name room-<slug> on the frame and the page's
+  plate) - plain <a> navigations on purpose.
+- Verified (Playwright, real wheel, dev :3000): hand-off at 1440x900
+  (portal visible 1600-2560, hidden at studio top), studio waits 0, dot
+  0->1000, years 2020,2021,2024,2025,2026; pieces pin + tab + real mm; wall
+  rail -393px + bar 1; table steps/dock/mm; nav clicks; modal wheel; mega
+  hover swaps the image (Dining · 2 pieces); /collections and
+  /collections/living-room full-page screenshots reviewed; piece modal opens
+  with hash. 390x844: no horizontal overflow (360 at dpr), burger + sheet,
+  sheet anchor -> pinned table at 0, tile -> /collections/bedroom, back ->
+  /#floor at 0, pieces pinned fits (stage 137-377, tabs to 708), snap track
+  + dots. tsc / eslint / build clean, 0 console errors.
+- Harness notes: clip-path TRANSITIONS do not advance in this headless env
+  (verified with a bare div) - the mega panel's drop reads as closed to
+  getComputedStyle here but its state/links/images all work; real browsers
+  are fine. Viewport screenshots after scrolling still render black.
+- Lighthouse (production :3100, rebuilt): MOBILE 79 / 100 / 100 / 100 (FCP
+  1.3s, LCP 3.9s simulated, TBT 300ms, CLS 0); DESKTOP 96 / 100 / 100 / 100
+  (FCP 0.4s, LCP 0.9s, TBT 80ms); /collections/living-room mobile 86 / 100 /
+  100 / 100. First run after PART B was 59 / 63 with desktop TBT 1,840ms:
+  StageLoader's 150% rootMargin reached the new pieces stage at load and
+  mounted three.js during the page's own load -> 60%. Also fixed from that
+  run: label-content-name-mismatch (aria-labels on the frame, the plate and
+  the real-work link replaced by sr-only / visible names), plaque contrast
+  on waiting rail frames (face-in opacity floor .4 -> .7), room-page legible
+  text (specs 9.6px -> 12px).
+- Not committed: awaiting git permission (~50 files changed/new).
+- Next: Saadman's real-phone pass; D3 headline, MD cut-out, logo, evening
+  showroom photo, recording, deploy.
+
+## 2026-09-03 (evening) - PART C: Saadman's live review, twelve notes
+
+Everything below was found by him clicking through the running build, and
+every one is closed and measured (Playwright, real wheel, 1440x900 + 390x844).
+
+1. **The white screen on every menu click.** THE PORTAL was the bug: a fixed
+   ivory sheet carrying the studio's heading, opened by the hero's zoom. Any
+   jump past the hero could leave it standing over the page, and an opaque
+   fixed sheet is a white broken site whose scroll looks dead. Two attempts
+   to keep it in sync lost races against the scrubbed timeline, so it is
+   DELETED. The hero ends on `lightsOut` - an ink overlay INSIDE the hero -
+   and the studio's paper is a hard cut. A full-screen element that cannot
+   outlive its section cannot strand. Verified: Bespoke / Showroom / Contact
+   all land at their section top (0px) and the scroll still moves 1200px.
+2. **The 3D turntable chapter removed** on his call. Seven chapters again;
+   the map lost a room; the components, copy and motion are gone.
+3. **The floor is THE GLASS WALL now.** Five plates, different ratios, hung
+   at different heights and angles so they cross on a diagonal and overlap.
+   The wall is behind glass and in black and white; the plate under the
+   pointer - or, with no pointer, the one the scroll brings to the middle
+   (`data-focus`, one rule for the rail and the snap track) - slides its
+   pane away and comes up in full colour. A brass ring follows the mouse and
+   becomes a filled VIEW disc over a plate.
+4. **The header's action redrawn**: a hairline brass plate with corner ticks
+   that fills from its baseline on hover, label turning to ink. Not the
+   hero's filled pill.
+5. **The floor plan is a menu**: every room takes the visitor to its chapter
+   through the nav scroller (mouse only - 20px rooms are no tap target).
+6. **The maker rebuilt.** The quote sat on his face because `.inner
+   .makerText` was one element and `.inner` centres what it holds. He is now
+   a lit PLATE in the middle of the chapter with the words underneath:
+   nothing can overlap at any width. Measured: 126px of air above the plate,
+   54px between plate and text on desktop; 108px / 67px on a phone.
+7. **The milestones removed from the maker** - the studio's founding line is
+   the one timeline.
+8. **The founding line stopped counting up**: a scrubbed count-up printed
+   years Heaven never had (2025 read 2024 mid-tween).
+9. **The 3D sofa was missing.** StageLoader's rootMargin had been cut
+   150% -> 60% for the (now removed) turntable chapter; restored. Verified at
+   both sizes: canvas up, poster gone, real millimetres off the mesh.
+10. **The film autoplays** - muted, looping, no controls, desktop only, once
+    the panel is 55% on screen, with "Watch with sound" over it. A phone
+    keeps the zero-byte facade.
+11. **The wall's names were being clipped** at both ends of the pinned
+    chapter. The plate height is a budget now: `min(38svh, calc(100svh -
+    470px))`, so a short screen shrinks the plates instead of eating a name.
+    Measured: 3px of air above the heading, 39px below the lowest name.
+    Every dark chapter also opens on a hairline, so the cuts read as cuts.
+12. **The phone's top-right corner belongs to the menu.** The floor plan is
+    hidden below 861px (decoration in the way of a control, with rooms far
+    under any tap target) and the burger is a brass plate, 46x44, at the top
+    right. Its sheet is `inset: 0` rather than `100vw` (the scrollbar was
+    pushing the close button off the edge) and its header is sticky.
+
+**The studio, rewritten** (his last note: "customer not like to read texts").
+One paragraph, one long quotation and three lines of small print became:
+three BIG lines that arrive one at a time, and three points - Drawn to you /
+Built in-house / Delivered and fitted - each with a hand-drawn mark (a
+drafting compass, a hand plane, a delivery van; inline SVG, drawn on by GSAP
+stroke-dashoffset, no icon library) and a Details button that opens a sheet
+setting that point's four facts at 24px, one per line. Nothing was cut from
+what the page says; it moved behind a button. Every fact is still the
+brief's.
+
+Also fixed: the sticky WhatsApp pill never appeared on a room page (the
+layout sets html[data-hero-view=1] for every route and only the motion layer
+removes it), and the bespoke plate's "See it drawn" pointed at #table from
+/collections where no such section exists.
+
+Answered for him: the AR viewer is model-viewer, self-hosted, loaded only on
+press - Android with ARCore places the piece at true size, an iPhone gets a
+3D view until a USDZ export exists, a desktop gets 3D. The modal is fine at
+390px (345x491 in an 844-tall viewport).
+
+- Gates: tsc / eslint / build clean, 0 console errors on every pass.
+- Lighthouse (production :3100, mid-session): desktop 96 / 100 / 100 / 100
+  (FCP 0.4s, LCP 0.8s, TBT 60ms, CLS 0). The mobile run measured 60 with TBT
+  640ms while the dev server and Playwright were both running on the same
+  machine; the last idle mobile run of the same build was 79. NEEDS ONE IDLE
+  RE-RUN after the studio rewrite before the numbers are quoted anywhere.
+- Not committed: awaiting git permission (~50 files).
+- Next: his real-phone pass; D3 headline, MD cut-out PNG, logo, evening
+  showroom photo, screen recording, deploy.

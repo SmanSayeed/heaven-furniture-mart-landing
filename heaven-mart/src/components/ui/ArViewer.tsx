@@ -6,7 +6,7 @@ import { ar } from '@/content/copy'
 import { PrintPhoto, hasPhoto } from '@/components/ui/Photo'
 import { CropMarks } from '@/components/ui/CropMarks'
 import { ArGlyph } from '@/components/ui/Icons'
-import s from '@/components/sections/sections.module.css'
+import s from '@/components/ui/shared.module.css'
 
 /* Self-hosted, version-pinned. Google's CDN copy would be one third-party
    request and one more thing to be blocked inside the Facebook in-app
@@ -162,7 +162,7 @@ export function ArViewer() {
         <>
           {/* the panel IS a viewfinder, so it wears a viewfinder's marks */}
           <div
-            className={`${hasPhoto(AR_POSTER) ? '' : 'ph'} panel panel-land ${s.arPoster}`}
+            className={`${hasPhoto(AR_POSTER) ? '' : 'ph'} panel panel-land arch ${s.arPoster}`}
           >
             <PrintPhoto
               name={AR_POSTER}

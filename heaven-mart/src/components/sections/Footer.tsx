@@ -20,7 +20,7 @@ import s from './sections.module.css'
  */
 export function Footer() {
   return (
-    <footer id="sheet-09" className={`dark section sheet-grid ${s.footer}`}>
+    <footer id="sheet-09" className={`dark section sheet-grid room ${s.footer}`}>
       <div className={s.footerHead} data-col="2-5">
         <BeatCaption no="09" />
         <h2 className="section-title">{footer.headline}</h2>

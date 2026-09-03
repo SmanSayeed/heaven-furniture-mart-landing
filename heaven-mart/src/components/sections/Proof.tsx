@@ -41,7 +41,7 @@ export function Proof() {
   return (
     <section
       id="sheet-03"
-      className={`dark section sheet-grid ${s.proof}`}
+      className={`dark section sheet-grid room ${s.proof}`}
       aria-label="Abul Kalam Bhuiyan, Managing Director"
     >
       {/* the static shaft: the quote sits inside it, and the portrait stands

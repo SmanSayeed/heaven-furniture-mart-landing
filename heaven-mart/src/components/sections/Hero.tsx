@@ -1,7 +1,7 @@
 import { hero } from '@/content/copy'
 import { Cta } from '@/components/ui/Cta'
 import { ArHook } from '@/components/ui/ArHook'
-import { Turntable } from '@/components/ui/Turntable'
+import { Turntable, HeroReal } from '@/components/ui/Turntable'
 import { Photo, hasPhoto } from '@/components/ui/Photo'
 import { SheetBlock, BeatCaption } from '@/components/ui/SheetBlock'
 import { FloodBeam } from '@/components/ui/FloodBeam'
@@ -78,7 +78,7 @@ export function Hero() {
           meets the brand's sentence, meets the object it is about, and only
           then is asked for anything. Two blocks are what let the stage sit
           BETWEEN them at three columns and beside them at six. */}
-      <div className={s.heroMain} data-col="1-3">
+      <div className={s.heroMain} data-col="1-2">
         <p className="specimen" data-hero-fade>
           {/* one line at 390px, full category line from 480px up */}
           <span className="only-narrow">{hero.eyebrowShort}</span>
@@ -86,7 +86,7 @@ export function Hero() {
         </p>
         {/* one lit keyword max per statement (globals.css .grad-word) */}
         <h1 className="statement" data-hero-statement>
-          Furniture, <span className="grad-word">Crafted</span> Around You.
+          Built for the moment the <span className="grad-word">lights</span> come on.
         </h1>
         {/* the plot line's start: a short filament rule PageMotion draws
             left-to-right once the headline lands. Static (fully drawn) no-JS. */}
@@ -94,11 +94,11 @@ export function Hero() {
         <p className={s.heroSub} data-hero-fade>{hero.sub}</p>
       </div>
 
-      {/* ---- L3/L4/L5: the stage panel, columns 4-6 ---- */}
+      {/* ---- L3/L4/L5: THE PAIR's first half - the drawing, columns 3-4 ---- */}
       <Turntable />
 
       {/* ---- the one action, and the one invitation ---- */}
-      <div className={s.heroActions} data-col="1-3">
+      <div className={s.heroActions} data-col="1-2">
         <div className={s.heroCtaRow} data-hero-fade>
           <Cta label={hero.cta} shortLabel={hero.ctaShort} />
         </div>
@@ -106,6 +106,12 @@ export function Hero() {
           <ArHook />
         </div>
       </div>
+
+      {/* ---- THE PAIR's second half: the real work, columns 5-6 ----
+          AFTER the actions in the DOM, so a phone reads statement, drawing,
+          CTA, then the photograph - the CTA never leaves the first viewport.
+          The desktop grid places it beside the stage (see .heroReal). */}
+      <HeroReal />
 
       {/* ---- the foot of the sheet ---- */}
       <div className={s.heroBottom} data-col="1-4">

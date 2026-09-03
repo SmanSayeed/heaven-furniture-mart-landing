@@ -4,7 +4,7 @@ import dynamic from 'next/dynamic'
 import { useCallback, useEffect, useState } from 'react'
 import { detectTier, type Tier } from '@/lib/device'
 import { setStageReady } from '@/lib/stage-state'
-import s from '@/components/sections/sections.module.css'
+import s from '@/components/ui/shared.module.css'
 
 /* The Lab 01 pattern, production shape: ssr:false must live in a Client
    Component, and the loading slot renders nothing because the CSS stage
@@ -64,6 +64,34 @@ export function StageLoader() {
   }, [])
 
   useEffect(() => {
+    /*
+      THE DECK'S RULE (PLAN-V5): the 3D is one plate, sixth of nine, so the
+      chunk is fetched when the visitor is APPROACHING it - one and a half
+      screens away - and not before. A mouse moving over the hero used to
+      mount three.js five plates early, which on Chattogram mobile data is
+      a 350 KB download nobody asked for yet, and on a throttled audit was
+      the whole of the page's blocking time. An IntersectionObserver on the
+      stage rect is the honest signal; there is no gesture listener and no
+      timer, so a page that is never scrolled never pays.
+    */
+    const stages = document.querySelectorAll('[data-stage-hero], [data-stage-bespoke]')
+    if (stages.length && 'IntersectionObserver' in window) {
+      const io = new IntersectionObserver(
+        (entries) => {
+          if (!entries.some((e) => e.isIntersecting)) return
+          io.disconnect()
+          setTier(detectTier())
+        },
+        /* a screen and a half of warning. The only stage on the page is the
+           drafting table's, four chapters down, so this can never fire
+           during the page's own load - and by the time the visitor arrives
+           the piece is already on the table rather than a photograph of one. */
+        { rootMargin: '150% 0px 150% 0px' },
+      )
+      stages.forEach((el) => io.observe(el))
+      return () => io.disconnect()
+    }
+
     /* Mount on FIRST USER INTENT only: any pointer movement, touch, wheel or
        key press. No timer at all.
 

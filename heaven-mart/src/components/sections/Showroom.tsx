@@ -30,7 +30,7 @@ export function Showroom() {
   return (
     <section
       id="sheet-06"
-      className={`dark section sheet-grid ${s.showroom}`}
+      className={`dark section sheet-grid room ${s.showroom}`}
       aria-label="Showroom"
       data-grid
     >

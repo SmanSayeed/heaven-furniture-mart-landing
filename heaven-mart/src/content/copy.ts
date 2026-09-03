@@ -57,11 +57,23 @@ export const hero = {
   /* narrow phones only: the full category line wraps to two lines at 390px,
      which makes the hero read cramped. Same meaning, one line. */
   eyebrowShort: 'Bespoke furniture · Chattogram',
-  headline: 'Furniture, Crafted Around You.',
+  /* NOT the brief's example line. "Furniture, Crafted Around You" is the
+     "e.g." from the company brief, and three of the four competing entries
+     (and this page, until 2026-09-02) used it verbatim. The new line is the
+     concept in one breath: the page is a showroom at night, and the piece
+     is built for the moment the light finds it. */
+  headline: 'Built for the moment the lights come on.',
   sub: brand.tagline,
-  cta: 'Get a Free Design Consultation',
-  /* the same action, short enough not to wrap inside the pill at 390px */
-  ctaShort: 'Free Design Consultation',
+  /* the brief's own suggested action, word for word */
+  cta: 'Request a Quote',
+  ctaShort: 'Request a Quote',
+  /* THE BLACKOUT BEAT (CONCEPT-V2 D1/D2): a Chattogram room goes dark, one
+     Bangla word appears, the light comes back. The only Bangla on the page,
+     and the one moment no template can have. */
+  blackout: {
+    word: 'আলো আসবে',
+    line: 'Chattogram, after dark · the light comes back',
+  },
   specimens: ['EST. 2020', 'AGRABAD · CTG', 'FULLY BESPOKE'],
   /* S1 "The Turntable": the hero's piece is a real 3D object you can grab
      and spin, and it changes as you scroll. Captions stay at CATEGORY level
@@ -163,7 +175,7 @@ export const bespoke = {
      page about bespoke measurement cannot afford. These three are facts from
      the brief instead. */
   dimensions: ['MADE TO YOUR MEASUREMENTS', 'YOUR FABRIC', 'YOUR FINISH'],
-  cta: 'Get my free design consultation',
+  cta: 'Request a Quote',
   /* the practical version of this sheet lives at /process; a visitor who
      wants the steps in plain words rather than in three verbs can get them */
   how: 'How bespoke works',
@@ -223,7 +235,7 @@ export const catalogue = {
     eyebrow: 'THE FULL RANGE',
     title: 'Collections',
     lead: 'Five rooms. Every piece built to the measurements of yours.',
-    cta: 'Talk to us about your room',
+    cta: 'Request a Quote',
   },
   categories: [
     {
@@ -290,7 +302,7 @@ export const catalogue = {
   bespokeNote: {
     title: 'Not exactly what you had in mind?',
     line: 'That is the usual case. Send us the room and the measurements, and we draw it.',
-    cta: 'Get a free design consultation',
+    cta: 'Request a Quote',
   },
 } as const
 
@@ -310,7 +322,7 @@ export const nav = {
   close: 'Close',
   overlayLabel: 'Contents: the story, sheet by sheet',
   footerHeading: 'Contents',
-  cta: 'Consult on WhatsApp',
+  cta: 'Request a Quote on WhatsApp',
 } as const
 
 /* S5 · showroom */
@@ -405,7 +417,7 @@ export const contact = {
 /* S8 · footer */
 export const footer = {
   headline: 'Ready to design around you?',
-  cta: 'Get a Free Design Consultation',
+  cta: 'Request a Quote',
   /* This line used to be a LICENCE OBLIGATION: the turntable ran on Khronos
      CC-BY sample assets, which oblige credit. Those are gone — every piece on
      the page is now generated from measurements in
@@ -476,7 +488,7 @@ export const processPage = {
     },
   ],
   photoCaption: 'BUILT IN-HOUSE · AGRABAD, CHATTOGRAM',
-  cta: 'Start with the free consultation',
+  cta: 'Request a Quote',
 } as const
 
 export const aboutPage = {
@@ -487,7 +499,7 @@ export const aboutPage = {
   showroomTitle: 'The showroom',
   showroomLine: 'A large physical showroom on Agrabad Access Road. Walk in, sit on the work, talk to the people who build it.',
   rangeTitle: 'What we build',
-  cta: 'Get a free design consultation',
+  cta: 'Request a Quote',
 } as const
 
 export const contactPage = {
@@ -508,4 +520,258 @@ export const whatsappMessages = {
     "Hi Heaven, I'd like a free design consultation for a bespoke piece. My space is ",
   withSwatch: (swatch: string) =>
     `Hi Heaven, I'd like a free design consultation for a bespoke sofa in ${swatch}. My space is `,
+} as const
+
+/* ---------------------------------------------------------------------------
+   THE SLIDES (PLAN-V5, 2026-09-03). Nine full-screen plates. Every line
+   here is a caption to a photograph, so every line is short; the facts are
+   the brief's, verbatim. `title` arrays are the two lines of the big type.
+--------------------------------------------------------------------------- */
+export const deck = {
+  total: 9,
+  cta: 'Request a Quote',
+  view: 'View',
+  freeLine: 'Free design consultation',
+  scroll: 'Scroll',
+  nav: [
+    { label: 'Collections', href: '#living-room' },
+    { label: 'Bespoke', href: '#bespoke' },
+    { label: 'Showroom', href: '#showroom' },
+    { label: 'Contact', href: '#quote' },
+  ],
+  hero: {
+    tag: brand.category,
+    tagShort: 'Bespoke furniture · Chattogram',
+    /* placeholder until Saadman's D3 line: NOT the brief's example, which
+       three competing entries used verbatim */
+    headline: ['Furnished', 'to you.'],
+    sub: brand.tagline,
+    /* until the evening showroom shot (D5) arrives: the full wooden set,
+       styled in the Agrabad showroom */
+    photo: 'living-03-wood-set',
+  },
+  rooms: [
+    { slug: 'living-room', no: '01', name: 'Living Room', title: ['Living', 'Room'], line: 'Sofa sets, coffee tables, TV units and consoles, built to the wall they stand against.', measure: 'to your wall', photo: 'living-01-beige-set' },
+    { slug: 'bedroom', no: '02', name: 'Bedroom', title: ['Bedroom', ''], line: 'Beds, wardrobes, dressing tables and bedside pieces, sized to the room.', measure: 'to your room', photo: 'bedroom-01-royal-bed' },
+    { slug: 'dining', no: '03', name: 'Dining', title: ['Dining', ''], line: 'Dining tables, chairs and cabinets, cut to the number of people who sit down.', measure: 'to your seats', photo: 'dining-01-cream' },
+    { slug: 'office-study', no: '04', name: 'Office & Study', title: ['Office', '& Study'], line: 'Executive tables, bookshelves, storage and workstations, built to the alcove.', measure: 'to your alcove', photo: 'office-storage-01-black-cabinet' },
+  ],
+  bespoke: {
+    no: '05',
+    tag: 'Bespoke · their #1 difference',
+    title: ['Designed. Crafted.', 'Customized.'],
+    line: 'Drawn to your measurements. Built in premium wood by in-house craftsmen. Finished in your fabric.',
+    ar: 'See it in your room',
+    measure: 'to your measurements',
+  },
+  maker: {
+    no: '06',
+    tag: 'The maker',
+    /* an excerpt of the MD's own sentence (brief, verbatim substring) */
+    quote: 'Furniture is more than just function; it is a reflection of lifestyle, taste, and comfort.',
+    name: 'Abul Kalam Bhuiyan',
+    role: 'Managing Director',
+    trust: 'Trusted by hundreds of happy homeowners · Chamber of Commerce 2025 · BFIOA recognition 2026',
+    photo: 'people-owner-heaven-furniture',
+  },
+  showroom: {
+    no: '07',
+    tag: 'Showroom',
+    title: ['Agrabad,', 'Chattogram'],
+    line: 'A large physical showroom. Walk the floor before you decide.',
+    photo: 'living-02-blue-pair',
+  },
+  quote: {
+    no: '08',
+    tag: 'Your room',
+    title: ['Ready to design', 'around you?'],
+    line: 'Tell us the room and the piece. We draw it to your measurements and send the quote on WhatsApp.',
+    measure: 'drawn to your room',
+  },
+  quoteSteps: ['What are you looking for?', 'Your space', 'Where do we send it?'],
+  quoteEnds: 'Ends on WhatsApp with the message already written',
+  quoteSend: 'Send on WhatsApp',
+  quoteNote: 'Nothing is stored here. The button opens WhatsApp with your answers written out.',
+  quoteError: 'Please add your name and a phone number.',
+  roomMessage: (room: string) =>
+    `Hi Heaven, I'd like a free design consultation for my ${room.toLowerCase()}. My space is `,
+} as const
+
+/* ---------------------------------------------------------------------------
+   A NIGHT AT HEAVEN (PLAN-V6, 2026-09-03). Seven chapters on one scroll. The
+   visitor walks through the showroom at night and DOES one thing per chapter.
+   Every fact is the brief's; the narrator lines are the only new words.
+--------------------------------------------------------------------------- */
+export const night = {
+  /* SEVEN chapters. A turntable chapter was built and then removed on the
+     client's call (2026-09-03): the drafting table already hands the visitor
+     a piece to turn, and a second 3D stage two chapters earlier made the
+     page read as a technology demo rather than as a showroom. */
+  chapters: [
+    { id: 'room', no: '01', name: 'The floodlit room', narrator: 'The power is out. You have a light.' },
+    { id: 'studio', no: '02', name: 'The studio', narrator: 'Through the fabric.' },
+    { id: 'floor', no: '03', name: 'The floor', narrator: 'Walk the floor.' },
+    { id: 'table', no: '04', name: 'The drafting table', narrator: 'Yours is drawn.' },
+    { id: 'maker', no: '05', name: 'The maker', narrator: 'The man who builds it.' },
+    { id: 'home', no: '06', name: 'Take it home', narrator: 'Take it home.' },
+    { id: 'ask', no: '07', name: 'Your room', narrator: 'Tell us your room.' },
+  ],
+  nav: [
+    { label: 'Rooms', href: '#floor' },
+    { label: 'Bespoke', href: '#table' },
+    { label: 'Showroom', href: '#home' },
+    { label: 'Contact', href: '#ask' },
+  ],
+  hero: {
+    tag: brand.category,
+    tagShort: 'Bespoke furniture · Chattogram',
+    headline: ['Furnished', 'to you.'],
+    sub: brand.tagline,
+    cue: 'Scroll',
+    /* THE PROOF STRIP (2026-09-03, client): the hero had a gap under the CTA
+       and a narrator line ("The power is out. You have a light.") that read as
+       atmosphere rather than as an answer. A first-time visitor's three
+       questions are who draws it, who builds it, who delivers it - so the gap
+       now carries the offer itself, in the studio's own three sentences.
+
+       NOTHING NEW IS CLAIMED. Each line is `studio.lines` shortened to a
+       label, and the marks are the `specimens` already on the page. */
+    proof: [
+      { no: '01', label: 'Drawn to your room', note: 'Free consultation' },
+      { no: '02', label: 'Built in our workshop', note: 'Our own makers' },
+      { no: '03', label: 'Delivered and fitted', note: 'Chattogram' },
+    ],
+    marks: ['EST. 2020', 'AGRABAD · CTG', 'FULLY BESPOKE'],
+    /* three views of Heaven's own rooms; `focal` is the point the zoom
+       portal pushes into (the fabric of the seat), per photograph */
+    views: [
+      { photo: 'living-03-wood-set', focal: '50% 62%', alt: 'A full wooden living room set, styled in the Agrabad showroom.' },
+      { photo: 'living-02-blue-pair', focal: '52% 60%', alt: 'A matched pair of deep blue two-seat sofas by Heaven Furniture Mart.' },
+      { photo: 'bespoke-chairs-01', focal: '58% 62%', alt: 'Bespoke upholstered chairs, built to order in Chattogram.' },
+    ],
+  },
+  /* CH.2 · THE STUDIO. NOBODY READS A PARAGRAPH (client, verbatim: "avoid
+     those big descriptions and texts - customer not like to read texts").
+     What was one long paragraph, one long quotation and three lines of small
+     print is now: three BIG lines that arrive one at a time, and three points
+     with a drawn mark each. The detail is still there for the visitor who
+     wants it - behind a button, in a sheet, set large. Every fact below is
+     the brief's; nothing new is claimed. */
+  studio: {
+    title: ['Bespoke furniture,', 'drawn to your room.'],
+    /* the whole offer in three sentences a customer can take in at a glance */
+    lines: ['We draw it to your room.', 'We build it in our own workshop.', 'We deliver it and fit it.'],
+    points: [
+      {
+        key: '01',
+        icon: 'compass',
+        title: 'Drawn to you',
+        line: 'Free consultation. Your space, your size, your taste.',
+        detail: [
+          'A free design consultation, at the Agrabad showroom or on WhatsApp.',
+          'Built to your space, never pulled off a shelf.',
+          'Bring a room, a size, a photograph or a sketch.',
+          'Sofas, beds, dining sets, office pieces, or something nobody has made before.',
+        ],
+      },
+      {
+        key: '02',
+        icon: 'plane',
+        title: 'Built in-house',
+        line: 'Premium wood. Skilled craftsmen. One workshop.',
+        detail: [
+          'Premium wood and materials, chosen for the piece.',
+          'Skilled in-house craftsmanship, not outsourced.',
+          'A large physical showroom in Agrabad, Chattogram, to see the work before you decide.',
+          'One of Chattogram’s leading bespoke furniture brands since 2020.',
+        ],
+      },
+      {
+        key: '03',
+        icon: 'van',
+        title: 'Delivered and fitted',
+        line: 'Delivery and installation included. Easy payments.',
+        detail: [
+          'Delivery and installation are included.',
+          'Easy payment options.',
+          'Trusted by hundreds of happy homeowners.',
+          'Member of the Chamber of Commerce, 2025. Nationwide BFIOA recognition, 2026.',
+        ],
+      },
+    ],
+    /* the button under each point, and the sheet's own eyebrow */
+    more: 'Details',
+    sheet: 'What that means',
+    since: 'Since 2020',
+  },
+  /* CH.3 · THE FLOOR: a gallery wall of five framed rooms */
+  floor: {
+    title: ['Five rooms.', 'Every piece to your measurements.'],
+    view: 'Quick look',
+    open: 'Open the room',
+    bespokeCard: { num: '05', name: 'Bespoke', detail: 'ANYTHING · YOUR SIZE · YOUR TASTE', action: 'See it drawn' },
+    swipe: 'Swipe',
+    /* THE GLASS WALL. Five plates of different proportions, hung at
+       different heights and turned at different angles so the run of them
+       crosses the screen on a diagonal and the plates overlap like prints
+       laid on a table. `rot` is the angle, `lift` how far it hangs. */
+    frames: [
+      { ratio: '3 / 4', lift: '0vh', rot: '-4deg' },
+      { ratio: '1 / 1', lift: '5vh', rot: '3.2deg' },
+      { ratio: '4 / 5', lift: '1.5vh', rot: '-2.4deg' },
+      { ratio: '3 / 4', lift: '6.5vh', rot: '5deg' },
+      { ratio: '3 / 4', lift: '2.5vh', rot: '-3.4deg' },
+    ],
+    /* the word the cursor carries over the wall */
+    cursor: 'View',
+  },
+  /* the mega menu (header "Rooms") and the phone's full-screen menu */
+  menu: {
+    rooms: 'Rooms',
+    all: 'All pieces',
+    open: 'Menu',
+    close: 'Close',
+    line: 'Five rooms. Every piece built to your measurements.',
+    built: 'built in Agrabad',
+    walk: 'Walk the floor',
+  },
+  /* the room pages (/collections/[slug]) in the night system */
+  roomPage: {
+    back: 'Back to the floor',
+    next: 'Next room',
+    all: 'All rooms',
+    pieces: 'pieces',
+    piece: 'piece',
+    built: 'built in Agrabad',
+    open: 'Open',
+    enquire: 'Enquire about this piece',
+    indexTitle: ['Five rooms.', 'Walk them all.'],
+    indexLine: 'Every photograph here is a piece Heaven built and delivered. Nothing is stock.',
+  },
+  table: {
+    title: ['Designed. Crafted.', 'Customized.'],
+    line: 'Drawn to your measurements. Built in premium wood by in-house craftsmen. Finished in your fabric.',
+    fabric: 'Fabric',
+    measured: 'Measured off the drawing',
+    ar: 'See it in your room',
+  },
+  home: {
+    title: ['Take it', 'home.'],
+    arCard: {
+      key: 'In your room',
+      line: 'The piece you just dyed, standing in your own room at true size. Point your phone at the floor.',
+      button: 'Open in your room',
+    },
+    film: {
+      key: 'The showroom',
+      line: 'Agrabad Access Road, Chattogram. Walk the floor before you decide.',
+      /* the ambient film runs muted on a desktop; this is the way in to the
+         real one, with sound */
+      sound: 'Watch with sound',
+    },
+  },
+  ask: {
+    title: ['Ready to design', 'around you?'],
+    line: 'Tell us the room and the piece. We draw it to your measurements and send the quote on WhatsApp.',
+  },
 } as const

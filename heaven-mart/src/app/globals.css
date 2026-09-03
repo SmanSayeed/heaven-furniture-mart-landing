@@ -10,27 +10,36 @@
      the photographs, the 3D pieces + fabric swatch chips, and the logo's
      own triangle. Everything below is ink, paper, and white light. */
 
-  /* ---- ground ---- */
-  --ink: #070809;            /* near black, the page ground */
-  --ink-2: #101214;          /* raised dark panels */
-  --paper: #f2f3f4;          /* NEUTRAL near-white (never warm ivory) */
-  --paper-2: #e6e8e9;
-  --graphite: #17191c;       /* hairline borders on ink */
-  --text-dim: rgba(242, 243, 244, 0.62);
+  /* ---- ground: THE LIGHT STORY (CONCEPT-V2, 2026-09-02) ----
+     The page is Heaven's showroom at night, and every colour below is what
+     a Chattogram room looks like under ONE warm tungsten bulb: the dark is
+     brown-black (wood shadow, not the blue-black of a dead screen), the
+     paper is warm ivory (the brief's own word), and "light" is tungsten,
+     never white. The monochrome "Drawn to Measure" skin this replaces was
+     precise and cold; four competing entries were warm and generic. This
+     is warm AND lit, which neither of them is. */
+  --ink: #0d0906;            /* tungsten-lit brown-black, the page ground */
+  --ink-2: #17110c;          /* raised dark panels */
+  --paper: #f4eee3;          /* warm ivory */
+  --paper-2: #eae1d2;
+  --graphite: #261b12;       /* hairline borders on ink */
+  --text-dim: rgba(244, 238, 227, 0.62);
   --brand: #0c1312;          /* the logo's own ground: ONLY the logo block */
 
-  /* ---- light (SS2.8: "neon" means light, not colour) ---- */
-  --glow: rgba(255, 255, 255, 0.06);       /* broad white bloom */
-  --glow-cool: rgba(238, 244, 252, 0.55);  /* light pools; cast <= 6% sat */
-  --filament: rgba(255, 255, 255, 0.55);   /* 1px lit lines: plot line, dims */
+  /* ---- light: tungsten. A bulb, a lamp, a generator coming back on. ---- */
+  --glow: rgba(255, 190, 110, 0.07);       /* broad warm bloom */
+  --glow-cool: rgba(255, 214, 160, 0.5);   /* light pools (name kept: every
+                                              stage reads this token) */
+  --filament: rgba(255, 220, 170, 0.7);    /* 1px lit lines: plot line, dims */
+  --tungsten: #ffd4a0;                     /* the bulb itself */
 
-  /* text on the light ground: 16.3:1 on --paper */
-  --text-ink: #14161a;
+  /* text on the light ground: 15:1 on --paper */
+  --text-ink: #1c1410;
 
-  /* collapsed to white: every old accent consumer (CTA border, index
-     numerals, tri glyphs, focus ring) is now white-on-ink. Light-ground
-     consumers carry their own overrides below. */
-  --accent: #ffffff;
+  /* THE ACCENT IS BRASS AGAIN - the colour of the light, and of the logo.
+     Used in at most four places per viewport (CTA ring, the lit word, one
+     index, one swatch). On ink it measures 10.4:1. */
+  --accent: #d9b46a;
 
   /* ---- compatibility layer ----
      Section modules were written against older names; they now RESOLVE to
@@ -40,20 +49,20 @@
   --ivory-soft: var(--paper-2);
   --ink-soft: var(--ink-2);
   --brown: var(--text-ink);
-  --brass: #ffffff;          /* dead as a colour; alias = filament white */
-  --gold: #ffffff;
+  --brass: #c9a45c;
+  --gold: #d9b46a;
   --marigold: #f0a62b;       /* THE LOGO EXCEPTION ONLY: used by the
                                 wordmark triangle override, nowhere else */
 
   /* ---- hairlines ---- */
-  --line-on-ink: rgba(242, 243, 244, 0.1);
-  --line-on-ivory: rgba(20, 22, 26, 0.14);
+  --line-on-ink: rgba(255, 230, 200, 0.12);
+  --line-on-ivory: rgba(28, 20, 16, 0.14);
 
   /* ---- type (BLUEPRINT SS2.6: baseline-snapped scale) ----
      font family custom properties are injected by next/font in layout.tsx:
      --font-display (Inter Tight), --font-sans (Inter), --font-mono (Geist
      Mono), --font-quote (Fraunces italic, the MD quote only) */
-  --text-statement: clamp(3rem, 9vw, 5.5rem);   /* 48 -> 88px */   /* 48 -> 88px */
+  --text-statement: clamp(3rem, 9vw, 5.5rem);   /* 48 -> 88px */
   --text-section: clamp(2.375rem, 6vw, 3.125rem); /* 38 -> 50px */
   --text-placard: 1rem;                          /* 16/24 */
   --text-specimen: 0.75rem;                      /* 12/16 mono */
@@ -399,12 +408,19 @@ img {
 
 /* STATEMENT: huge display type, max 6 words. The premium is the SETTING:
    enormous size, negative tracking, tight leading (PLAN v3). */
+/* FRAUNCES at display size (CONCEPT-V2). The brief asked for "an elegant
+   serif for headlines"; every competing entry answered with Cormorant or
+   Playfair, the two serifs every template ships. Fraunces is a soft, wonky
+   old-style with a real optical-size axis: at 144 opsz it is high-contrast
+   and editorial, at text sizes it stays sturdy. -0.02em, not -0.035: a
+   serif's counters close up faster than a grotesk's under tight tracking. */
 .statement {
-  font-family: var(--font-display), system-ui, sans-serif;
+  font-family: var(--font-display), Georgia, serif;
   font-size: var(--text-statement);
-  font-weight: 600;
-  line-height: 0.95;
-  letter-spacing: -0.035em;
+  font-weight: 500;
+  font-variation-settings: 'opsz' 144;
+  line-height: 1;
+  letter-spacing: -0.02em;
   text-wrap: balance;
 }
 
@@ -417,19 +433,115 @@ img {
    sign in a dark studio window. White core, soft white bloom, no hue.
    Never more than one per statement. */
 .grad-word {
-  color: #ffffff;
+  color: var(--tungsten);
+  font-style: italic;
   text-shadow:
-    0 0 18px rgba(255, 255, 255, 0.45),
-    0 0 64px rgba(255, 255, 255, 0.18);
+    0 0 18px rgba(255, 200, 130, 0.5),
+    0 0 64px rgba(255, 180, 100, 0.22);
 }
 
 .section-title {
-  font-family: var(--font-display), system-ui, sans-serif;
+  font-family: var(--font-display), Georgia, serif;
   font-size: var(--text-section);
-  font-weight: 600;
-  line-height: 0.95;
-  letter-spacing: -0.035em;
+  font-weight: 500;
+  font-variation-settings: 'opsz' 96;
+  line-height: 1.02;
+  letter-spacing: -0.015em;
   text-wrap: balance;
+}
+
+/* ============ THE LIGHT STORY primitives (CONCEPT-V2) ============ */
+
+/* THE TORCH (Torch.tsx): on pointer devices the cursor is a warm pool of
+   light over the whole page. One fixed circle, moved by transform only, so
+   it composites and never lays out. screen-blended: it ADDS light to what
+   is under it, which on a dark room reveals detail and on ivory paper is a
+   faint warmth. Off by default (opacity 0); the component turns it on at
+   the first pointer move and off when the pointer leaves the window. */
+.torch {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 640px;
+  height: 640px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 5; /* above the fixed WebGL canvas (4): light falls on the 3D too */
+  background: radial-gradient(
+    closest-side,
+    rgba(255, 196, 120, 0.2),
+    rgba(255, 196, 120, 0.07) 42%,
+    transparent 70%
+  );
+  mix-blend-mode: screen;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+  will-change: transform;
+}
+
+.torch[data-on] {
+  opacity: 1;
+}
+
+/* THE BLACKOUT (Blackout.tsx): the loadshedding beat. Fixed and ABOVE the
+   WebGL canvas, because a cut that leaves the sofa lit is not a cut. CSS
+   default is hidden: no JS, reduced motion and slow devices never see it.
+   PageMotion runs it once, on the first visit, right after the hero lands. */
+.blackout {
+  position: fixed;
+  inset: 0;
+  /* above EVERYTHING - the Index pill (90), the dock (92), the overlay
+     (94), the grain (80). When the current goes in Agrabad the chrome goes
+     with it; a cut that leaves a menu button lit is a modal, not a cut. */
+  z-index: 96;
+  display: grid;
+  place-content: center;
+  gap: 1.1rem;
+  text-align: center;
+  background: var(--ink);
+  color: var(--paper);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* the one Bangla word on the page. Light weight, large, and set in the
+   language the room actually goes dark in. */
+.blackout-word {
+  font-family: var(--font-bengali), 'Noto Sans Bengali', 'Nirmala UI', system-ui, sans-serif;
+  font-weight: 300;
+  font-size: clamp(2.6rem, 9vw, 6rem);
+  line-height: 1.3;
+  color: var(--tungsten);
+  opacity: 0;
+}
+
+.blackout-line {
+  opacity: 0;
+}
+
+/* THE ARCH: a photograph seen through a doorway. The one geometric motif
+   the redesign adds - furniture lives in rooms, rooms have doorways, and a
+   round-headed arch is the shape every Chattogram showroom front already
+   has. Applied to at most one panel per sheet. */
+/* `.panel.arch` as well as `.arch`: .panel is declared later in this file
+   with the sharp corners every other plate keeps, and at equal specificity
+   it silently won (measured: computed radius 0). Two classes outrank one. */
+.arch,
+.panel.arch {
+  border-radius: 50% 50% 0 0 / 38% 38% 0 0;
+  overflow: hidden;
+}
+
+/* THE ROOMS OVERLAP: the sheet that follows slides over the one before it
+   with a radiused top edge, like the next room's doorway drawing over the
+   last. DOM order is paint order for positioned siblings, so no z-index is
+   involved - which matters, because the fixed 3D canvas sits at z 4 and the
+   two sheets that host 3D (bespoke, collections rail) are deliberately NOT
+   in this list. */
+.room {
+  border-radius: calc(var(--u) * 4) calc(var(--u) * 4) 0 0;
+  margin-top: calc(var(--u) * -4);
 }
 
 /* PLACARD: museum label = index + small caps title + one line */
@@ -966,4 +1078,27 @@ img {
   border-radius: 10px;
   background: var(--brand);
   color: var(--paper);
+}
+
+
+/* ---------- PAGE TRANSITIONS (PLAN-V6 PART B5) ----------
+   Cross-document view transitions, no library: a frame on the wall and the
+   room page's own plate share a `view-transition-name`, so on Chrome, Edge
+   and Safari 18 the clicked photograph flies into the page it opens and
+   the rest crossfades. Everywhere else a plain navigation. */
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.45s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
 }

@@ -184,7 +184,105 @@
     Chattogram mobile data, and a second subject again — three problems to
     buy an atmosphere that a black ground and one beam already have.
   */
-  filter: grayscale(1) contrast(1.28) brightness(0.26);
+  /* THE LIGHT STORY (CONCEPT-V2): no longer greyscale. The room is a warm
+     room at night - colour survives, drained to 60% and crushed to a third
+     of its brightness, so it reads as a space lit by one bulb rather than
+     as a photograph. Still not a second subject; now a warm one. */
+  filter: saturate(0.6) contrast(1.22) brightness(0.3);
+}
+
+/* ============ THE BULB (Bulb.tsx) ============
+   One tungsten bulb on a short cord in the stage's TOP-LEFT CORNER, with a
+   cone of light thrown DIAGONALLY down and to the right across the piece -
+   the One Light Law (top left, 45 degrees) made visible. A bulb hanging in
+   mid-air lighting straight down read as a pendant lamp in a shop (client
+   screenshot); a corner source raking across the piece reads as a lit
+   stage. transform-origin at the cord's top makes the assembly swing as one
+   pendulum. */
+.bulb {
+  position: absolute;
+  top: 0;
+  left: 7%;
+  width: 0;
+  height: 0;
+  transform-origin: 50% 0;
+  animation: bulbSwing 6.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.bulbCord {
+  position: absolute;
+  top: 0;
+  left: -0.5px;
+  width: 1px;
+  height: 9%;
+  min-height: 22px;
+  background: linear-gradient(180deg, var(--line-on-ink), rgba(255, 220, 170, 0.35));
+}
+
+.bulbGlass {
+  position: absolute;
+  top: max(9%, 22px);
+  left: -7px;
+  width: 14px;
+  height: 18px;
+  border-radius: 7px 7px 9px 9px;
+  background: radial-gradient(circle at 50% 40%, #fff6e6, var(--tungsten) 55%, rgba(255, 190, 110, 0.6));
+  box-shadow:
+    0 0 10px 3px rgba(255, 214, 160, 0.75),
+    0 0 42px 12px rgba(255, 190, 110, 0.35);
+}
+
+/* THE CONE. A conic wedge whose apex is the bulb (50% 0% of this box, which
+   is why the box is centred on the cord: left = -width/2). The wedge is
+   centred on --beam-angle measured clockwise from straight up - 135deg is
+   the diagonal - and spans +-18deg. A radial mask fades it with distance
+   from the bulb, so the light is brightest at the source and dies before
+   the far edge of the panel. screen-blended: it ADDS to the stage pool. */
+.bulbCone {
+  --beam-angle: 135deg;
+  position: absolute;
+  top: max(9%, 22px);
+  left: -400px;
+  width: 800px;
+  height: 800px;
+  /* ONE quiet wedge, nothing else. The wide two-layer wash tried before
+     read as a flat brown sheet laid over the stage ("too much light, other
+     layer"): a broad radial spill has no edge to read as a beam, and at .3
+     it lifted the whole panel. This is a +-14deg core with 16deg soft ramps
+     on each side - the edge a real spot throws - at half the opacity, dying
+     within the panel. The bulb's own glow (box-shadow) is the only spill. */
+  background: conic-gradient(
+    from calc(var(--beam-angle) - 30deg) at 50% 0%,
+    transparent 0deg,
+    rgba(255, 200, 130, 0.15) 16deg,
+    rgba(255, 200, 130, 0.15) 44deg,
+    transparent 60deg
+  );
+  mask-image: radial-gradient(620px circle at 50% 0%, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0.5) 50%, transparent 88%);
+  mix-blend-mode: screen;
+}
+
+/* a phone's stage is wide (1.41:1) rather than squarish, so the diagonal
+   that crosses the piece's centre is a little flatter */
+@media (max-width: 899px) {
+  .bulb {
+    left: 8%;
+  }
+  .bulbCone {
+    --beam-angle: 122deg;
+  }
+}
+
+@keyframes bulbSwing {
+  0%, 100% { transform: rotate(-2deg); }
+  50% { transform: rotate(2deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bulb {
+    animation: none;
+  }
 }
 
 /* text contrast at the top, clearing at the bottom so the vitrine glow reads
@@ -356,6 +454,9 @@
 .stage {
   position: relative;
   width: 100%;
+  /* the bulb's cone box is 800px square; the panel's edge is where the
+     light stops (the arrows and crop marks sit inside the edge) */
+  overflow: hidden;
   /* .panel .panel-land (globals) own the shape: 1.41421 : 1, sharp corners,
      hairline edge. Height is derived, never set, so the ratio is exact. */
   /*
@@ -396,7 +497,12 @@
 */
 @media (min-width: 900px) {
   .stage {
-    aspect-ratio: 1.18 / 1;
+    /* 1.05, not 1.18: the stage is two columns now (THE PAIR took the other
+       two), and at the narrower width the squarer ratio buys back most of
+       the height the piece lost. The camera refits to whatever box it gets.
+       The plate next door declares the SAME ratio - that agreement is what
+       makes the two panels read as one pair. */
+    aspect-ratio: 1.05 / 1;
     /* full width of its own grid track, flush to the sheet's right margin —
        the same edge the header, the CTA row and the footer all sit on */
     width: 100%;
@@ -715,8 +821,12 @@
     gets the full 88px. 11dvh hits exactly 88px at 800px tall.
   */
   .heroMain :global(.statement) {
-    font-size: min(5.5rem, 11dvh);
-    line-height: 1;
+    /* 4.4rem, was 5.5: the statement's column went from three to two when
+       THE PAIR took the stage's old width. At 88px the longest word overran
+       the track; at ~70px it sets as a tall three-line column, which is what
+       a narrow measure is FOR. The dvh clamp keeps short laptops honest. */
+    font-size: min(4.4rem, 9.5dvh);
+    line-height: 1.02;
   }
 }
 
@@ -728,7 +838,7 @@
    one place the grid law yields, and it yields to the ratio deliberately. */
 @media (min-width: 900px) and (max-height: 720px) {
   .stage {
-    width: min(100%, calc(40dvh * 1.41421));
+    width: min(100%, calc(42dvh * 1.05));
     justify-self: end;
   }
 }
@@ -2488,9 +2598,22 @@
   */
   height: auto;
   aspect-ratio: 1.41421 / 1;
-  border: 1px solid var(--line-on-ivory);
+  border: 1px solid var(--graphite);
   overflow: hidden;
-  background: transparent;
+  /*
+    THE VIEWER STANDS ON THE HERO'S OWN STAGE, not on the sheet's paper.
+
+    Sheet 07 is an ivory sheet, model-viewer's canvas is transparent, and
+    the royal canape is ivory upholstery in a gilt frame - so the live
+    viewer rendered a white sofa dissolving into a white page (client
+    screenshot). The fix is the same plate the hero already uses: near-black
+    ground, one cool pool of light, and suddenly the ivory is the brightest
+    thing in the frame and the gilt has something to burn against. It also
+    means the two 3D stages on the page agree about what a stage is.
+  */
+  background:
+    radial-gradient(46% 40% at 50% 62%, var(--glow-cool), transparent 72%),
+    var(--ink);
   /* the page keeps vertical gestures; the viewer gets horizontal ones */
   touch-action: pan-y;
 }
@@ -2968,69 +3091,97 @@
 }
 
 
-/* ============ THE PROOF CHIP (Turntable.tsx) ============
-   The real photograph as an inline thumb in the caption row. Both in-stage
-   corners have been tried and lost to the 3D (see the JSX comment); inline
-   it cannot collide with anything and costs the row no height. */
-.realChip {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: inherit;
+/* ============ THE PAIR (Hero.tsx + Turntable.tsx HeroReal) ============
+   The hero's two plates of equal rank: THE DRAWING (the turntable, columns
+   3-4) and THE REAL WORK (this photograph, columns 5-6). The proof spent a
+   week as a 2.75rem caption thumb, which satisfied the layout and nobody
+   else - evidence does not work at postage-stamp size. Now it is a plate.
+
+   Mobile first: full width, right after the CTA in DOM order, so it is the
+   first thing a scroll reveals and costs the 844px first viewport nothing.
+   3:2 because that is roughly the photographs' own shape (1.6-1.8), so the
+   cover-crop stays honest. */
+.heroReal {
+  display: grid;
+  gap: 0.55rem;
+  align-content: start;
 }
 
-.realFrames {
+.heroRealPanel {
   position: relative;
   display: block;
-  width: 2.75rem;
-  aspect-ratio: 4 / 3;
-  border: 1px solid var(--graphite);
-  border-radius: 0 3px 8px 3px;
+  width: 100%;
+  aspect-ratio: 3 / 2;
   overflow: hidden;
+  border: 1px solid var(--line-on-ink);
   background: var(--ink-2);
-  transition: border-color 0.3s ease, box-shadow 0.35s ease;
+  transition: border-color 0.3s ease;
 }
 
-.realChip:hover .realFrames,
-.realChip:focus-visible .realFrames {
+.heroRealPanel:hover,
+.heroRealPanel:focus-visible {
   border-color: var(--accent);
-  box-shadow: 0 8px 20px -10px color-mix(in srgb, var(--accent) 65%, transparent);
 }
 
-/* all five plates live stacked; the active one is simply the opaque one, so
-   a piece change is a crossfade rather than a swap */
-.realFrame {
+/* all five photographs live stacked; the active one is the opaque one, so a
+   piece change crossfades here in the same breath as the 3D */
+.heroRealFrame {
   position: absolute;
   inset: 0;
   opacity: 0;
   transition: opacity 0.6s ease;
 }
 
-.realFrame[data-active] {
+.heroRealFrame[data-active] {
   opacity: 1;
 }
 
-.realImg {
+.heroRealImg {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-/* the label rides only where there is room for it */
-.realLabel {
+.heroRealCaption {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  color: var(--ivory);
+}
+
+.heroRealCaption :global(.specimen) {
+  opacity: 0.62;
+}
+
+.heroRealTag {
   color: var(--accent);
 }
 
-@media (max-width: 599px) {
-  .realLabel {
-    display: none;
+.heroRealCaption .heroRealTag {
+  opacity: 1;
+}
+
+/* desktop: the grid lifts the plate out of DOM order and stands it beside
+   the drawing - same rows, same vertical centre, one baseline. Its ratio
+   switches to the STAGE's (see .stage at 900px): the pair only reads as a
+   pair if the two panels are the same panel. */
+@media (min-width: 900px) {
+  .heroReal {
+    grid-row: 2 / span 2;
+    align-self: center;
+    gap: 0.9rem;
   }
 
-  /* the category specimen wrapped the caption to a second line, and that
-     line was the hero's last 20px over budget. On a phone the thumb and the
-     name carry the category; the page it links to says the rest. */
-  .pieceName > :global(.specimen) {
-    display: none;
+  .heroRealPanel {
+    /* TALLER than the stage on purpose (0.88 vs 1.05): the extra height is
+       exactly the dimension line + caption stack the turntable carries under
+       its panel, so with both blocks centred on the same rows the two
+       panels' TOP edges land on one line and the photograph runs down past
+       the stage into its caption row - a tall plate clipped beside a
+       drawing, which is the pair the plan asked for. */
+    aspect-ratio: 0.88 / 1;
+    max-height: 56dvh;
   }
 }
 

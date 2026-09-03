@@ -1,4 +1,4 @@
-import s from '@/components/sections/sections.module.css'
+import s from '@/components/ui/shared.module.css'
 
 /**
  * Registration / crop marks at a panel's four corners (BLUEPRINT SS2.7.3).

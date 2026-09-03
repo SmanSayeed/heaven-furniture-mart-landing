@@ -1,0 +1,1892 @@
+/* ============================================================
+   THE SLIDES (PLAN-V5). Nine full-screen plates; each rises over the last.
+
+   Mechanic: every plate is `position: sticky; top: 0; height: 100svh`. As the
+   document scrolls, plate N holds at the top while plate N+1 slides up over
+   it. Native scroll, no hijack, identical on a phone, and the browser
+   composites it - nothing here is animated from JavaScript except a class.
+
+   Stacking: plates BEFORE the bespoke plate sit at z 1 (DOM order paints the
+   later one on top), the bespoke plate at z 2, and every plate AFTER it at
+   z 5. The page's one fixed WebGL canvas is z 4 (sections.module.css
+   .stageCanvas): it must paint OVER the bespoke plate, where its View lives,
+   and UNDER the plates that rise to cover that view. Change one of these
+   numbers and the sofa will float over the Maker.
+   ============================================================ */
+
+.deck {
+  position: relative;
+}
+
+.plate {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  overflow: hidden;
+  display: grid;
+  align-content: end;
+  padding: 0 var(--pad-x) clamp(2.5rem, 6vh, 4rem);
+  isolation: isolate;
+  background: var(--ink);
+  color: var(--ivory);
+  /* the seam: a soft shadow on the rising edge, so the plate reads as a
+     sheet laid over the last one rather than a hard cut */
+  box-shadow: 0 -30px 60px -30px rgba(0, 0, 0, 0.7);
+}
+
+.plateMedia {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  transform: scale(1.06);
+  transition: transform 1.6s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.plateImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.scrim {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    180deg,
+    rgba(15, 26, 27, 0.5) 0%,
+    rgba(15, 26, 27, 0) 32%,
+    rgba(15, 26, 27, 0) 52%,
+    rgba(15, 26, 27, 0.78) 100%
+  );
+}
+
+/* quiet plates carry no photograph: the ground is the plate */
+.plateQuiet {
+  background: radial-gradient(60% 50% at 50% 50%, #1d2f30 0%, var(--ink) 70%);
+}
+
+/* ============ THE ENTRANCES (Plate.tsx `enter` / `text`) ============
+   Inversion law: every rule below the [data-wait] line describes the
+   plate BEFORE it arrives; everything else is the finished plate. The
+   motion layer stamps data-wait from JavaScript on plates below the fold
+   and removes it as each crosses 60% of the viewport, so no-JS and
+   reduced-motion never see an unfinished one.
+
+   Nine plates arriving the same way read as a slideshow. Each variant is a
+   transform or a clip-path on the media layer - compositor work only. */
+.plateMedia {
+  transition:
+    transform 1.6s cubic-bezier(0.22, 0.61, 0.36, 1),
+    clip-path 1.3s cubic-bezier(0.22, 0.61, 0.36, 1),
+    opacity 1.2s ease;
+  transform-origin: 50% 100%;
+}
+
+.plate:not([data-wait]) .plateMedia {
+  transform: scale(1);
+}
+
+/* resting poses that a variant's hidden pose can interpolate to */
+.plate[data-enter='wipe-r'] .plateMedia,
+.plate[data-enter='wipe-l'] .plateMedia,
+.plate[data-enter='shutter'] .plateMedia {
+  clip-path: inset(0 0 0 0);
+}
+
+.plate[data-enter='iris'] .plateMedia {
+  clip-path: circle(120% at 50% 55%);
+}
+
+/* hidden poses */
+.plate[data-wait][data-enter='rise'] .plateMedia {
+  transform: scale(1.06);
+}
+
+.plate[data-wait][data-enter='wipe-r'] .plateMedia {
+  clip-path: inset(0 100% 0 0);
+}
+
+.plate[data-wait][data-enter='wipe-l'] .plateMedia {
+  clip-path: inset(0 0 0 100%);
+}
+
+.plate[data-wait][data-enter='iris'] .plateMedia {
+  clip-path: circle(0% at 50% 55%);
+}
+
+.plate[data-wait][data-enter='shutter'] .plateMedia {
+  clip-path: inset(50% 0 50% 0);
+}
+
+.plate[data-wait][data-enter='zoom'] .plateMedia {
+  transform: scale(1.25);
+  opacity: 0.35;
+}
+
+.plate[data-wait][data-enter='tilt'] .plateMedia {
+  transform: perspective(1200px) rotateX(12deg) scale(1.1);
+  opacity: 0.6;
+}
+
+/* the maker's portrait is an aside, not the media layer; it zooms with
+   its own plate */
+.plate[data-wait] .makerPortrait {
+  transform: scale(1.18);
+  opacity: 0;
+}
+
+.makerPortrait {
+  transition:
+    transform 1.6s cubic-bezier(0.22, 0.61, 0.36, 1),
+    opacity 1.2s ease;
+  transform-origin: 60% 30%;
+}
+
+/* ---- the stack's shadow: scrubbed by DeckMotion as the next plate rises ---- */
+.shade {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--ink);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ---- the caption ---- */
+.text {
+  display: grid;
+  gap: clamp(0.75rem, 1.4vh, 1rem);
+  max-width: 900px;
+}
+
+/* tag, lede, controls: a quiet rise after the title's words */
+.text > *:not(.title) {
+  transition:
+    transform 0.9s cubic-bezier(0.22, 0.61, 0.36, 1),
+    opacity 0.9s ease;
+}
+
+.plate[data-wait] .text > *:not(.title) {
+  transform: translateY(26px);
+  opacity: 0;
+}
+
+/* the title's WORDS (PlateTitle): each line is a mask, each word carries
+   --i, and the stagger is that index times 55 ms - staggerChildren, in CSS */
+.line {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.06em; /* descenders survive the mask */
+  margin-bottom: -0.06em;
+}
+
+.w {
+  display: inline-block;
+  transition:
+    transform 0.95s cubic-bezier(0.22, 0.61, 0.36, 1),
+    opacity 0.8s ease,
+    filter 0.8s ease;
+  transition-delay: calc(var(--i, 0) * 55ms + 120ms);
+}
+
+.plate[data-wait][data-text='mask'] .w {
+  transform: translateY(110%);
+}
+
+.plate[data-wait][data-text='blur'] .w {
+  opacity: 0;
+  filter: blur(10px);
+  transform: translateY(6px);
+}
+
+.plate[data-wait][data-text='slide-l'] .w {
+  opacity: 0;
+  transform: translateX(-48px);
+}
+
+.plate[data-wait][data-text='slide-r'] .w {
+  opacity: 0;
+  transform: translateX(48px);
+}
+
+.text > :nth-child(2) { transition-delay: 0.08s; }
+.text > :nth-child(3) { transition-delay: 0.16s; }
+.text > :nth-child(4) { transition-delay: 0.24s; }
+.text > :nth-child(5) { transition-delay: 0.32s; }
+
+/* ---- type: Apple-sized, bottom-left, a caption to the photograph ---- */
+.tag {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 0.6875rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.tag::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--brass);
+  flex: none;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-weight: 600;
+  font-size: clamp(2.75rem, 7vw, 6.5rem);
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+.titleHero {
+  font-size: clamp(3rem, 7.6vw, 7rem);
+}
+
+.lede {
+  margin: 0;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: clamp(0.9375rem, 1.25vw, 1.1875rem);
+  line-height: 1.5;
+  max-width: 44ch;
+  opacity: 0.88;
+}
+
+.sub {
+  margin: 0;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-weight: 500;
+  font-size: clamp(1rem, 1.5vw, 1.375rem);
+  letter-spacing: -0.01em;
+  opacity: 0.92;
+}
+
+.quiet {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.72;
+  color: inherit;
+  text-decoration: none;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* ---- the pill: one shape for every control on the deck ---- */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+  background: var(--ivory);
+  padding: 0.75rem 1.125rem;
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.pill svg {
+  width: 16px;
+  height: 16px;
+}
+
+.pill:hover {
+  transform: translateY(-1px);
+}
+
+.pill:focus-visible {
+  outline: 2px solid var(--brass);
+  outline-offset: 3px;
+}
+
+.pillBrass {
+  background: var(--brass);
+}
+
+.pillGhost {
+  /* no backdrop-filter: a blur over a full-bleed photograph is re-rendered
+     every scrolled frame on a mid-range Android; a slightly deeper tint
+     reads the same and costs nothing */
+  background: rgba(15, 26, 27, 0.66);
+  color: var(--ivory);
+  border: 1px solid rgba(244, 240, 232, 0.28);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-weight: 500;
+  font-size: 0.6875rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.pillGhost::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ivory);
+}
+
+.pillGhost:hover,
+.pillGhost:focus-visible {
+  border-color: var(--brass);
+}
+
+/* the VIEW control: right-middle on a wide screen (Sørenrose's position),
+   inline with the text on a phone where the sticky pill owns the corner */
+.view {
+  position: absolute;
+  right: clamp(1.5rem, 4vw, 4rem);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
+}
+
+@media (max-width: 860px) {
+  .view {
+    position: static;
+    transform: none;
+    justify-self: start;
+    /* after the caption, not before it: the plate is a grid and the pill
+       is a sibling of the text block, so DOM order would put it on top */
+    order: 2;
+    margin-top: 0.25rem;
+  }
+}
+
+/* ---- the header: the deck's only chrome ---- */
+.hdr {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 40;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding: 1.1rem var(--pad-x);
+  pointer-events: none;
+  transition: background-color 0.4s ease;
+}
+
+.hdr > * {
+  pointer-events: auto;
+}
+
+.hdrSolid {
+  background: color-mix(in srgb, var(--ink) 82%, transparent);
+  backdrop-filter: blur(10px);
+}
+
+/* over a paper chapter (PLAN-V6 The studio) the chrome turns to ink */
+.hdrPaper {
+  background: color-mix(in srgb, var(--paper) 86%, transparent);
+}
+
+.hdrPaper .brand,
+.hdrPaper .nav a {
+  color: var(--text-ink);
+}
+
+.hdrPaper .hdrCta {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.brand {
+  display: inline-block;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  font-size: 0.8125rem;
+  line-height: 1;
+  color: var(--ivory);
+  text-decoration: none;
+}
+
+.brand :global(.tri) {
+  border-bottom-color: var(--marigold);
+}
+
+.brandSub {
+  display: block;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-weight: 500;
+  font-size: 0.4375rem;
+  letter-spacing: 0.32em;
+  opacity: 0.7;
+  margin-top: 4px;
+}
+
+.nav {
+  display: flex;
+  gap: 1.4rem;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.nav a {
+  color: var(--ivory);
+  text-decoration: none;
+  opacity: 0.85;
+  transition: opacity 0.3s ease;
+}
+
+.nav a:hover {
+  opacity: 1;
+}
+
+.hdrCta {
+  justify-self: end;
+}
+
+/* ---- THE CHROME'S ACTION (client call: must not read as the hero's) ----
+   A hairline plate, brass on ink, that FILLS from its own baseline when a
+   pointer arrives; the label turns to ink as the brass rises behind it. Two
+   corner ticks, the same annotation the photographs wear. */
+.hdrAction {
+  position: relative;
+  justify-self: end;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 2.5rem;
+  padding: 0.72rem 1.15rem;
+  border: 1px solid rgba(201, 164, 92, 0.5);
+  color: var(--brass);
+  background: color-mix(in srgb, var(--ink) 34%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  isolation: isolate;
+  transition: color 0.45s ease, border-color 0.45s ease;
+}
+
+.hdrActionFill {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--brass);
+  transform: translateY(101%);
+  transition: transform 0.55s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.hdrAction:hover,
+.hdrAction:focus-visible {
+  color: var(--ink);
+  border-color: var(--brass);
+}
+
+.hdrAction:hover .hdrActionFill,
+.hdrAction:focus-visible .hdrActionFill {
+  transform: none;
+}
+
+.hdrAction:focus-visible {
+  outline: 2px solid var(--brass);
+  outline-offset: 3px;
+}
+
+.hdrAction svg {
+  width: 13px;
+  height: 13px;
+  flex: none;
+}
+
+/* the label carries the tracking; the glyph must not be pushed by it */
+.hdrActionText {
+  display: inline-block;
+  letter-spacing: 0.22em;
+  margin-right: -0.22em;
+}
+
+/* the ticks: two hairlines at the right corners, inside the edge */
+.hdrAction::before,
+.hdrAction::after {
+  content: '';
+  position: absolute;
+  right: 3px;
+  width: 7px;
+  height: 7px;
+  border: solid currentColor;
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.hdrAction::before {
+  top: 3px;
+  border-width: 1px 1px 0 0;
+}
+
+.hdrAction::after {
+  bottom: 3px;
+  border-width: 0 1px 1px 0;
+}
+
+/* over the studio's paper the same plate turns to ink */
+.hdrPaper .hdrAction {
+  color: var(--text-ink);
+  border-color: rgba(28, 20, 16, 0.35);
+  background: color-mix(in srgb, var(--paper) 40%, transparent);
+}
+
+.hdrPaper .hdrAction .hdrActionFill {
+  background: var(--text-ink);
+}
+
+.hdrPaper .hdrAction:hover,
+.hdrPaper .hdrAction:focus-visible {
+  color: var(--paper);
+  border-color: var(--text-ink);
+}
+
+/* the counter: which plate, of how many */
+.counter {
+  position: fixed;
+  right: var(--pad-x);
+  top: 50%;
+  transform: translateY(-50%) rotate(90deg);
+  transform-origin: right center;
+  z-index: 40;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  opacity: 0.8;
+  font-variant-numeric: tabular-nums;
+  color: var(--ivory);
+  pointer-events: none;
+}
+
+@media (max-width: 860px) {
+  .hdr {
+    grid-template-columns: 1fr;
+  }
+  .nav {
+    display: none;
+  }
+  /* one CTA per viewport: the hero carries its own, and the sticky pill
+     takes over the moment the hero leaves. A third in the header was the
+     only thing on the first screen that broke the rule. */
+  .hdrCta,
+  .hdrAction {
+    display: none;
+  }
+  .counter {
+    right: 0.75rem;
+    font-size: 0.6rem;
+  }
+  .plate {
+    /* room for the sticky Quote pill under the text */
+    padding-bottom: 5.5rem;
+  }
+}
+
+/* ---- the bespoke plate: the deck's one 3D ----
+   The rect the drei View tracks. Upper half of the plate, centred, clear of
+   the caption below; the piece is framed by the camera to this box. */
+.stage3d {
+  position: absolute;
+  left: 50%;
+  top: 9%;
+  width: min(64vw, 760px);
+  height: 46%;
+  transform: translateX(-50%);
+  /* the light the piece stands in, drawn in CSS so the no-3D plate still
+     reads as a lit stage rather than an empty one */
+  background: radial-gradient(45% 40% at 50% 62%, var(--glow-cool), transparent 72%);
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+@media (max-width: 860px) {
+  .stage3d {
+    top: 8%;
+    width: 88vw;
+    height: 38%;
+  }
+}
+
+.swatches {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.swatch {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid rgba(244, 240, 232, 0.35);
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.3s ease;
+}
+
+.swatch:hover {
+  transform: scale(1.08);
+}
+
+.swatch[aria-pressed='true'] {
+  outline: 2px solid var(--brass);
+  outline-offset: 3px;
+}
+
+.swatch:focus-visible {
+  outline: 2px solid var(--ivory);
+  outline-offset: 3px;
+}
+
+/* ---- the maker plate: the man on the right, keyed out of his seamless ---- */
+.makerPortrait {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 58%;
+  z-index: -1;
+  object-fit: cover;
+  object-position: 50% 20%;
+  /* the studio's flat grey backdrop fades into the plate's own dark */
+  /* the studio JPEG sits on a flat light-grey seamless. Graded DOWN until
+     that grey is the plate's own dark, and masked so no edge of the frame
+     survives: a portrait in the room, not a photograph pinned to it. A
+     supplied cut-out PNG would replace both lines. */
+  mask-image: radial-gradient(56% 72% at 55% 42%, #000 28%, transparent 68%);
+  filter: brightness(0.7) contrast(1.22) saturate(1.05);
+}
+
+@media (max-width: 860px) {
+  .makerPortrait {
+    width: 100%;
+    bottom: 40%;
+    object-position: 50% 15%;
+    mask-image: radial-gradient(62% 78% at 50% 38%, #000 25%, transparent 70%);
+  }
+}
+
+.quote {
+  margin: 0;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-weight: 500;
+  font-size: clamp(1.25rem, 2.2vw, 2rem);
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  max-width: 30ch;
+}
+
+/* ---- the showroom plate's film: VideoEmbed paints into this box ---- */
+.film {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+}
+
+.film iframe,
+.film video {
+  width: 100%;
+  height: 100%;
+}
+
+/* ---- the DIM beat: the one theatrical moment, over the Maker ---- */
+.dim {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  background: #000;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ---- the footer, after the deck ---- */
+.footer {
+  position: relative;
+  z-index: 6;
+  background: var(--ink);
+  color: rgba(244, 240, 232, 0.82);
+  padding: 4rem var(--pad-x) 2.5rem;
+  border-top: 1px solid var(--line-on-ink);
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 1.5rem;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 0.8125rem;
+  line-height: 1.7;
+}
+
+.footer a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.footer a:hover {
+  color: var(--brass);
+}
+
+.footerKey {
+  display: block;
+  font-size: 0.59rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--brass);
+  margin-bottom: 0.5rem;
+}
+
+.footerBottom {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line-on-ink);
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+
+@media (max-width: 860px) {
+  .footer {
+    grid-template-columns: 1fr;
+    padding-bottom: 6rem; /* above the sticky pill */
+  }
+}
+
+/* ============ THE MODAL (Modal.tsx) ============
+   One <dialog> for the whole site: category pieces, the AR viewer, the
+   quote builder. The element handles focus containment, Escape and the
+   backdrop; this only styles it and animates the entrance. */
+.modal {
+  border: 0;
+  padding: 0;
+  background: var(--ivory);
+  color: var(--text-ink);
+  width: min(960px, 92vw);
+  max-height: 88dvh;
+  border-radius: 4px;
+  box-shadow: 0 40px 100px -30px rgba(0, 0, 0, 0.8);
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  overflow: hidden;
+}
+
+.modal::backdrop {
+  background: rgba(15, 26, 27, 0.74);
+}
+
+.modal[open] {
+  animation: modalRise 0.45s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.modalDark {
+  background: var(--ink);
+  color: var(--ivory);
+}
+
+@keyframes modalRise {
+  from {
+    transform: translateY(24px) scale(0.98);
+    opacity: 0;
+  }
+}
+
+.modalHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--line-on-ivory);
+}
+
+.modalDark .modalHead,
+.modalDark .modalFoot {
+  border-color: var(--line-on-ink);
+}
+
+.modalTitle {
+  margin: 0;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-weight: 600;
+  font-size: clamp(1.5rem, 3vw, 2.125rem);
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.modalSub {
+  display: block;
+  margin-top: 0.4rem;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+.modalClose {
+  background: none;
+  border: 0;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  cursor: pointer;
+  color: inherit;
+  padding: 0.25rem 0;
+  white-space: nowrap;
+}
+
+.modalBody {
+  padding: 1.25rem 1.5rem;
+  display: grid;
+  gap: 1rem;
+  overflow-y: auto;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+.modalBody p {
+  margin: 0;
+  max-width: 60ch;
+}
+
+.modalFoot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--line-on-ivory);
+}
+
+.modalFoot .pill {
+  background: var(--ink);
+  color: var(--ivory);
+}
+
+.modalDark .modalFoot .pill {
+  background: var(--brass);
+  color: var(--ink);
+}
+
+/* the photograph strip inside the category modal: scroll-snap, no library */
+.strip {
+  display: flex;
+  gap: 0.6rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-bottom: 0.4rem;
+  -webkit-overflow-scrolling: touch;
+}
+
+.stripItem {
+  flex: 0 0 62%;
+  aspect-ratio: 4 / 3;
+  scroll-snap-align: start;
+  position: relative;
+  border-radius: 3px;
+  overflow: hidden;
+  background: var(--paper-2);
+}
+
+.stripItem img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.stripCap {
+  position: absolute;
+  left: 0.6rem;
+  bottom: 0.5rem;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(244, 240, 232, 0.85);
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6);
+}
+
+.specs {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+
+/* ---- the quote builder (QuoteModal.tsx) ---- */
+.steps {
+  display: flex;
+  gap: 4px;
+  width: 140px;
+  margin-top: 0.5rem;
+}
+
+.steps i {
+  flex: 1;
+  height: 2px;
+  background: rgba(244, 240, 232, 0.25);
+}
+
+.steps i[data-on] {
+  background: var(--brass);
+}
+
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+}
+
+@media (max-width: 600px) {
+  .tiles {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.tile {
+  border: 1px solid rgba(244, 240, 232, 0.25);
+  background: none;
+  color: inherit;
+  padding: 0.9rem 0.6rem;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-weight: 500;
+  font-size: 0.9375rem;
+  cursor: pointer;
+  border-radius: 3px;
+  transition: border-color 0.3s ease, color 0.3s ease;
+}
+
+.tile:hover,
+.tile:focus-visible {
+  border-color: var(--brass);
+  outline: none;
+}
+
+.tile[aria-pressed='true'] {
+  border-color: var(--brass);
+  color: var(--brass);
+}
+
+.field {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.field label {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+
+.input {
+  width: 100%;
+  background: none;
+  border: 0;
+  border-bottom: 1px solid rgba(244, 240, 232, 0.35);
+  color: inherit;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 1rem;
+  padding: 0.5rem 0;
+  border-radius: 0;
+}
+
+.input:focus-visible {
+  outline: none;
+  border-bottom-color: var(--brass);
+}
+
+.input option {
+  color: var(--text-ink);
+}
+
+.stepBody {
+  animation: stepIn 0.4s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+@keyframes stepIn {
+  from {
+    transform: translateX(18px);
+    opacity: 0;
+  }
+}
+
+.formNote {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+/* ---- reduced motion: every plate static and fully lit ---- */
+@media (prefers-reduced-motion: reduce) {
+  .plateMedia,
+  .text > *,
+  .w,
+  .makerPortrait,
+  .pill {
+    transition: none !important;
+  }
+  .plate[data-wait] .plateMedia,
+  .plate[data-wait] .makerPortrait {
+    transform: none;
+    opacity: 1;
+    clip-path: none;
+  }
+  .plate[data-wait] .text > *,
+  .plate[data-wait] .w {
+    transform: none;
+    opacity: 1;
+    filter: none;
+  }
+  .modal[open],
+  .stepBody {
+    animation: none;
+  }
+}
+
+/* ============ LIFE (2026-09-03) ============
+   Nine plates with the same bottom-left caption read as a slideshow, however
+   each one arrived. This block gives every plate a place to stand and every
+   still photograph a pulse, all of it transform, opacity or clip-path:
+
+     drift    - the live plate's photograph creeps 1 -> 1.08 over 26 s
+     side     - the caption sits left, right, centred, or in the middle
+     no       - the chapter number, outlined, the size of the plate
+     measure  - a dimension line that draws itself under the title
+     cue      - the hero's scroll cue, a dot running down a hairline
+     cursor   - a ring that follows the pointer and says View over a room
+     edge     - a brass hairline on a rising plate's top edge
+   ============================================================ */
+
+/* ---- drift: motion in the stillness. The `scale` property composes with
+   the `transform` matrix DeckMotion scrubs on the same img (depth), so the
+   two never fight. Paused unless the plate is the live one: nine drifting
+   layers is nine compositor animations, one is one. */
+@keyframes drift {
+  from {
+    scale: 1;
+  }
+  to {
+    scale: 1.08;
+  }
+}
+
+.plate:not([data-wait]) .plateImg {
+  animation: drift 26s linear both paused;
+}
+
+.plate[data-live] .plateImg {
+  animation-play-state: running;
+}
+
+/* ---- side: where the caption stands ---- */
+.plate[data-side='right'] .text {
+  justify-self: end;
+  text-align: right;
+}
+
+.plate[data-side='right'] .tag,
+.plate[data-side='right'] .row {
+  justify-content: flex-end;
+}
+
+.plate[data-side='right'] .lede {
+  margin-left: auto;
+}
+
+.plate[data-side='center'] .text,
+.plate[data-side='middle'] .text {
+  justify-self: center;
+  text-align: center;
+}
+
+.plate[data-side='center'] .tag,
+.plate[data-side='center'] .row,
+.plate[data-side='middle'] .tag,
+.plate[data-side='middle'] .row {
+  justify-content: center;
+}
+
+.plate[data-side='center'] .lede,
+.plate[data-side='middle'] .lede {
+  margin-inline: auto;
+}
+
+.plate[data-side='middle'] {
+  align-content: center;
+}
+
+/* a caption in the middle of the plate and a right-middle pill would meet
+   on a narrow desktop, so the pill drops to the bottom centre there. Only
+   for `middle`: a `center` plate keeps its caption at the bottom, where the
+   pill would land on the caption's own row (the bespoke plate, verified). */
+.plate[data-side='middle'] .view {
+  top: auto;
+  bottom: clamp(2.5rem, 6vh, 4rem);
+  right: 50%;
+  transform: translateX(50%);
+}
+
+@media (max-width: 860px) {
+  .plate[data-side='right'] .view {
+    justify-self: end;
+  }
+  .plate[data-side='center'] .view,
+  .plate[data-side='middle'] .view {
+    justify-self: center;
+    transform: none;
+  }
+}
+
+/* ---- no: the chapter number, outlined, behind the caption ---- */
+.no {
+  position: absolute;
+  right: var(--pad-x);
+  top: 8vh;
+  z-index: 0;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-weight: 700;
+  font-size: clamp(7rem, 22vw, 19rem);
+  line-height: 1;
+  letter-spacing: -0.06em;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(244, 240, 232, 0.26);
+  pointer-events: none;
+  user-select: none;
+  transition:
+    transform 1.4s cubic-bezier(0.22, 0.61, 0.36, 1) 0.2s,
+    opacity 1.2s ease 0.2s;
+}
+
+.plate[data-side='right'] .no {
+  right: auto;
+  left: var(--pad-x);
+}
+
+.plate[data-wait] .no {
+  transform: translateY(48px);
+  opacity: 0;
+}
+
+@media (max-width: 860px) {
+  .no {
+    top: 11vh;
+    right: 1.25rem;
+  }
+}
+
+/* ---- measure: the dimension line under a title. Two rules grow out from
+   the label, the ticks land last. It is the deck's one recurring drawing,
+   and it says the one thing the brand is about. ---- */
+.measure {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: min(100%, 300px);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--brass);
+}
+
+.plate[data-side='right'] .measure {
+  margin-left: auto;
+}
+
+.plate[data-side='center'] .measure,
+.plate[data-side='middle'] .measure {
+  margin-inline: auto;
+}
+
+.measure em {
+  font-style: normal;
+  white-space: nowrap;
+}
+
+.measure i {
+  display: block;
+  flex: 1;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.7;
+  transition: transform 1.1s cubic-bezier(0.22, 0.61, 0.36, 1) 0.45s;
+}
+
+.measure i:first-of-type {
+  transform-origin: right center;
+}
+
+.measure i:last-of-type {
+  transform-origin: left center;
+}
+
+.measure b {
+  display: block;
+  width: 1px;
+  height: 9px;
+  background: currentColor;
+  transition: opacity 0.4s ease 1.3s;
+}
+
+.plate[data-wait] .measure i {
+  transform: scaleX(0);
+}
+
+.plate[data-wait] .measure b {
+  opacity: 0;
+}
+
+/* ---- power: the showroom's supply comes back ----
+   A Chattogram evening. The room is dark, the supply stutters twice, then
+   holds and the lights come up. The one theatrical beat on the first
+   screen, and it is the brand's own city. Opacity over the plate's ink,
+   not a brightness filter: the compositor does it for free, and the hero
+   TEXT is never touched (it is the LCP; see DeckMotion). CSS rather than
+   JavaScript so it plays from the first paint, gesture or not. */
+@keyframes power {
+  0%,
+  13% {
+    opacity: 0.06;
+  }
+  16% {
+    opacity: 0.5;
+  }
+  19%,
+  27% {
+    opacity: 0.08;
+  }
+  29% {
+    opacity: 0.68;
+  }
+  32%,
+  42% {
+    opacity: 0.12;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.plate:first-child .plateMedia {
+  animation: power 2.6s cubic-bezier(0.33, 1, 0.68, 1) 0.2s both;
+}
+
+/* ---- cue: the hero's invitation to scroll ---- */
+@keyframes cue-run {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(400%);
+  }
+}
+
+.cue {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(2.5rem, 6vh, 4rem);
+  transform: translateX(-50%);
+  z-index: 1;
+  display: grid;
+  justify-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 0.55rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  opacity: 0.7;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+
+.cueLine {
+  position: relative;
+  width: 1px;
+  height: 44px;
+  overflow: hidden;
+  background: rgba(244, 240, 232, 0.2);
+}
+
+.cueLine::after {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 25%;
+  background: var(--brass);
+  animation: cue-run 2.2s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
+:global(html:not([data-hero-view='1'])) .cue {
+  opacity: 0;
+}
+
+@media (max-width: 860px) {
+  .cue {
+    display: none;
+  }
+}
+
+/* ---- cursor: the ring. Only for a real pointer; a finger has no hover. ---- */
+.cursor {
+  display: none;
+}
+
+@media (pointer: fine) {
+  .cursor {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 95;
+    display: grid;
+    place-items: center;
+    width: 14px;
+    height: 14px;
+    margin: -7px 0 0 -7px;
+    border-radius: 50%;
+    border: 1px solid rgba(244, 240, 232, 0.75);
+    font-family: var(--font-sans), system-ui, sans-serif;
+    font-weight: 600;
+    font-size: 0.55rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink);
+    opacity: 0;
+    pointer-events: none;
+    will-change: transform;
+    transition:
+      width 0.35s cubic-bezier(0.22, 0.61, 0.36, 1),
+      height 0.35s cubic-bezier(0.22, 0.61, 0.36, 1),
+      margin 0.35s cubic-bezier(0.22, 0.61, 0.36, 1),
+      opacity 0.3s ease,
+      background-color 0.3s ease,
+      border-color 0.3s ease;
+  }
+
+  .cursor::after {
+    content: 'View';
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  .cursor[data-show] {
+    opacity: 1;
+  }
+
+  .cursor[data-on] {
+    width: 76px;
+    height: 76px;
+    margin: -38px 0 0 -38px;
+    background: var(--ivory);
+    border-color: transparent;
+  }
+
+  .cursor[data-on]::after {
+    opacity: 1;
+    transition-delay: 0.15s;
+  }
+
+  /* the ring says View, so the ground it says it over is clickable */
+  .plate:has([data-view-pill]) [data-plate-ground] {
+    cursor: pointer;
+  }
+}
+
+/* ---- edge: the sheet's lit top edge ---- */
+.plate:not(:first-child)::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
+  z-index: 1;
+  background: linear-gradient(90deg, transparent 0%, rgba(201, 164, 92, 0.55) 50%, transparent 100%);
+  pointer-events: none;
+}
+
+/* ---- the counter's digit rolls (DeckMotion tweens it) ---- */
+.counter span {
+  display: inline-block;
+}
+
+/* ---- the bespoke stage takes the fabric's colour (Swatches.tsx) ---- */
+.stage3d {
+  color: var(--stage-glow, var(--glow-cool));
+  background: radial-gradient(45% 40% at 50% 62%, currentColor, transparent 72%);
+  transition: color 0.9s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .plateImg,
+  .plate:first-child .plateMedia,
+  .cueLine::after {
+    animation: none !important;
+  }
+  .no,
+  .measure i,
+  .measure b,
+  .cursor {
+    transition: none !important;
+  }
+  .plate[data-wait] .no,
+  .plate[data-wait] .measure i {
+    transform: none;
+    opacity: 1;
+  }
+  .plate[data-wait] .measure b {
+    opacity: 1;
+  }
+  .cursor {
+    display: none;
+  }
+}
+
+
+/* ============ THE MEGA MENU (PLAN-V6 PART B5) ============ */
+/* the wrapper has no box of its own: the nav and the burger are the
+   header's grid children, the panel and the sheet position themselves */
+.navWrap {
+  display: contents;
+}
+
+.navBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ivory);
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  opacity: 0.85;
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+}
+
+.navBtn:hover,
+.navBtn[aria-expanded='true'] {
+  opacity: 1;
+}
+
+.navBtn:focus-visible {
+  outline: 2px solid var(--brass);
+  outline-offset: 4px;
+}
+
+.hdrPaper .navBtn {
+  color: var(--text-ink);
+}
+
+.navCaret {
+  width: 5px;
+  height: 5px;
+  border: solid currentColor;
+  border-width: 0 1px 1px 0;
+  transform: translateY(-2px) rotate(45deg);
+  transition: transform 0.3s ease;
+}
+
+.navBtn[aria-expanded='true'] .navCaret {
+  transform: translateY(1px) rotate(225deg);
+}
+
+/* the panel drops from under the header: a clip, half a second */
+.mega {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--ink);
+  color: var(--ivory);
+  border-top: 1px solid var(--line-on-ink);
+  border-bottom: 1px solid var(--line-on-ink);
+  box-shadow: 0 40px 80px -30px rgba(0, 0, 0, 0.8);
+  clip-path: inset(0 0 100% 0);
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    clip-path 0.5s cubic-bezier(0.22, 0.61, 0.36, 1),
+    visibility 0s linear 0.5s;
+}
+
+.mega[data-on] {
+  clip-path: inset(0 0 0 0);
+  visibility: visible;
+  pointer-events: auto;
+  transition: clip-path 0.5s cubic-bezier(0.22, 0.61, 0.36, 1), visibility 0s;
+}
+
+.megaInner {
+  width: 100%;
+  max-width: 1320px;
+  margin-inline: auto;
+  padding: 2.25rem var(--pad-x) 2.5rem;
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: clamp(2rem, 4vw, 4rem);
+  align-items: start;
+}
+
+.megaList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+}
+
+.megaTitle {
+  display: grid;
+  grid-template-columns: 2.4rem 1fr;
+  align-items: baseline;
+  column-gap: 0.5rem;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid var(--line-on-ink);
+  color: var(--ivory);
+  text-decoration: none;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-weight: 600;
+  font-size: clamp(1.5rem, 2.4vw, 2.25rem);
+  letter-spacing: -0.035em;
+  line-height: 1;
+  text-transform: none;
+  transition: color 0.3s ease, padding-left 0.3s ease;
+}
+
+.megaTitle:hover,
+.megaTitle:focus-visible,
+.megaTitle[data-active] {
+  color: var(--brass);
+  padding-left: 0.4rem;
+}
+
+.megaTitle:focus-visible {
+  outline: none;
+}
+
+.megaNo {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  color: var(--brass);
+}
+
+.megaLead {
+  grid-column: 2;
+  margin-top: 0.3rem;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-weight: 400;
+  font-size: 0.75rem;
+  letter-spacing: 0;
+  line-height: 1.4;
+  color: var(--ivory);
+  opacity: 0.65;
+  max-width: 44ch;
+}
+
+.megaFoot {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  padding-top: 1rem;
+}
+
+.megaAll {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--brass);
+  text-decoration: none;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.megaAll svg {
+  width: 12px;
+  height: 12px;
+  transition: transform 0.3s ease;
+}
+
+.megaAll:hover svg {
+  transform: translateX(4px);
+}
+
+/* the one large photograph, an ivory mat in a brass frame */
+.megaArt {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  background: var(--ivory);
+  border: 1px solid var(--brass);
+  overflow: hidden;
+}
+
+.megaImg {
+  position: absolute;
+  inset: 8px;
+  opacity: 0;
+  transform: scale(1.03);
+  transition: opacity 0.6s ease, transform 1.2s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.megaImg[data-active] {
+  opacity: 1;
+  transform: none;
+}
+
+.megaImg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.megaCap {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: 8px;
+  padding: 0.55rem 0.75rem;
+  background: rgba(13, 9, 6, 0.72);
+  color: var(--ivory);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+/* the burger: phones only */
+/* the phone's menu: a plate, not two floating lines. Over a photograph a
+   borderless burger disappears, and the top right corner is the one place a
+   visitor looks for a menu. */
+.burger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  padding: 0.85rem 0.75rem;
+  border: 1px solid rgba(201, 164, 92, 0.5);
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--ink) 42%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  cursor: pointer;
+  justify-self: end;
+}
+
+.burger span {
+  display: block;
+  width: 18px;
+  height: 1px;
+  background: var(--brass);
+}
+
+.burger span:last-child {
+  width: 12px;
+  margin-left: auto;
+}
+
+.burger:focus-visible {
+  outline: 2px solid var(--brass);
+  outline-offset: 3px;
+}
+
+.hdrPaper .burger {
+  border-color: rgba(28, 20, 16, 0.35);
+  background: color-mix(in srgb, var(--paper) 45%, transparent);
+}
+
+.hdrPaper .burger span {
+  background: var(--text-ink);
+}
+
+/* the phone's full-screen menu */
+/* inset, not 100vw: 100vw counts the scrollbar, which pushed the close
+   button off the right edge of the phone (client: "make the menu header
+   close button sticky and within viewport") */
+.sheet {
+  position: fixed;
+  inset: 0;
+  width: auto;
+  max-width: none;
+  height: auto;
+  max-height: none;
+  margin: 0;
+  border: 0;
+  padding: 0 var(--pad-x) 2rem;
+  background: var(--ink);
+  color: var(--ivory);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.sheet[open] {
+  display: grid;
+  align-content: start;
+  gap: 1.4rem;
+  animation: modalRise 0.4s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.sheet::backdrop {
+  background: var(--ink);
+}
+
+/* the wordmark and the way out stay on screen however far the menu scrolls */
+.sheetHead {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  min-height: 3.25rem;
+  margin-inline: calc(var(--pad-x) * -1);
+  padding: 0.75rem var(--pad-x);
+  background: color-mix(in srgb, var(--ink) 94%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line-on-ink);
+}
+
+.sheetHead .modalClose {
+  flex: none;
+  min-height: 2.75rem;
+  display: inline-flex;
+  align-items: center;
+  color: var(--brass);
+}
+
+.sheetLine {
+  margin: 0;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-weight: 500;
+  font-size: 1rem;
+  color: var(--brass);
+}
+
+.sheetTiles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+}
+
+.tile {
+  position: relative;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  gap: 0.35rem;
+  aspect-ratio: 4 / 4.6;
+  padding: 5px;
+  background: var(--ivory);
+  border: 1px solid rgba(201, 164, 92, 0.6);
+  color: var(--text-ink);
+  text-decoration: none;
+  overflow: hidden;
+}
+
+.tile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  min-height: 0;
+}
+
+.tile span {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.1rem 0.15rem 0.2rem;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 0.55rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.tile svg {
+  width: 11px;
+  height: 11px;
+}
+
+.tileAll {
+  background: transparent;
+  color: var(--brass);
+  border-style: dashed;
+  grid-template-rows: 1fr;
+  place-items: center;
+}
+
+.sheetLinks {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.sheetLinks a {
+  color: var(--ivory);
+  text-decoration: none;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 1.6rem;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.sheetFoot {
+  display: grid;
+  gap: 0.8rem;
+  justify-items: start;
+}
+
+@media (max-width: 860px) {
+  .hdr {
+    grid-template-columns: 1fr auto;
+  }
+  .burger {
+    display: flex;
+  }
+  .mega {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mega,
+  .megaImg,
+  .megaTitle,
+  .sheet[open] {
+    transition: none;
+    animation: none;
+  }
+}

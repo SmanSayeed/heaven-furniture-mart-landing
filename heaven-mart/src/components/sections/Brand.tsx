@@ -28,7 +28,7 @@ export function Brand() {
        up OVER the dark stage ("the room lights come on", PLAN 2.5) */
     <section
       id="sheet-02"
-      className={`light section sheet-grid ${s.brand}`}
+      className={`light section sheet-grid room ${s.brand}`}
       aria-label="About Heaven Furniture Mart"
       data-curtain
     >

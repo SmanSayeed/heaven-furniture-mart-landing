@@ -1,22 +1,31 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Heaven Furniture Mart">
   <!--
-    THE MARK, not a photograph.
+    THE MARK, at 16 px.
 
-    A favicon is rendered at 16 px in a browser tab. Any photograph — the
-    founder, a sofa, the showroom — is a grey smear at that size, which is
-    why every brand on earth ships a device rather than a picture there. So
-    this is the page's own wordmark reduced to the one glyph that carries it:
-    the brass triangle standing in for the A of HEAVEN, on the sheet's ink.
+    A favicon is a 16 px tile in a strip of twenty other 16 px tiles. Two
+    things decide whether it is found: how bright it is against a browser
+    chrome that is white or near-black, and whether the shape survives being
+    four pixels wide. So this is BRASS GROUND, ink glyph - the inverse of the
+    page - because a warm gold square is the only thing in a tab strip full
+    of white cards and blue circles that reads as a brand rather than a
+    document.
 
-    Drawn rather than exported: it is 500 bytes, it is crisp at every size
-    including the 180 px Apple touch icon, and it stays in step with the
-    header automatically because it is built from the same two brand values
-    (--ink #0B0C0C, --brass #B08D57) rather than from a rasterised copy.
+    The glyph is the H of HEAVEN, drawn in the header's own proportions
+    (Inter Tight 700: heavy stems, crossbar a touch above optical centre)
+    with the wordmark's triangle set into the counter as a serif nobody sees
+    at 16 px and everybody sees at 180 px on a home screen.
 
-    If the client supplies their real logotype, replace this file — Next
-    picks up app/icon.svg by filename and nothing else has to change.
+    Drawn, not exported: ~600 bytes, crisp at every size, and built from the
+    two brand values (brass #B08D57, ink #0B0C0C) so it can never drift
+    out of step with the header.
+
+    If the client supplies their real logotype, replace this file and
+    src/app/apple-icon.png. Next picks both up by filename.
   -->
-  <rect width="64" height="64" rx="14" fill="#0B0C0C"/>
-  <path d="M32 17 L46 45 H18 Z" fill="#B08D57"/>
-  <path d="M32 30.5 L38 43 H26 Z" fill="#0B0C0C"/>
+  <rect width="64" height="64" rx="13" fill="#B08D57"/>
+  <!-- the H: two stems and a crossbar, one path so the counter can be cut -->
+  <path fill="#0B0C0C" d="M15 14h9.5v14.5h15V14H49v36h-9.5V35.5h-15V50H15z"/>
+  <!-- the wordmark's triangle, set in the crossbar. Invisible at 16 px,
+       which is the point: the tile must not be busy where it is small. -->
+  <path fill="#B08D57" d="M32 26.4l4.6 8.1h-9.2z"/>
 </svg>

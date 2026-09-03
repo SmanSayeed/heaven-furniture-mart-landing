@@ -419,8 +419,9 @@ function HeroTurntable({
     if (group.current) {
       const p = stageState.heroProgress
       const sway = reduced ? 0 : Math.sin(clock.elapsedTime * ((Math.PI * 2) / 6)) * 0.03
-      group.current.rotation.y = auto.current + stageState.heroSpin + sway + p * 0.35
-      group.current.position.z = -p * 0.55 // recedes as the hero leaves
+      /* PLAN-V6 B2: the chapter is pinned for the five pieces, so the
+         scroll's share of the yaw is a quarter turn per piece */
+      group.current.rotation.y = auto.current + stageState.heroSpin + sway + p * Math.PI * 2.5
     }
 
     /* ---- the swap dip ---- */
@@ -809,12 +810,20 @@ function InspectControls() {
   )
 }
 
-function BespokeStage() {
+function BespokeStage({ onReady }: { onReady: () => void }) {
   const [fit, setFit] = useState<Fit | null>(null)
-  const onMeasure = useCallback((next: Fit) => {
-    setFit(next)
-    setPieceSize('bespoke', toPieceSize(next.raw))
-  }, [])
+  const onMeasure = useCallback(
+    (next: Fit) => {
+      setFit(next)
+      setPieceSize('bespoke', toPieceSize(next.raw))
+      /* the canvas wrapper fades in on this (StageLoader): since PLAN-V5
+         the hero view no longer exists, so if only the hero reported ready
+         the bespoke piece rendered into a wrapper held at opacity 0 -
+         present in the GL buffer, invisible on screen (verified 09-03) */
+      onReady()
+    },
+    [onReady],
+  )
   useEffect(() => () => setPieceSize('bespoke', null), [])
   const half = fit?.half ?? DEFAULT_HALF
 
@@ -891,7 +900,7 @@ export function StageCanvas({ tier, onReady }: { tier: Tier; onReady: () => void
       )}
       {bespokeTrack && (
         <View track={bespokeTrack}>
-          <BespokeStage />
+          <BespokeStage onReady={onReady} />
         </View>
       )}
     </Canvas>

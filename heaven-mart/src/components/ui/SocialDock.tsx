@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { brand } from '@/content/copy'
 import { whatsappUrl } from '@/lib/whatsapp'
 import { FacebookLogo, InstagramLogo, WhatsApp, YoutubeLogo } from './Icons'
-import s from '@/components/sections/sections.module.css'
+import s from '@/components/ui/shared.module.css'
 
 /**
  * THE DOCK — every way to reach Heaven, folded into one lamp.

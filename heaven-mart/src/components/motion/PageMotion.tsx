@@ -96,6 +96,10 @@ export function PageMotion() {
            by the server HTML - which is the state this whole file's rule 1
            exists to guarantee. */
         const lightweight = prefersLightweight()
+        /* read ONCE: shouldShowPreloader consumes the session flag, and the
+           blackout beat below runs on exactly the same visits the preloader
+           does - the first one in a session, on a device that can afford it */
+        const firstVisit = shouldShowPreloader()
 
         const startHeroIntro = () => {
           if (lightweight) return
@@ -175,6 +179,45 @@ export function PageMotion() {
               ease: 'expo.out',
               delay: 1.2,
             })
+
+            /* ---- THE BLACKOUT (CONCEPT-V2 D1/D2) ----
+
+               The hero has landed and the visitor has had two seconds with
+               the headline. Then the current goes. The whole viewport cuts
+               to ink - above the 3D canvas, so the sofa goes too - one
+               Bangla word rises in tungsten, "the light will come", holds a
+               breath, and the power returns the way it does in Agrabad: a
+               catch, a fail, a hold. 1.9s end to end, first visit only.
+
+               It is the page's thesis performed instead of described: the
+               furniture is built for the moment the light finds it, and the
+               visitor has just watched that moment happen. */
+            const blackout = document.querySelector<HTMLElement>('[data-blackout]')
+            /* its OWN session flag, read at the moment the intro actually
+               runs - not the preloader's. In development React mounts the
+               effect twice, and the first (reverted) mount consumed the
+               preloader's flag before the real one asked, so a beat keyed
+               to `firstVisit` never fired in dev at all. */
+            let blackoutDue = false
+            try {
+              blackoutDue = sessionStorage.getItem('hfm-blackout') !== '1'
+              if (blackoutDue) sessionStorage.setItem('hfm-blackout', '1')
+            } catch {
+              blackoutDue = true
+            }
+            if (blackout && blackoutDue) {
+              gsap
+                .timeline({ delay: 3.4 })
+                .to(blackout, { autoAlpha: 1, duration: 0.07, ease: 'none' })
+                .to('[data-blackout-word]', { opacity: 1, y: 0, duration: 0.55, ease: 'power2.out' }, 0.18)
+                .from('[data-blackout-word]', { y: 14, duration: 0.55, ease: 'power2.out' }, 0.18)
+                .to('[data-blackout-line]', { opacity: 0.62, duration: 0.4 }, 0.5)
+                /* the return: catch, fail, hold */
+                .to(blackout, { opacity: 0.15, duration: 0.06, ease: 'none' }, 1.55)
+                .to(blackout, { opacity: 0.85, duration: 0.07, ease: 'none' }, 1.63)
+                .to(blackout, { autoAlpha: 0, duration: 0.32, ease: 'power2.out' }, 1.72)
+                .set(['[data-blackout-word]', '[data-blackout-line]'], { opacity: 0 })
+            }
           })
         }
 
@@ -183,7 +226,7 @@ export function PageMotion() {
            overlay at all. Repeat visitors in the same session skip straight
            to the hero intro (sessionStorage flag, guarded). */
         let preloaderCleanup: (() => void) | null = null
-        if (shouldShowPreloader()) {
+        if (firstVisit) {
           preloaderCleanup = runPreloader(startHeroIntro)
         } else {
           startHeroIntro()
@@ -300,6 +343,9 @@ export function PageMotion() {
                scrim, so text contrast without JS is higher, never lower. */
             .fromTo('[data-hero-scrim]', { opacity: 0.82 }, { opacity: 1 }, 0)
             .fromTo('[data-turntable]', { yPercent: 0 }, { yPercent: -10 }, 0)
+            /* the photograph plate leaves a touch slower than the drawing:
+               two layers at two speeds is what sells the depth */
+            .fromTo('[data-hero-real]', { yPercent: 0 }, { yPercent: -6 }, 0)
             .fromTo('[data-stage-pool]', { opacity: 0.5 }, { opacity: 0 }, 0)
             .to(stageState, { heroProgress: 1 }, 0)
             /* statement drifts up faster than the page: type leaves first */

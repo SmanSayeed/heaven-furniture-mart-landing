@@ -1,9 +1,12 @@
 # Heaven Furniture Mart — landing page
 
-**Drawn to Measure.** A one-page site for a bespoke furniture studio, built so that the
-page *is* a technical drawing of itself: every element sits on a measured column grid, the
-grid is drawn on screen in light, and the piece in the hero carries its own real dimensions,
-read off the 3D model at load rather than typed by anyone.
+**A Night at Heaven.** A one-page site for a bespoke furniture studio, told as a walk
+through the showroom at night: the visitor is handed a light, the rooms come on one by one,
+a piece is drawn to their measurements and built in front of them in 3D (its real
+dimensions read off the mesh, never typed), they choose its fabric, turn it, place it in
+their own room in AR, and are asked one question. Eight chapters, eight different motions,
+a floor-plan map that lights as you go. See `PLAN-V6.md` for the design and
+`src/components/night/` for the chapters.
 
 Built for the [Racdox Hackathon 2026](https://www.racdox.com/hackathon) for
 **Heaven Furniture Mart**, Agrabad Access Road, Chattogram.
@@ -72,25 +75,32 @@ traps and verification recipes are in [`../BUILD-GUIDE.md`](../BUILD-GUIDE.md).
 
 ## The story
 
-Nine sheets, one route, told in `src/content/copy.ts` as a single `story` array that the
-title blocks, the beat captions, the Index overlay and the sheet **count** all read from — so
-the wayfinding cannot disagree with itself, and adding a sheet renumbers the whole set.
+Seven chapters, one route, told in `src/content/copy.ts` as `night.chapters` - the chapter
+tags, the narrator lines and the map all read from the same array, so the wayfinding cannot
+disagree with itself.
 
 ```
-01 The Window          a piece waits, lit          (grabbable 3D turntable)
-02 The Studio          the lights come on          (the loadshedding cut)
-03 The Maker           in his own words            (portrait, quote, timeline as a dimension line)
-04 The Drafting Table  yours is drawn              (blueprint -> craft -> customize)
-05 The Range           walk the collections        (pinned horizontal rail)
-06 The Showroom        step through. Agrabad.      (aperture + the cut)
-07 Your Room           see it in your place        (press-to-load AR, in the chosen fabric)
-08 The Hands           who builds it               (the team; absent until the photograph exists)
-09 The Order           have yours drawn            (the last ask + the brief form)
+01 The floodlit room   the power is out; you have a light   (pinned: flood -> iris -> slide -> zoom, then the lights go out)
+02 The studio          through the fabric                   (paper; the founding line draws itself under a brass dot)
+03 The floor           walk the floor                       (pinned rail past the glass wall; snap track on phones)
+04 The drafting table  yours is drawn                       (pinned: blueprint -> craft -> your fabric, real mm off the mesh)
+05 The maker           the man who builds it                (portrait, his own sentence, the lights dip once)
+06 Take it home        take it home                         (AR in your room, the showroom film, the address)
+07 Your room           tell us your room                    (the one ask, on WhatsApp)
 ```
 
-The Maker sits third rather than seventh because "who is behind this" is a bespoke buyer's
-second question, and the Hands sits immediately before the ask because the last thing a
-visitor should see is the people who would do the work.
+THE GLASS WALL is chapter 3: five plates of different proportions, hung at different heights
+and angles so they cross the screen on a diagonal, the whole wall behind glass and in black
+and white. The one under the pointer - or, with no pointer, the one the scroll has brought to
+the middle - slides its pane away and comes up in colour. A brass ring follows the mouse and
+becomes a VIEW disc over a plate.
+
+Beyond the landing page: `/collections` (the five rooms as the same wall) and
+`/collections/[slug]` (one room, its real pieces as framed plates, each opening a sheet whose
+one action names the piece). The header's "Rooms" is a mega menu on wide screens and a
+full-screen sheet behind a burger on phones; the floor plan in the corner is also a menu.
+Frames and menu titles are plain links, and the photograph flies into the page it opens
+through a cross-document view transition.
 
 ## Stack
 

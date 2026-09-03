@@ -1,5 +1,5 @@
 import { photos } from '@/content/photos.generated'
-import s from '@/components/sections/sections.module.css'
+import s from '@/components/ui/shared.module.css'
 
 type PhotoName = keyof typeof photos
 
@@ -27,12 +27,21 @@ export function Photo({
   sizes = '100vw',
   className,
   priority = false,
+  low = false,
+  eager = false,
 }: {
   name: PhotoName | (string & {})
   alt: string
   sizes?: string
   className?: string
   priority?: boolean
+  /** deliberately BEHIND everything else: the deck's later plates are
+      lazy, but Chrome's lazy threshold on a slow link is wide enough that
+      four of them were downloading alongside the hero's LCP image */
+  low?: boolean
+  /** fetched now but BEHIND the LCP image: the hero's second and third
+      views are needed within one scroll, never before the headline */
+  eager?: boolean
 }) {
   const photo = photos[name as PhotoName]
   if (!photo) return null
@@ -52,8 +61,8 @@ export function Photo({
       alt={alt}
       /* the one photo above the fold is eager; every other one waits until
          it is worth downloading */
-      loading={priority ? 'eager' : 'lazy'}
-      fetchPriority={priority ? 'high' : 'auto'}
+      loading={priority || eager ? 'eager' : 'lazy'}
+      fetchPriority={priority ? 'high' : low ? 'low' : 'auto'}
       decoding="async"
       style={{ backgroundImage: `url(${photo.blurDataURL})` }}
     />

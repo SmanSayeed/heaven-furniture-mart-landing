@@ -1,27 +1,32 @@
-import { brand } from '@/content/copy'
-import { Hero } from '@/components/sections/Hero'
-import { Brand, Ticker } from '@/components/sections/Brand'
-import { Bespoke } from '@/components/sections/Bespoke'
-import { Collections } from '@/components/sections/Collections'
-import { Showroom } from '@/components/sections/Showroom'
-import { Ar } from '@/components/sections/Ar'
-import { Proof } from '@/components/sections/Proof'
-import { Team } from '@/components/sections/Team'
-import { Footer } from '@/components/sections/Footer'
-import { StickyCta } from '@/components/ui/StickyCta'
-import { PageMotion } from '@/components/motion/PageMotion'
+import { brand, night } from '@/content/copy'
+import { Header } from '@/components/deck/Header'
+import { DeckFooter } from '@/components/deck/DeckFooter'
+import { Hero } from '@/components/night/Hero'
+import { Studio } from '@/components/night/Studio'
+import { Floor } from '@/components/night/Floor'
+import { Table } from '@/components/night/Table'
+import { Maker } from '@/components/night/Maker'
+import { Home } from '@/components/night/Home'
+import { Ask } from '@/components/night/Ask'
+import { Map } from '@/components/night/Map'
+import { NightMotionIdle } from '@/components/motion/NightMotionIdle'
 import { StageLoader } from '@/components/three/StageLoader'
-import { IndexNav } from '@/components/ui/IndexNav'
+import { StickyCta } from '@/components/ui/StickyCta'
 import { SocialDock } from '@/components/ui/SocialDock'
+import s from '@/components/night/night.module.css'
 
 /**
- * The whole page, as a Server Component. This file is deliberately boring:
- * nine sheets in narrative order (copy.ts `story`), fully readable and
- * convertible with JavaScript disabled. Motion and 3D are layered on top
- * without touching this structure.
+ * A NIGHT AT HEAVEN (PLAN-V6). Seven chapters on one scroll; in every
+ * chapter the visitor does one thing. One CTA, one 3D chapter, one map.
+ *
+ * A Server Component: every chapter is complete, readable and convertible
+ * with JavaScript disabled. NightMotion and StageLoader layer the motion
+ * and the 3D over this structure without touching it.
+ *
+ * Stacking: the fixed WebGL canvas is z 4 and the drafting table's stage is
+ * the only thing it paints into; the chapters are ordinary flow (no sticky
+ * stack any more), so nothing has to be told to paint over it.
  */
-/* Structured data so Google understands this as a real local furniture store
-   (SEO beyond Lighthouse: rich results, local pack eligibility). */
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'FurnitureStore',
@@ -42,42 +47,32 @@ const jsonLd = {
 
 export default function Page() {
   return (
-    <main>
+    <main id="top">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      <Header nav={night.nav} counter={false} />
+
       <Hero />
-      <Brand />
-      {/* SHEET 03, and it used to be seventh. "Who is behind this" is a
-          bespoke buyer's second question, not their seventh, and answering it
-          here is what lets everything after it be read as a promise someone
-          in particular is making. */}
-      <Proof />
-      <Ticker />
-      <Bespoke />
-      <Collections />
-      <Showroom />
-      <Ar />
-      {/* SHEET 08: the people, immediately before the ask. Renders nothing
-          until the team photograph exists — see Team.tsx. */}
-      <Team />
-      <Footer />
+      <Studio />
+      <Floor />
+      <Table />
+      <Maker />
+      <Home />
+      <Ask />
+
+      <DeckFooter />
+
+      <Map />
       <StickyCta />
       <SocialDock />
-      {/* the page's only chrome: renders after hydration only, so the no-JS
-          path is the Footer's plain category list (PLAN S1d) */}
-      <IndexNav />
-      {/* the golden thread (PLAN Part 2.5): a fixed 1px brass spine in the
-          left gutter, drawn by scroll, tied off by the gold triangle at the
-          footer. Fully drawn by default; PageMotion animates it when allowed. */}
-      <div className="thread" aria-hidden="true" data-thread />
-      <span className="tri thread-tip" aria-hidden="true" data-thread-tip />
-      {/* mounted last so every section's DOM exists before the orchestrator
-          queries it; renders nothing itself (Sprint 2 motion layer) */}
-      <PageMotion />
-      {/* the ONE fixed WebGL canvas (PLAN 4.3): gated, deferred, faded in;
-          its two drei Views track the hero and bespoke stage divs */}
+      {/* the DIM beat's layer: fixed, above the chapters and the canvas */}
+      <div className={s.dimLayer} data-dim aria-hidden="true" />
+
+      {/* mounted last, so every chapter exists before the orchestrator asks */}
+      <NightMotionIdle />
+      {/* the ONE fixed WebGL canvas; its view tracks [data-stage-bespoke] */}
       <StageLoader />
     </main>
   )
