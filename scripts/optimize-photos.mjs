@@ -15,7 +15,7 @@ import { fileURLToPath } from 'node:url'
 import sharp from 'sharp'
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url))
-const RAW = join(ROOT, '..', 'assets-raw', 'photos')
+const RAW = join(ROOT, 'assets-raw', 'photos')
 const GRADED = join(RAW, 'graded')
 const ORIGINALS = join(RAW, 'originals')
 /* Folders directly under photos/ that are neither graded/ nor originals/ are

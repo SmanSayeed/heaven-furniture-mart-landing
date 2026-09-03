@@ -45,3 +45,19 @@ design-refs/
 # local snapshot of the v2 source, kept on disk only: 6.5 MB of dead code
 # that would ship in every clone and every Vercel build for no benefit
 backup-v2-*/
+
+# ---- from the app's own ignore file, folded in when the app became the root
+/coverage
+/build
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# ---- working notes. Deliberately NOT in the repository: the plans, the brief
+# and the session log are how the page was made, not what it is.
+/docs/
+/CLAUDE.md
+/AGENTS.md
+/PROGRESS.md

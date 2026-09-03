@@ -33,8 +33,8 @@ import { fileURLToPath } from 'node:url'
 import sharp from 'sharp'
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url))
-const SRC = join(ROOT, '..', 'assets-raw', 'photos', 'originals')
-const OUT = join(ROOT, '..', 'assets-raw', 'photos', 'graded')
+const SRC = join(ROOT, 'assets-raw', 'photos', 'originals')
+const OUT = join(ROOT, 'assets-raw', 'photos', 'graded')
 
 /** clears the logo, the headline and the contact bar on a 1:1 ad graphic */
 const DEFAULT_CROP = { top: 0.27, bottom: 0.12 }
