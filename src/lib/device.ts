@@ -49,9 +49,12 @@ export function detectTier(): Tier {
   /* server render or a non-window context: treat as low, mount nothing */
   if (typeof window === 'undefined') return 'low'
 
-  /* a slow link or a data-saving visitor never gets 2 MB of geometry, whatever
-     the GPU could technically handle */
-  if (prefersLightweight()) return 'low'
+  const nav = navigator as NavigatorCapabilities
+  const conn = nav.connection
+
+  /* Data Saver is the visitor SAYING so. It is the one signal here that is a
+     decision rather than a guess, and it is absolute. */
+  if (conn?.saveData) return 'low'
 
   let webgl2 = false
   try {
@@ -60,13 +63,40 @@ export function detectTier(): Tier {
     webgl2 = false
   }
 
-  const memory = (navigator as NavigatorCapabilities).deviceMemory
+  const memory = nav.deviceMemory
   const cores = navigator.hardwareConcurrency ?? 4
 
   /* memory is undefined outside Chromium (Safari, Firefox): its absence must
      never force 'low' on an otherwise capable device, so it only counts when
      reported. Cores default to a neutral 4 for the same reason. */
   if (!webgl2 || (memory !== undefined && memory <= 2) || cores <= 2) return 'low'
+
+  /*
+    A NETWORK ESTIMATE IS NOT A DEVICE.
+
+    This used to run `prefersLightweight()` first, so effectiveType '3g' shut
+    the 3D off completely - and Chrome on a DESKTOP reports '3g' from nothing
+    more than a high round-trip time, which is normal here. The client watched
+    the bespoke chapter fall back to its photograph on his own machine, twice,
+    on hardware that renders the piece at 60fps ("where is the 3d skeleton
+    sofa? i want that").
+
+    So the link now decides HOW MUCH, not WHETHER, except on a phone - where
+    a 2g/3g estimate really is a 2g/3g connection, the audience is Facebook
+    ad traffic in Chattogram, and 350 KB of three.js is a real cost to a real
+    person. A phone is the coarse pointer, not the narrow window: a desktop
+    browser dragged narrow is still a desktop.
+  */
+  const eff = conn?.effectiveType
+  const slowLink = eff === 'slow-2g' || eff === '2g'
+  const modestLink = slowLink || eff === '3g'
+  const handheld =
+    typeof window.matchMedia === 'function' && window.matchMedia('(pointer: coarse)').matches
+
+  if (slowLink) return 'low'
+  if (modestLink && handheld) return 'low'
+  if (modestLink) return 'mid'
+
   if (cores >= 6 && (memory ?? 8) >= 6) return 'high'
   return 'mid'
 }
