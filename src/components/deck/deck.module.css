@@ -388,9 +388,30 @@
   pointer-events: auto;
 }
 
+/* THE FROST LIVES ON A PSEUDO-ELEMENT, NOT ON THE HEADER.
+
+   `backdrop-filter` makes an element a containing block for its
+   position: fixed descendants, exactly as `transform` does. The rooms menu
+   is a fixed, inset: 0 panel inside this header, so the moment the header
+   turned solid - on every room page, and on the landing page the instant it
+   was scrolled - the menu stopped measuring itself against the viewport and
+   became a 77px strip the height of the header. Full screen, and 77px tall:
+   which is why it read as "showing close button only, not showing menu".
+
+   The frost is decoration, so it moves to a layer of its own and the header
+   goes back to being a plain fixed bar that contains nothing. */
 .hdrSolid {
   background: color-mix(in srgb, var(--ink) 82%, transparent);
+}
+
+.hdrSolid::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
   backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  pointer-events: none;
 }
 
 /* over a paper chapter (PLAN-V6 The studio) the chrome turns to ink */

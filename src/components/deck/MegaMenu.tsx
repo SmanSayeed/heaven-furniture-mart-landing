@@ -69,14 +69,25 @@ export function MegaMenu({
        viewport, so there is no outside to click, and the page beneath it is
        held still rather than being allowed to scroll the menu away. The
        Escape key and the button are the two ways out, and both are visible. */
+    /* Lenis is stopped, and NOTHING is done to document.body.
+
+       An earlier version also set `body { overflow: hidden }` while the menu
+       was open. That is the usual scroll-lock, and on this page it is a trap:
+       five chapters are ScrollTrigger PINS measured against the document's
+       scroll height, and taking the scrollbar away under them - then giving
+       it back - leaves every pin measuring a document that no longer matches.
+       If the restore is ever missed, by a fast unmount or a re-render, the
+       page simply stops scrolling and every scroll-driven animation on it
+       dies with the scroll (client: "on scroll all gsap animations gone").
+
+       Stopping Lenis holds the page still on its own, the panel carries
+       `overscroll-behavior: contain` so its own scrolling does not chain out,
+       and the document's height is never touched. */
     const lenis = getLenis()
     lenis?.stop()
-    const prevOverflow = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
     window.addEventListener('keydown', onKey)
     return () => {
       window.removeEventListener('keydown', onKey)
-      document.body.style.overflow = prevOverflow
       lenis?.start()
     }
   }, [open, close])
