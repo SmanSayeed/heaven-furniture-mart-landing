@@ -68,81 +68,16 @@ export function NightMotion() {
         const cue = q('[data-cue]')
         const out = q('[data-lights-out]')
 
-        /* ---------------- THE REEL, INSIDE VIEW 1 ONLY ----------------
+        /* NOTHING RUNS HERE ON ARRIVAL.
 
-           The scroll story below is untouched: view 2 still blooms out of
-           the beam's origin, view 3 still slides in from the right. This is
-           only about the seconds BEFORE anyone scrolls, which on this page's
-           traffic - a tap on a Facebook ad - is the whole first impression
-           and used to be a still photograph.
-
-           Four frames inside view 1, cross-fading every six seconds, each
-           drifting slowly closer while it holds. The drift alternates: even
-           frames push in, odd frames pull back, because a reel that always
-           pushes in reads as a slideshow with an effect bolted on, and
-           alternating reads as a camera.
-
-           Opacity and scale only, so it is compositor work and costs nothing
-           per frame - and it runs ONLY while the hero is on screen, so a
-           visitor four chapters down is not paying for a cross-fade above
-           them. */
-        const frames = gsap.utils.toArray<HTMLElement>('[data-reel-frame]', hero)
-        if (frames.length > 1) {
-          const DWELL = 6
-          const FADE = 1.5
-          let at = 0
-          let call: gsap.core.Tween | null = null
-
-          const show = (n: number) => {
-            frames.forEach((el, i) => {
-              el.toggleAttribute('data-on', i === n)
-              gsap.to(el, { autoAlpha: i === n ? 1 : 0, duration: FADE, ease: 'power1.inOut' })
-            })
-            const img = frames[n].querySelector<HTMLElement>('img')
-            if (img) {
-              const inward = n % 2 === 0
-              gsap.fromTo(
-                img,
-                /* 1.14 cut a quarter off the sides of every photograph at
-                   the end of its dwell, on top of what `object-fit: cover`
-                   already takes (client: "images are looking like big and
-                   partial, full image not showing"). 1.06 still reads as a
-                   camera and keeps the piece whole. */
-                { scale: inward ? 1.0 : 1.06, xPercent: inward ? 0 : -0.6 },
-                {
-                  scale: inward ? 1.06 : 1.0,
-                  xPercent: inward ? -0.6 : 0,
-                  duration: DWELL + FADE,
-                  ease: 'none',
-                  overwrite: 'auto',
-                },
-              )
-            }
-          }
-          const advance = () => {
-            show((at = (at + 1) % frames.length))
-            call = gsap.delayedCall(DWELL, advance)
-          }
-
-          frames.forEach((el, i) => gsap.set(el, { autoAlpha: i === 0 ? 1 : 0 }))
-          const reelIO = new IntersectionObserver(
-            ([e]) => {
-              if (e.isIntersecting) {
-                if (!call) call = gsap.delayedCall(DWELL, advance)
-              } else {
-                call?.kill()
-                call = null
-              }
-            },
-            { threshold: 0.15 },
-          )
-          reelIO.observe(hero)
-          cleanups.push(() => {
-            reelIO.disconnect()
-            call?.kill()
-            call = null
-          })
-        }
+           Room one used to hold a four-frame reel on a six-second clock,
+           cross-fading and drifting while the light lifted, the colour
+           arrived and a dust sheet slid off - four animations for a visitor
+           who had not asked for any of them (client: "avoid double
+           animations - lighting and slided option at very first not looking
+           good - remove those, keep only onscroll effects"). The hero is a
+           still, lit photograph until the visitor scrolls, and everything
+           below is the scroll's.
 
         /* hidden poses, JS only: view 2 is a closed iris at the beam's
            origin, view 3 waits off the right edge */

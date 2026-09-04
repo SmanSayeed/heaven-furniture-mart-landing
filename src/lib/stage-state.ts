@@ -149,6 +149,46 @@ export function onStageReady(listener: (ready: boolean) => void): () => void {
   }
 }
 
+/* ---- HOW FAR THE 3D HAS GOT (0..1) ----
+
+   The drafting table shows a drawn skeleton of the piece until the real one
+   is on the table, and that wait is not instant: the WebGL chunk is fetched
+   only when the visitor is approaching the chapter, and three.js is a real
+   download on Chattogram mobile data. A skeleton with nothing to say about
+   itself reads as a broken section (client: "found this section not working
+   ... keep this skeleton loaded as image until main 3d loaded with loading
+   %"), so the loader publishes its progress here and the drawing prints it.
+
+   THE CHECKPOINTS ARE REAL, and there are three of them: the load is armed,
+   the chunk has resolved, the piece is on screen. StageLoader eases between
+   them so the readout never sits still, but it can only reach 100 when
+   `setStageReady(true)` is genuinely true. -1 means NO LOAD HAS BEEN ARMED -
+   a low-tier device, or a visitor who has not come near the chapter - and
+   the drawing then says nothing at all rather than promising a piece that
+   is never coming. */
+let stageProgress = -1
+const progressListeners = new Set<(p: number) => void>()
+
+export function getStageProgress(): number {
+  return stageProgress
+}
+
+export function setStageProgress(next: number): void {
+  const clamped = next < 0 ? -1 : Math.min(1, next)
+  /* one listener pass per whole percent: this is driven by a rAF ticker and
+     the only consumer renders two digits */
+  if (Math.round(clamped * 100) === Math.round(stageProgress * 100)) return
+  stageProgress = clamped
+  progressListeners.forEach((l) => l(clamped))
+}
+
+export function onStageProgress(listener: (p: number) => void): () => void {
+  progressListeners.add(listener)
+  return () => {
+    progressListeners.delete(listener)
+  }
+}
+
 /* ---- the piece's REAL size (BLUEPRINT SS5.2) ----
    The dimension lines drawn around a stage are not decoration and they are
    not made up: they are the model's own bounding box in millimetres, read

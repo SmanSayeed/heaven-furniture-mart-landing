@@ -52,58 +52,35 @@ export function Hero() {
             data-view={i}
             style={{ '--focal': v.focal } as React.CSSProperties}
           >
-            {i === 0 ? (
-              /* ROOM ONE IS A REEL. Rooms two and three still arrive on the
-                 scroll, with the iris and the slide they have always had;
-                 this is only about what the page does before anyone has
-                 scrolled at all. The photographs cross-fade inside room one
-                 on their own clock, each drifting slowly closer, so the
-                 opening screen is moving from the first second - which on a
-                 tap from a Facebook ad is the whole first impression.
+            {/* ONE PHOTOGRAPH PER ROOM, AND THE SCROLL MOVES THEM.
 
-                 Frame 1 is the room's own photograph and the LCP, lit in the
-                 server HTML: with no JavaScript this is exactly the single
-                 photograph it has always been. */
-              h.reel.map((r, k) => (
-                <span
-                  key={r.photo}
-                  className={s.reelFrame}
-                  data-reel-frame
-                  data-on={k === 0 ? '' : undefined}
-                  style={{ '--focal': r.focal } as React.CSSProperties}
-                >
-                  <Photo
-                    name={r.photo}
-                    tall={r.tall}
-                    alt={k === 0 ? v.alt : ''}
-                    sizes="100vw"
-                    priority={k === 0}
-                    eager={k === 1}
-                    low={k > 0}
-                    className={s.viewImg}
-                  />
-                </span>
-              ))
-            ) : (
-              <Photo
-                name={v.photo}
-                tall={v.tall}
-                alt=""
-                sizes="100vw"
-                eager
-                low
-                className={s.viewImg}
-              />
-            )}
+                Room one used to hold a four-frame reel that cross-faded on
+                its own clock, on top of the light arriving and a sheet
+                sliding off. Three animations were competing for the first
+                three seconds (client: "avoid double animations - lighting
+                and slided option at very first not looking good"), so the
+                landing is still now: the room is simply lit, and NOTHING
+                moves until the visitor scrolls. */}
+            <Photo
+              name={v.photo}
+              tall={v.tall}
+              alt={i === 0 ? v.alt : ''}
+              sizes="100vw"
+              priority={i === 0}
+              eager={i > 0}
+              low={i > 0}
+              className={s.viewImg}
+            />
           </div>
         ))}
       </div>
       <div className={s.scrim} data-hero-scrim aria-hidden="true" />
-      <div className={s.night} aria-hidden="true" />
-      {/* the room arriving in colour, and the sheet coming off it. Both are
-          one-shot CSS on first paint: no JavaScript, nothing left behind. */}
-      <div className={s.desat} aria-hidden="true" />
-      <div className={s.wipe} aria-hidden="true" />
+      {/* THE ROOM IS ALREADY LIT. The darkness lifting, the colour arriving
+          and the dust sheet sliding off were three separate one-shot
+          animations on first paint, running while the reel was already
+          cross-fading underneath them. All four are gone: the light in this
+          room now only answers the scroll (the beam widens, the scrim
+          clears), which is the one thing the visitor is driving. */}
       <span className={s.beam} data-beam aria-hidden="true">
         <span className={s.beamShaft} />
       </span>

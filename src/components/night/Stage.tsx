@@ -4,14 +4,16 @@ import { useSyncExternalStore } from 'react'
 import {
   getInspectArmed,
   getPieceSize,
+  getStageProgress,
   getStageReady,
   onInspectArmed,
   onPieceSize,
+  onStageProgress,
   onStageReady,
   type StageKey,
 } from '@/lib/stage-state'
-import { bespoke } from '@/content/copy'
-import { Photo } from '@/components/ui/Photo'
+import { bespoke, night } from '@/content/copy'
+import { Skeleton } from './Skeleton'
 import s from './night.module.css'
 
 /**
@@ -20,18 +22,43 @@ import s from './night.module.css'
  * has actually made true.
  */
 
-/** the sofa photograph standing in until (or instead of) the 3D piece */
+/**
+ * THE DRAWING THAT STANDS IN FOR THE PIECE, and says how far off it is.
+ *
+ * Two things were wrong here. The stand-in was a photograph of a DIFFERENT
+ * sofa, so the chapter opened on one object and swapped it for another
+ * (client: "here showing another image at first - confusing"); and it said
+ * nothing while the 3D chunk downloaded, so a slow connection looked like a
+ * dead section ("found this section not working").
+ *
+ * Now: the same piece, drawn (Skeleton), with the loader's real progress
+ * printed under it. The readout exists ONLY while a load is actually armed
+ * - `progress` is -1 on the server, on a low-tier device and on any visitor
+ * who never comes near this chapter - so the drawing never promises a piece
+ * that is not coming. When the real one arrives, this unmounts.
+ */
 export function StagePoster() {
   const ready = useSyncExternalStore(onStageReady, getStageReady, () => false)
+  const progress = useSyncExternalStore(onStageProgress, getStageProgress, () => -1)
   if (ready) return null
+  const loading = progress >= 0
   return (
-    <Photo
-      name="hero-sofa-01-frontal"
-      alt=""
-      sizes="(min-width: 861px) 60vw, 92vw"
-      className={s.poster}
-      low
-    />
+    <div className={s.blueprint}>
+      <Skeleton />
+      <p className={s.blueprintNote}>
+        <span className={s.blueprintWord}>
+          {loading ? night.table.drawing : night.table.drawn}
+        </span>
+        {loading ? (
+          <>
+            <span className={s.blueprintBar}>
+              <i style={{ transform: `scaleX(${progress})` }} />
+            </span>
+            <span className={s.blueprintPct}>{Math.round(progress * 100)}%</span>
+          </>
+        ) : null}
+      </p>
+    </div>
   )
 }
 

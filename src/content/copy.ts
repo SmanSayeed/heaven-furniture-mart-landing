@@ -692,29 +692,6 @@ export const night = {
       { no: '03', label: 'Delivered and fitted', note: 'Chattogram' },
     ],
     marks: ['EST. 2020', 'AGRABAD · CTG', 'FULLY BESPOKE'],
-    /* ---- THE REEL, and it is the FIRST ROOM ONLY ----
-
-       The hero's three rooms still change on scroll, with the iris and the
-       slide they have always had. What was missing is what the page does
-       when nobody has scrolled yet: a tap from a Facebook ad landed on a
-       still photograph (client: "make first view auto animated sliding ...
-       looks like a premium video"). So room ONE is a reel of its own -
-       these photographs cross-fade inside it, each drifting slowly closer,
-       on a clock, while the visitor reads the headline. Rooms two and three
-       are untouched and still belong to the scroll.
-
-       The first entry is the room's own photograph, so the reel begins on
-       exactly what the server rendered. */
-    reel: [
-      { photo: 'living-03-wood-set', tall: 'living-03-wood-set-tall', focal: '50% 62%' },
-      { photo: 'hero-room-01-palace', tall: 'hero-room-01-palace-tall', focal: '50% 58%' },
-      /* 2048x1536 is 1.33 wide; the hero is 1.6, so a quarter of that
-         photograph's height was being thrown away before the drift even
-         started. Every frame here is between 1.6 and 1.8, which is what a
-         full-bleed landscape hero can show whole. */
-      { photo: 'living-01-beige-set', tall: 'living-01-beige-set-tall', focal: '50% 58%' },
-      { photo: 'hero-room-02-leather-chair', tall: 'hero-room-02-leather-chair-tall', focal: '58% 52%' },
-    ],
     /* three views of Heaven's own rooms; `focal` is the point the zoom
        portal pushes into (the fabric of the seat), per photograph */
     views: [
@@ -827,6 +804,15 @@ export const night = {
     fabric: 'Fabric',
     measured: 'Measured off the drawing',
     ar: 'See it in your room',
+    /* what the drawn skeleton says while the real piece is still coming.
+       It is the chapter's own verb: on the drafting table a piece is drawn
+       first and built second, so the wait is part of the story rather than
+       an apology for it. */
+    drawing: 'Building the piece',
+    /* ...and what it says on a device that will never get a 3D piece at
+       all. The drawing is then the finished state, not a placeholder, so it
+       must not advertise a wait. */
+    drawn: 'Drawn to measure',
   },
   home: {
     title: ['Take it', 'home.'],

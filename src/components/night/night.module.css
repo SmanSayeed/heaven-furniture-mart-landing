@@ -220,55 +220,6 @@
   will-change: transform;
 }
 
-/* the reel's frames stack inside room one; GSAP owns opacity and the slow
-   drift, both compositor properties */
-.reelFrame {
-  position: absolute;
-  inset: 0;
-  display: block;
-}
-
-.reelFrame:not([data-on]) {
-  visibility: hidden;
-}
-
-/* ---- THE REEL'S POSITION ----
-   Five hairlines along the foot of the hero, the live one filling over the
-   six seconds its room holds the screen. It is a progress bar, not a
-   control: there is nothing here to operate, so nothing here is a button. */
-.reel {
-  position: absolute;
-  left: var(--pad-x);
-  bottom: clamp(2.5rem, 6vh, 4rem);
-  z-index: 2;
-  display: flex;
-  gap: 6px;
-  pointer-events: none;
-}
-
-.reelTick {
-  display: block;
-  width: clamp(22px, 3.4vw, 40px);
-  height: 1px;
-  background: rgba(244, 240, 232, 0.28);
-  overflow: hidden;
-}
-
-.reelTick i {
-  display: block;
-  width: 100%;
-  height: 100%;
-  background: var(--brass);
-  transform: scaleX(0);
-  transform-origin: left center;
-}
-
-@media (max-width: 860px) {
-  .reel {
-    bottom: clamp(1.5rem, 4vh, 2.5rem);
-  }
-}
-
 .scrim {
   position: absolute;
   inset: 0;
@@ -283,94 +234,10 @@
   opacity: 0.78;
 }
 
-/* the darkness before the light: the room reads at 12% until the beam
-   finds it. Compositor-only (opacity over ink), plays from first paint. */
-/* ---- THE FIRST SECOND ----
-
-   This used to be a power cut: the veil stuttered 0.88 -> 0.5 -> 0.86 ->
-   0.35 -> 0.8 -> 0 over 2.6 seconds, a tube light striking in a load-shedding
-   blackout. It is a nice idea about Chattogram and a bad idea about a
-   customer, who has just tapped an advertisement and is being shown a
-   flickering screen (client: "change first loadshedding effect to smooth
-   animation black and white to colorful or a transparent beautiful premium
-   smooth soft animation slide").
-
-   Three layers now, all finite, all one-shot, and all free:
-
-     .night  a single soft lift, no stutter
-     .desat  the room ARRIVING IN COLOUR. A flat grey sheet in `saturation`
-             blend mode holds the photograph black and white, and fading
-             that sheet out returns the colour. Blend and fade, not a
-             `filter` animation - filtering a full-bleed photograph repaints
-             it every frame, on the one frame budget that matters, while the
-             LCP is still being decided.
-     .wipe   a soft-edged veil that slides off to the right, the way a
-             dust sheet comes off a piece of furniture.
-
-   Nothing here moves layout and nothing here survives its own animation. */
-.night {
-  position: absolute;
-  inset: 0;
-  z-index: -2;
-  background: var(--ink);
-  opacity: 0.88;
-  animation: night-lifts 1.9s cubic-bezier(0.22, 0.61, 0.36, 1) 0.15s both;
-}
-
-@keyframes night-lifts {
-  from { opacity: 0.88; }
-  to { opacity: 0; }
-}
-
-.desat {
-  position: absolute;
-  inset: 0;
-  z-index: -2;
-  background: #808080;
-  mix-blend-mode: saturation;
-  pointer-events: none;
-  animation: night-colour 2.2s cubic-bezier(0.22, 0.61, 0.36, 1) 0.35s both;
-}
-
-@keyframes night-colour {
-  0%,
-  12% { opacity: 1; }
-  100% { opacity: 0; }
-}
-
-.wipe {
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background: linear-gradient(
-    100deg,
-    var(--ink) 0%,
-    var(--ink) 42%,
-    color-mix(in srgb, var(--ink) 55%, transparent) 68%,
-    transparent 100%
-  );
-  animation: night-wipe 1.7s cubic-bezier(0.65, 0, 0.35, 1) 0.1s both;
-}
-
-@keyframes night-wipe {
-  from { transform: translate3d(0, 0, 0); }
-  to { transform: translate3d(118%, 0, 0); }
-}
-
-/* reduced motion: the room is simply already lit, already in colour, and
-   the sheet was never on it */
-@media (prefers-reduced-motion: reduce) {
-  .night,
-  .desat,
-  .wipe {
-    animation: none;
-    opacity: 0;
-  }
-}
-
-/* THE FLOODLIGHT (One Light Law: top-left, 45 degrees). The outer is what
-   NightMotion widens; the inner shaft is what sweeps on load. */
+/* THE FLOODLIGHT (One Light Law: top-left, 45 degrees). It is STILL on
+   arrival and widens only as the visitor scrolls: the shaft used to sweep
+   itself in over 2.8s on top of three other one-shot animations, which is
+   the pile-up the client asked us to clear. */
 .beam {
   position: absolute;
   top: -30%;
@@ -398,13 +265,6 @@
   );
   mask-image: linear-gradient(180deg, transparent, #000 22%, #000 72%, transparent);
   -webkit-mask-image: linear-gradient(180deg, transparent, #000 22%, #000 72%, transparent);
-  animation: beam-sweep 2.8s cubic-bezier(0.33, 1, 0.68, 1) 0.4s both;
-}
-
-@keyframes beam-sweep {
-  0% { transform: translateX(-260%); opacity: 0; }
-  20% { opacity: 1; }
-  100% { transform: translateX(0); opacity: 1; }
 }
 
 .vignette {
@@ -1177,14 +1037,76 @@
   transform: translateY(12px);
 }
 
-.poster {
+/* ---- THE DRAWN PIECE ON THE DRAFTING TABLE ----
+   What the stage holds until the 3D piece arrives, and what it keeps
+   forever on a device that will never render one. Hairlines on the sheet:
+   no fill, no photograph, nothing to decode, nothing that moves. */
+.blueprint {
   position: absolute;
-  inset: 8%;
-  width: 84%;
-  height: 84%;
+  inset: 7% 6%;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  align-items: center;
+  justify-items: center;
+  gap: clamp(0.75rem, 2vh, 1.4rem);
+  color: var(--filament);
+}
+
+.skeleton {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
   object-fit: contain;
-  filter: saturate(0.9) contrast(1.05);
-  mix-blend-mode: normal;
+  opacity: 0.9;
+}
+
+/* the status line: the chapter's verb, a rule that fills, and the number.
+   Same micro-type as the dimension line below the stage, because it is the
+   same kind of annotation on the same drawing. */
+.blueprintNote {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin: 0;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 0.58rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.blueprintWord {
+  opacity: 0.75;
+}
+
+.blueprintBar {
+  display: block;
+  width: clamp(54px, 9vw, 96px);
+  height: 1px;
+  background: color-mix(in srgb, currentColor 24%, transparent);
+  overflow: hidden;
+}
+
+.blueprintBar i {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--brass);
+  transform-origin: left center;
+  /* the loader writes whole percents, so the rule is stepping between them;
+     a short transition joins the steps into one continuous fill */
+  transition: transform 0.2s linear;
+}
+
+.blueprintPct {
+  color: var(--brass);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .blueprintBar i {
+    transition: none;
+  }
 }
 
 .dimLine {

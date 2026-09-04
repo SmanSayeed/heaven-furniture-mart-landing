@@ -1,9 +1,9 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { detectTier, type Tier } from '@/lib/device'
-import { setStageReady } from '@/lib/stage-state'
+import { setStageProgress, setStageReady } from '@/lib/stage-state'
 import s from '@/components/ui/shared.module.css'
 
 /* The Lab 01 pattern, production shape: ssr:false must live in a Client
@@ -55,8 +55,14 @@ function cancelIdle(id: number): void {
 export function StageLoader() {
   const [tier, setTier] = useState<Tier | null>(null)
   const [ready, setReady] = useState(false)
+  const done = useRef(false)
   const onReady = useCallback(() => {
+    done.current = true
     setReady(true)
+    /* the drawn skeleton on the drafting table prints this; 100 is the only
+       number it is allowed to reach, and only here, where the piece really
+       is on the table */
+    setStageProgress(1)
     /* publishes to the DOM side of the hero (Turntable.tsx): only now may
        the grab cursor and the drag hint exist, because only now is there
        something to grab. Low tier never reaches this line. */
@@ -149,6 +155,48 @@ export function StageLoader() {
     }, 2500)
     return cleanup
   }, [])
+
+  /*
+    THE WAIT, SAID OUT LOUD.
+
+    Between "the visitor is approaching the drafting table" and "the piece is
+    on it" sits a real download - the three.js chunk - and until now the
+    chapter said nothing about it: a drawn skeleton simply sat there, which
+    on a slow connection reads as a section that does not work (client:
+    "found this section not working ... with loading %").
+
+    THREE REAL CHECKPOINTS, and the number can only be honest about them:
+
+      armed          the tier resolved and the mount began          ->  4%
+      chunk resolved the same import() the dynamic() below makes,
+                     served from the module cache, so asking costs
+                     one promise and no second request               -> 74%
+      onReady        the piece is measured and on screen            -> 100%
+
+    Between checkpoints it eases toward the next one's floor without ever
+    arriving, which is what keeps it moving on a slow link and stops it
+    lying: 100 is written in onReady and nowhere else.
+  */
+  useEffect(() => {
+    if (!tier || tier === 'low' || ready) return
+    let p = 0.04
+    let ceiling = 0.7
+    let raf = 0
+    setStageProgress(p)
+    const tick = () => {
+      if (done.current) return
+      p += (ceiling - p) * 0.04
+      setStageProgress(p)
+      raf = requestAnimationFrame(tick)
+    }
+    raf = requestAnimationFrame(tick)
+    void import('./StageCanvas').then(() => {
+      if (done.current) return
+      p = Math.max(p, 0.74)
+      ceiling = 0.97
+    })
+    return () => cancelAnimationFrame(raf)
+  }, [tier, ready])
 
   if (!tier || tier === 'low') return null
 
