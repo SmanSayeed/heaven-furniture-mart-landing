@@ -306,6 +306,7 @@ export const catalogue = {
         { img: 'office-03-executive-desk', title: 'Executive desk and workstation', specs: ['DESK AND RETURN', 'DRAWER PEDESTAL', 'BUILT TO THE ROOM'] },
         { img: 'office-04-director-desk', title: 'Director’s desk with storage wall', specs: ['DESK PLUS STORAGE', 'FLOOR TO CEILING OPTION', 'TO YOUR FLOOR PLAN'] },
         { img: 'office-02-conference', title: 'Conference table and seating', specs: ['SEATS TO YOUR ROOM', 'ONE-PIECE TOP', 'MATCHING STORAGE'] },
+        { img: 'office-05-conference-hd', title: 'Boardroom table, seats eight', specs: ['SEATS TO YOUR ROOM', 'ONE-PIECE TOP', 'BUILT TO THE FLOOR PLAN'] },
       ],
     },
     {
@@ -658,64 +659,66 @@ export const night = {
     headline: ['Furnished', 'to you.'],
     sub: brand.tagline,
     cue: 'Scroll',
-    /* THE HERO IS A REEL, NOT A SLIDESHOW WITH ARROWS (client, 2026-09-04:
-       "make first view auto animated sliding ... looks like a premium video
-       ... comes and hides on another arrival zoom in").
-
-       Five rooms, each holding the screen for about six seconds while it
-       drifts slowly closer, then dissolving into the next. Nobody has to
-       click, nobody has to scroll, and the page is doing something the
-       moment it is open - which on a Facebook ad click is the whole first
-       impression.
-
-       ONE LINE PER ROOM. The three-row proof strip and the marks line left
-       the hero on the same call ("take away these 3 lines ... to look
-       minimal"): under a headline, a tagline and a CTA they were four more
-       blocks of type over a photograph. The same three facts are what the
-       rooms now say, one at a time, at headline size - and the studio
-       chapter still states all three together, with the detail behind its
-       buttons. Nothing was lost; it was given room.
-
-       `focal` is the point the slow zoom pushes towards, per photograph. */
-    slides: [
+    /* THREE VIEWS, THREE THINGS TO SAY (client, 2026-09-03: "3rd hero
+       showing empty - add like text going on scroll for each top sections").
+       The hero changes photograph twice as it is scrolled and the headline
+       used to sit still through all of it, so views 2 and 3 arrived as
+       pictures with nothing to read. Each view carries its own line now.
+       Message 1 is the h1 and the LCP; 2 and 3 are the same three facts the
+       studio chapter states, said one at a time over the room they describe.
+       Nothing here is new: every claim is the brief's. */
+    messages: [
+      { headline: ['Furnished', 'to you.'], sub: brand.tagline },
       {
-        photo: 'living-03-wood-set',
-        focal: '50% 62%',
-        alt: 'A full wooden living room set, styled in the Agrabad showroom.',
-        headline: ['Furnished', 'to you.'],
-        sub: brand.tagline,
-      },
-      {
-        photo: 'hero-room-01-palace',
-        focal: '50% 58%',
-        alt: 'A carved sofa, lamps and side chairs in a panelled sitting room.',
         headline: ['Drawn', 'to your room.'],
-        sub: 'A free design consultation, at the showroom or on WhatsApp.',
+        sub: 'Free design consultation, at the showroom or on WhatsApp.',
       },
       {
-        photo: 'living-02-blue-pair',
-        focal: '52% 60%',
-        alt: 'A matched pair of deep blue two-seat sofas by Heaven Furniture Mart.',
-        headline: ['Built', 'in our workshop.'],
-        sub: 'Premium wood and materials. Skilled in-house craftsmen.',
-      },
-      {
-        photo: 'hero-room-02-leather-chair',
-        focal: '58% 52%',
-        alt: 'A buttoned leather armchair with a carved wooden frame.',
-        headline: ['Made', 'one at a time.'],
-        sub: 'Built to your space, your size and your taste. Never off a shelf.',
-      },
-      {
-        photo: 'bespoke-chairs-01',
-        focal: '58% 62%',
-        alt: 'Bespoke upholstered chairs, built to order in Chattogram.',
-        headline: ['Delivered', 'and fitted.'],
-        sub: 'Delivery and installation included. Easy payment options.',
+        headline: ['Built', 'and fitted.'],
+        sub: 'Premium wood, our own craftsmen, delivery and installation included.',
       },
     ],
-  },
+    /* THE PROOF STRIP (2026-09-03, client): the hero had a gap under the CTA
+       and a narrator line ("The power is out. You have a light.") that read as
+       atmosphere rather than as an answer. A first-time visitor's three
+       questions are who draws it, who builds it, who delivers it - so the gap
+       now carries the offer itself, in the studio's own three sentences.
 
+       NOTHING NEW IS CLAIMED. Each line is `studio.lines` shortened to a
+       label, and the marks are the `specimens` already on the page. */
+    proof: [
+      { no: '01', label: 'Drawn to your room', note: 'Free consultation' },
+      { no: '02', label: 'Built in our workshop', note: 'Our own makers' },
+      { no: '03', label: 'Delivered and fitted', note: 'Chattogram' },
+    ],
+    marks: ['EST. 2020', 'AGRABAD · CTG', 'FULLY BESPOKE'],
+    /* ---- THE REEL, and it is the FIRST ROOM ONLY ----
+
+       The hero's three rooms still change on scroll, with the iris and the
+       slide they have always had. What was missing is what the page does
+       when nobody has scrolled yet: a tap from a Facebook ad landed on a
+       still photograph (client: "make first view auto animated sliding ...
+       looks like a premium video"). So room ONE is a reel of its own -
+       these photographs cross-fade inside it, each drifting slowly closer,
+       on a clock, while the visitor reads the headline. Rooms two and three
+       are untouched and still belong to the scroll.
+
+       The first entry is the room's own photograph, so the reel begins on
+       exactly what the server rendered. */
+    reel: [
+      { photo: 'living-03-wood-set', focal: '50% 62%' },
+      { photo: 'hero-room-01-palace', focal: '50% 58%' },
+      { photo: 'living-11-green-set', focal: '50% 55%' },
+      { photo: 'hero-room-02-leather-chair', focal: '58% 52%' },
+    ],
+    /* three views of Heaven's own rooms; `focal` is the point the zoom
+       portal pushes into (the fabric of the seat), per photograph */
+    views: [
+      { photo: 'living-03-wood-set', focal: '50% 62%', alt: 'A full wooden living room set, styled in the Agrabad showroom.' },
+      { photo: 'living-02-blue-pair', focal: '52% 60%', alt: 'A matched pair of deep blue two-seat sofas by Heaven Furniture Mart.' },
+      { photo: 'bespoke-chairs-01', focal: '58% 62%', alt: 'Bespoke upholstered chairs, built to order in Chattogram.' },
+    ],
+  },
   /* CH.2 · THE STUDIO. NOBODY READS A PARAGRAPH (client, verbatim: "avoid
      those big descriptions and texts - customer not like to read texts").
      What was one long paragraph, one long quotation and three lines of small

@@ -212,6 +212,18 @@
   will-change: transform;
 }
 
+/* the reel's frames stack inside room one; GSAP owns opacity and the slow
+   drift, both compositor properties */
+.reelFrame {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+
+.reelFrame:not([data-on]) {
+  visibility: hidden;
+}
+
 /* ---- THE REEL'S POSITION ----
    Five hairlines along the foot of the hero, the live one filling over the
    six seconds its room holds the screen. It is a progress bar, not a
@@ -1873,8 +1885,8 @@
    again smaller than the words under it, and a ceiling so a tall desktop
    monitor does not turn a gallery wall into a billboard. */
 .floor {
-  --wall-chrome: 366px;
-  --wall-h: clamp(240px, calc(100svh - var(--wall-chrome)), 620px);
+  --wall-chrome: 318px;
+  --wall-h: clamp(260px, calc(100svh - var(--wall-chrome)), 720px);
 }
 
 /* PINNED, THE HEAD IS FURNITURE, NOT A POSTER. It shares one viewport with
@@ -1905,7 +1917,7 @@
    up too. Each step buys the plates roughly 70px. */
 @media (min-width: 861px) and (max-height: 820px) {
   .floor {
-    --wall-chrome: 300px;
+    --wall-chrome: 254px;
     --hang: 0.62;
   }
 
@@ -1918,7 +1930,7 @@
 
 @media (min-width: 861px) and (max-height: 680px) {
   .floor {
-    --wall-chrome: 274px;
+    --wall-chrome: 238px;
     --hang: 0.4;
   }
 
@@ -1951,26 +1963,100 @@
   flex: 0 0 auto;
   scroll-snap-align: center;
   display: grid;
-  /* the plaque hangs 0.85rem below the plate, so the name needs more air
-     under it than a plain gap */
-  gap: 1.6rem;
+  gap: 0.9rem;
   align-content: start;
-  /* GSAP owns this element's transform (the rail's face-in), so every
-     rotation below lives on .frame instead */
+  /* GSAP owns this element's transform (the rail's face-in) */
   transform-style: preserve-3d;
 }
 
-/* the plate itself */
+/* ONE SIZE, ONE BASELINE. Five proportions at five angles never lined up,
+   and their captions landed at five different heights. */
 .frame {
   position: relative;
   display: block;
   height: var(--wall-h);
-  aspect-ratio: var(--ratio, 3 / 4);
+  aspect-ratio: 3 / 4;
   color: inherit;
   text-decoration: none;
   perspective: 1000px;
-  transform: rotate(var(--rot, 0deg));
   transition: transform 0.8s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* ---- THE CAPTION, INSIDE THE PHOTOGRAPH ---- */
+.panelShade {
+  position: absolute;
+  inset: 30% 10px 10px;
+  z-index: 3;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent, rgba(8, 7, 6, 0.9) 76%);
+}
+
+.panelBody {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
+  z-index: 4;
+  display: grid;
+  gap: 0.3rem;
+  padding: clamp(0.9rem, 1.6vw, 1.35rem);
+  color: var(--paper);
+}
+
+.panelNo {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  color: var(--brass);
+}
+
+.panelName {
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-weight: 600;
+  font-size: clamp(1.25rem, 1.9vw, 1.75rem);
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+}
+
+.panelLead {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 0.75rem;
+  line-height: 1.45;
+  opacity: 0.78;
+  /* two lines, whatever the room's line length: five panels have to end on
+     the same baseline or the wall is ragged again */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* the way in. It slides up under the pointer, but it is READABLE at rest:
+   an affordance that only exists on hover does not exist on a phone. */
+.panelGo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.45rem;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--brass);
+  transition: gap 0.4s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.panelGo svg {
+  width: 12px;
+  height: 12px;
+}
+
+.frame:hover .panelGo,
+.frame:focus-visible .panelGo {
+  gap: 0.9rem;
 }
 
 .mat {
@@ -1994,14 +2080,24 @@
   background: var(--ink-2);
 }
 
-/* BLACK AND WHITE, until this is the plate */
+/* IN COLOUR. This used to be `grayscale(1)`, and it was the wall's whole
+   device: a monochrome gallery, one room at a time coming up in colour. It
+   is also inherited by every piece on every room page, where a customer is
+   choosing upholstery from a photograph (client: "black and white not
+   looking good here"). A furniture page that shows its furniture grey is
+   answering the wrong question. The wall keeps one room alive at a time by
+   holding the others BACK - dimmer and a little flatter - rather than by
+   draining them. */
 .frameImg img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: grayscale(1) contrast(1.05) brightness(0.82);
   transform: scale(1.04) translate(calc((var(--mx, 50%) - 50%) * -0.05), calc((var(--my, 50%) - 50%) * -0.05));
   transition: filter 0.8s ease, transform 1.3s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.wcard:not([data-focus]) .frameImg img {
+  filter: brightness(0.62) saturate(0.72) contrast(1.02);
 }
 
 /* THE PANE. A sheet of glass over the photograph: a diagonal sheen, a
@@ -2172,6 +2268,9 @@
   display: none;
 }
 
+/* one quiet row under the panel: what is in the room, and the quick look.
+   The room's NAME is inside the photograph now, so this line no longer
+   repeats it - which is what used to collide with the panel beside it. */
 .wcardFoot {
   display: flex;
   justify-content: space-between;

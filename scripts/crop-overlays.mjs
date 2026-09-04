@@ -81,6 +81,7 @@ const CROPS = {
      the height the hero wants */
   'hero-room-01-palace': NO_CROP,
   'hero-room-02-leather-chair': NO_CROP,
+  'office-05-conference-hd': NO_CROP,
 
   /* ...and the ones that ARE ads. A "MEGA SALE" roundel or a CRAFTED FOR
      LUXURY LIVING band is the crowded, marketplace look the brief tells us

@@ -55,10 +55,7 @@ export function NightMotion() {
       const hero = q('[data-hero]')
       const studio = q('#studio')
       if (hero) {
-        const slides = gsap.utils.toArray<HTMLElement>('[data-view]', hero)
-        const imgs = slides.map((v) => v.querySelector<HTMLElement>('img'))
-        const says = gsap.utils.toArray<HTMLElement>('[data-hero-msg]', hero)
-        const ticks = gsap.utils.toArray<HTMLElement>('[data-reel] i', hero)
+        const views = gsap.utils.toArray<HTMLElement>('[data-view]', hero)
         const viewsWrap = q('[data-views]')
         const scrim = q('[data-hero-scrim]')
         const beam = q('[data-beam]')
@@ -66,105 +63,88 @@ export function NightMotion() {
         const text = q('[data-hero-text]')
         const counter = q('[data-hero-counter]')
         const now = q('[data-hero-now]')
+        const says = gsap.utils.toArray<HTMLElement>('[data-hero-msg]', hero)
+        const proofs = gsap.utils.toArray<HTMLElement>('[data-proof-item]', hero)
         const cue = q('[data-cue]')
         const out = q('[data-lights-out]')
 
-        /* ---------------- THE REEL ----------------
+        /* ---------------- THE REEL, INSIDE VIEW 1 ONLY ----------------
 
-           The hero used to change room only when the visitor scrolled, and
-           the choreography (an iris, then a slide) was scrubbed against the
-           pin. That made the opening screen a still photograph until someone
-           touched the wheel - and on this page's actual traffic, a tap on a
-           Facebook ad, the first three seconds are the whole impression
-           (client: "make first view auto animated sliding ... looks like a
-           premium video").
+           The scroll story below is untouched: view 2 still blooms out of
+           the beam's origin, view 3 still slides in from the right. This is
+           only about the seconds BEFORE anyone scrolls, which on this page's
+           traffic - a tap on a Facebook ad - is the whole first impression
+           and used to be a still photograph.
 
-           So the rooms turn on their own clock now: five of them, each
-           holding the screen for six seconds while it drifts slowly closer,
-           then dissolving into the next over a second and a half. The line
-           over each room changes with it, so the words are never orphaned
-           from the picture.
+           Four frames inside view 1, cross-fading every six seconds, each
+           drifting slowly closer while it holds. The drift alternates: even
+           frames push in, odd frames pull back, because a reel that always
+           pushes in reads as a slideshow with an effect bolted on, and
+           alternating reads as a camera.
 
-           Two rules keep it from being a cost:
-             - it only runs while the hero is ON SCREEN (the observer below).
-               A visitor reading the drafting table is not paying for a
-               cross-fade four chapters above them.
-             - opacity and scale only. Both are compositor properties, so the
-               reel is free per frame, and there is no layout in it at all.
+           Opacity and scale only, so it is compositor work and costs nothing
+           per frame - and it runs ONLY while the hero is on screen, so a
+           visitor four chapters down is not paying for a cross-fade above
+           them. */
+        const frames = gsap.utils.toArray<HTMLElement>('[data-reel-frame]', hero)
+        if (frames.length > 1) {
+          const DWELL = 6
+          const FADE = 1.5
+          let at = 0
+          let call: gsap.core.Tween | null = null
 
-           The zoom alternates: even rooms push in, odd rooms pull back. A
-           reel that always pushes in reads as a slideshow with an effect
-           bolted on; alternating reads as a camera. */
-        const DWELL = 6
-        const FADE = 1.5
-        let at = 0
-        let call: gsap.core.Tween | null = null
-
-        const settle = (n: number, immediate = false) => {
-          slides.forEach((el, i) => el.toggleAttribute('data-on', i === n))
-          says.forEach((el, i) => el.toggleAttribute('data-on', i === n))
-          ticks.forEach((el, i) => {
-            gsap.killTweensOf(el)
-            if (i < n) gsap.set(el, { scaleX: 1 })
-            else if (i > n) gsap.set(el, { scaleX: 0 })
-            else gsap.fromTo(el, { scaleX: 0 }, { scaleX: 1, duration: DWELL, ease: 'none' })
-          })
-          if (now) {
-            now.textContent = String(n + 1)
-            gsap.fromTo(now, { y: 8, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4, ease: 'power2.out' })
-          }
-          slides.forEach((el, i) => {
-            gsap.to(el, { autoAlpha: i === n ? 1 : 0, duration: immediate ? 0 : FADE, ease: 'power1.inOut' })
-          })
-          const img = imgs[n]
-          if (img) {
-            const inward = n % 2 === 0
-            gsap.fromTo(
-              img,
-              { scale: inward ? 1.02 : 1.15, xPercent: inward ? 0 : -1.4 },
-              {
-                scale: inward ? 1.15 : 1.02,
-                xPercent: inward ? -1.4 : 0,
-                duration: DWELL + FADE,
-                ease: 'none',
-                overwrite: 'auto',
-              },
-            )
-          }
-        }
-
-        const advance = () => {
-          settle((at = (at + 1) % slides.length))
-          call = gsap.delayedCall(DWELL, advance)
-        }
-
-        /* every room but the first starts invisible. Set from JavaScript, so
-           the server HTML is still the finished first room. */
-        slides.forEach((el, i) => gsap.set(el, { autoAlpha: i === 0 ? 1 : 0 }))
-        settle(0, true)
-
-        const reelIO = new IntersectionObserver(
-          ([e]) => {
-            if (e.isIntersecting) {
-              if (!call) call = gsap.delayedCall(DWELL, advance)
-            } else {
-              call?.kill()
-              call = null
+          const show = (n: number) => {
+            frames.forEach((el, i) => {
+              el.toggleAttribute('data-on', i === n)
+              gsap.to(el, { autoAlpha: i === n ? 1 : 0, duration: FADE, ease: 'power1.inOut' })
+            })
+            const img = frames[n].querySelector<HTMLElement>('img')
+            if (img) {
+              const inward = n % 2 === 0
+              gsap.fromTo(
+                img,
+                { scale: inward ? 1.02 : 1.14, xPercent: inward ? 0 : -1.2 },
+                {
+                  scale: inward ? 1.14 : 1.02,
+                  xPercent: inward ? -1.2 : 0,
+                  duration: DWELL + FADE,
+                  ease: 'none',
+                  overwrite: 'auto',
+                },
+              )
             }
-          },
-          { threshold: 0.15 },
-        )
-        reelIO.observe(hero)
-        cleanups.push(() => {
-          reelIO.disconnect()
-          call?.kill()
-          call = null
-        })
+          }
+          const advance = () => {
+            show((at = (at + 1) % frames.length))
+            call = gsap.delayedCall(DWELL, advance)
+          }
 
-        /* ---------------- THE SCROLL, unchanged ----------------
-           The pin, the flood, the zoom through the fabric and the lights
-           going out are the chapter's scroll story and stay exactly as they
-           were. The reel runs underneath them on its own clock. */
+          frames.forEach((el, i) => gsap.set(el, { autoAlpha: i === 0 ? 1 : 0 }))
+          const reelIO = new IntersectionObserver(
+            ([e]) => {
+              if (e.isIntersecting) {
+                if (!call) call = gsap.delayedCall(DWELL, advance)
+              } else {
+                call?.kill()
+                call = null
+              }
+            },
+            { threshold: 0.15 },
+          )
+          reelIO.observe(hero)
+          cleanups.push(() => {
+            reelIO.disconnect()
+            call?.kill()
+            call = null
+          })
+        }
+
+        /* hidden poses, JS only: view 2 is a closed iris at the beam's
+           origin, view 3 waits off the right edge */
+        if (views[1]) gsap.set(views[1], { clipPath: 'circle(0% at 12% 8%)', autoAlpha: 1 })
+        if (views[2]) gsap.set(views[2], { xPercent: 100, autoAlpha: 1 })
+
+        let shown = 1
         const tl = gsap.timeline({
           defaults: { ease: 'none' },
           scrollTrigger: {
@@ -175,6 +155,27 @@ export function NightMotion() {
             scrub: 0.8,
             anticipatePin: 1,
             invalidateOnRefresh: true,
+            onUpdate: (st) => {
+              const p = st.progress
+              const v = p < 0.22 ? 1 : p < 0.5 ? 2 : 3
+              if (v !== shown) {
+                shown = v
+                if (now) {
+                  now.textContent = String(v)
+                  gsap.fromTo(now, { y: 8, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4, ease: 'power2.out' })
+                }
+                /* THE WORDS TRAVEL WITH THE ROOM. One message per view: the
+                   photographs used to change twice under a headline that
+                   never did, so views 2 and 3 read as pictures with nothing
+                   to say. `data-on` is the only switch; the fade and the
+                   lift are CSS transitions on the compositor, so this costs
+                   one attribute write per view change and nothing per frame.
+                   The proof strip rides the same switch, which is what makes
+                   it a single line on a phone instead of three. */
+                says.forEach((el, i) => el.toggleAttribute('data-on', i === v - 1))
+                proofs.forEach((el, i) => el.toggleAttribute('data-on', i === v - 1))
+              }
+            },
           },
         })
 
@@ -185,8 +186,17 @@ export function NightMotion() {
         if (text) tl.to(text, { y: -28, duration: 0.22 }, 0)
         if (cue) tl.to(cue, { autoAlpha: 0, duration: 0.04 }, 0.02)
 
-        /* ZOOM: through the fabric of the seat, and then out. The room goes
-           dark inside the hero and the studio's paper is the cut. */
+        /* IRIS: view 2 blooms from the light's own origin */
+        if (views[1]) tl.to(views[1], { clipPath: 'circle(160% at 12% 8%)', duration: 0.26 }, 0.22)
+
+        /* SLIDE: view 3 in from the right, view 2 pushed a third left */
+        if (views[2]) tl.to(views[2], { xPercent: 0, duration: 0.16, ease: 'power1.inOut' }, 0.5)
+        if (views[1]) tl.to(views[1], { xPercent: -30, duration: 0.16, ease: 'power1.inOut' }, 0.5)
+
+        /* ZOOM: through the fabric of the seat, and then out.
+
+           There is no fixed sheet any more (PART B, client call): the room
+           goes dark inside the hero and the studio's paper is the cut. */
         if (viewsWrap) tl.to(viewsWrap, { scale: 2.6, duration: 0.34, ease: 'power2.in' }, 0.66)
         if (text) tl.to(text, { autoAlpha: 0, y: -90, duration: 0.12 }, 0.66)
         if (counter) tl.to(counter, { autoAlpha: 0, duration: 0.06 }, 0.66)

@@ -272,6 +272,14 @@ export const photos = {
     "blurDataURL": "data:image/webp;base64,UklGRmYAAABXRUJQVlA4IFoAAAAQAgCdASoQABAAA4BaJZQCdADdro05NysAAP7I2ezU0vuAWvIeKfjypWQncawoint+32rJsYUiyXkZ8Uvf2arVlSvwZMh0/Eq8VpCb+JrpJcJ7gvKgK8QAAAA=",
     "alpha": false
   },
+  "office-05-conference-hd": {
+    "src": "/img/office-05-conference-hd-1920.webp",
+    "srcSet": "/img/office-05-conference-hd-480.webp 480w, /img/office-05-conference-hd-768.webp 768w, /img/office-05-conference-hd-1024.webp 1024w, /img/office-05-conference-hd-1600.webp 1600w, /img/office-05-conference-hd-1920.webp 1920w",
+    "width": 1920,
+    "height": 1279,
+    "blurDataURL": "data:image/webp;base64,UklGRmAAAABXRUJQVlA4IFQAAADQAQCdASoQAAsAA4BaJaQAAusQ3d8OAAD+8ExwRB7WxeuhbscymBre92mbrqn+Su4UeKc6mkyHMDqoaXlfgyvXlKfdy2BvbqGIwxveK41HsjwnAAA=",
+    "alpha": false
+  },
   "office-storage-01-black-cabinet": {
     "src": "/img/office-storage-01-black-cabinet-1024.webp",
     "srcSet": "/img/office-storage-01-black-cabinet-480.webp 480w, /img/office-storage-01-black-cabinet-768.webp 768w, /img/office-storage-01-black-cabinet-1024.webp 1024w",
