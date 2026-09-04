@@ -196,8 +196,8 @@
   inset: 0;
 }
 
-/* no-JS and reduced motion: view 1 only. NightMotion reveals the others
-   into their hidden poses, then scrubs them in. */
+/* no-JS and reduced motion: room 1 only. NightMotion fades the rest in on
+   the reel's own clock, and sets their hidden state itself. */
 .view:not([data-view='0']) {
   visibility: hidden;
 }
@@ -207,6 +207,46 @@
   height: 100%;
   object-fit: cover;
   object-position: var(--focal, 50% 60%);
+  /* GSAP owns this transform (the slow drift while a room holds the
+     screen); the promotion is declared once here rather than per tween */
+  will-change: transform;
+}
+
+/* ---- THE REEL'S POSITION ----
+   Five hairlines along the foot of the hero, the live one filling over the
+   six seconds its room holds the screen. It is a progress bar, not a
+   control: there is nothing here to operate, so nothing here is a button. */
+.reel {
+  position: absolute;
+  left: var(--pad-x);
+  bottom: clamp(2.5rem, 6vh, 4rem);
+  z-index: 2;
+  display: flex;
+  gap: 6px;
+  pointer-events: none;
+}
+
+.reelTick {
+  display: block;
+  width: clamp(22px, 3.4vw, 40px);
+  height: 1px;
+  background: rgba(244, 240, 232, 0.28);
+  overflow: hidden;
+}
+
+.reelTick i {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--brass);
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+
+@media (max-width: 860px) {
+  .reel {
+    bottom: clamp(1.5rem, 4vh, 2.5rem);
+  }
 }
 
 .scrim {

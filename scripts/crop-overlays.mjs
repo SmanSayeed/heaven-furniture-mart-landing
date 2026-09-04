@@ -76,6 +76,11 @@ const CROPS = {
   'office-04-director-desk': NO_CROP,
   'bespoke-02-swing-black': NO_CROP,
   'bespoke-03-swing-cream': NO_CROP,
+  /* the two HD interiors the client added for the hero slideshow: full-bleed
+     photography, nothing burned in, and cropping them would only throw away
+     the height the hero wants */
+  'hero-room-01-palace': NO_CROP,
+  'hero-room-02-leather-chair': NO_CROP,
 
   /* ...and the ones that ARE ads. A "MEGA SALE" roundel or a CRAFTED FOR
      LUXURY LIVING band is the crowded, marketplace look the brief tells us

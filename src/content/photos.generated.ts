@@ -104,6 +104,22 @@ export const photos = {
     "blurDataURL": "data:image/webp;base64,UklGRlgAAABXRUJQVlA4IEwAAADQAQCdASoQAAoAA4BaJQBOgBbbRuiSoAD2t3FWoHs9vtqNcBIuWif+9vrPTndSBkiOH+6XsCNujopc0uwm8333CG3yHJ+sesnfrAAA",
     "alpha": false
   },
+  "hero-room-01-palace": {
+    "src": "/img/hero-room-01-palace-1920.webp",
+    "srcSet": "/img/hero-room-01-palace-480.webp 480w, /img/hero-room-01-palace-768.webp 768w, /img/hero-room-01-palace-1024.webp 1024w, /img/hero-room-01-palace-1600.webp 1600w, /img/hero-room-01-palace-1920.webp 1920w",
+    "width": 1920,
+    "height": 1080,
+    "blurDataURL": "data:image/webp;base64,UklGRl4AAABXRUJQVlA4IFIAAACQAQCdASoQAAkAA4BaJQBOgBM4BSAA/moYi0S6dlU91AjNQBGUli9tPIYHfZ1amlldg3Ut6I0712ATnfvz3cQOOxnUw10w8JpmE1LnJy8TPkAA",
+    "alpha": false
+  },
+  "hero-room-02-leather-chair": {
+    "src": "/img/hero-room-02-leather-chair-1920.webp",
+    "srcSet": "/img/hero-room-02-leather-chair-480.webp 480w, /img/hero-room-02-leather-chair-768.webp 768w, /img/hero-room-02-leather-chair-1024.webp 1024w, /img/hero-room-02-leather-chair-1600.webp 1600w, /img/hero-room-02-leather-chair-1920.webp 1920w",
+    "width": 1920,
+    "height": 1080,
+    "blurDataURL": "data:image/webp;base64,UklGRlYAAABXRUJQVlA4IEoAAAAQAgCdASoQAAkAA4BaJZgCdADdZ0tJ+aEAAP7u84kRNHqRJZk0Gmg1k37uJ4aU3sTbn9hi3k+YbGskVhmW4RimPalYkMpD9yAAAA==",
+    "alpha": false
+  },
   "hero-sofa-01-frontal": {
     "src": "/img/hero-sofa-01-frontal-1024.webp",
     "srcSet": "/img/hero-sofa-01-frontal-480.webp 480w, /img/hero-sofa-01-frontal-768.webp 768w, /img/hero-sofa-01-frontal-1024.webp 1024w",
