@@ -5,6 +5,7 @@ import { CollectionModal } from '@/components/deck/CollectionModal'
 import { ArrowRight } from '@/components/ui/Icons'
 import s from './night.module.css'
 import d from '@/components/deck/deck.module.css'
+import { plural } from '@/lib/plural'
 
 /**
  * THE GLASS WALL (PLAN-V6 PART B3, redrawn on the client's call).
@@ -101,7 +102,7 @@ export function Wall({ mode = 'rail' }: { mode?: 'rail' | 'grid' }) {
               <div>
                 <h3 className={s.rcardName}>{cat.name}</h3>
                 <p className={s.rcardDetail}>
-                  {cat.pieces.length} {cat.pieces.length === 1 ? 'piece' : 'pieces'} · {night.menu.built}
+                  {plural(cat.pieces.length, 'piece', 'pieces')} · {night.menu.built}
                 </p>
               </div>
               <div className={s.rcardAct}>

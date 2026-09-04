@@ -7,6 +7,7 @@ import { Photo, hasPhoto } from '@/components/ui/Photo'
 import { WhatsApp } from '@/components/ui/Icons'
 import { Modal } from './Modal'
 import s from './deck.module.css'
+import { plural } from '@/lib/plural'
 
 /**
  * The VIEW pill on a category plate, and the sheet it opens: that room's
@@ -48,7 +49,7 @@ export function CollectionModal({
         open={open}
         onClose={close}
         title={cat.name}
-        sub={cat.pieces.length === 1 ? '1 piece · built in Agrabad' : `${cat.pieces.length} pieces · built in Agrabad`}
+        sub={`${plural(cat.pieces.length, 'piece', 'pieces')} · built in Agrabad`}
         foot={
           <>
             <span className={s.modalSub}>{deck.freeLine}</span>

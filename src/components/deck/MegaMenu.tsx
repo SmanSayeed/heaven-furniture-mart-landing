@@ -7,6 +7,7 @@ import { getLenis } from '@/lib/lenis-store'
 import { Photo, hasPhoto } from '@/components/ui/Photo'
 import { ArrowRight, WhatsApp } from '@/components/ui/Icons'
 import s from './deck.module.css'
+import { plural } from '@/lib/plural'
 
 /**
  * THE MEGA MENU (PLAN-V6 PART B5): the customer's path to the rooms.
@@ -232,8 +233,7 @@ export function MegaMenu({
                 ),
             )}
             <span className={s.megaCap}>
-              {current.name} · {current.pieces.length} {current.pieces.length === 1 ? 'piece' : 'pieces'} ·{' '}
-              {m.built}
+              {current.name} · {plural(current.pieces.length, 'piece', 'pieces')} · {m.built}
             </span>
           </div>
         </div>

@@ -10,6 +10,7 @@ import { whatsappUrl } from '@/lib/whatsapp'
 import { Wall } from './Wall'
 import s from './night.module.css'
 import d from '@/components/deck/deck.module.css'
+import { plural } from '@/lib/plural'
 
 type Category = (typeof catalogue.categories)[number]
 
@@ -31,7 +32,7 @@ type Category = (typeof catalogue.categories)[number]
  */
 export function Room({ cat, next }: { cat: Category; next: Category }) {
   const r = night.roomPage
-  const count = `${cat.pieces.length} ${cat.pieces.length === 1 ? r.piece : r.pieces}`
+  const count = plural(cat.pieces.length, r.piece, r.pieces)
   const nav = night.nav
   return (
     <main className={s.room} id="top">

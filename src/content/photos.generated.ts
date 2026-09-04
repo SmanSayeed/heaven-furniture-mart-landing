@@ -8,6 +8,46 @@ export const photos = {
     "blurDataURL": "data:image/webp;base64,UklGRlwAAABXRUJQVlA4IFAAAADwAQCdASoQAAkAA4BaJZACdAD6d2DQYwAA/oc8vmXecGJQcLtiImQYt4DtJKngmkwvoQbuMkUbnXTeSlWMgTfiooH4jeOLk3Sx4NerzFqgAA==",
     "alpha": false
   },
+  "bedroom-02-green-velvet": {
+    "src": "/img/bedroom-02-green-velvet-1024.webp",
+    "srcSet": "/img/bedroom-02-green-velvet-480.webp 480w, /img/bedroom-02-green-velvet-768.webp 768w, /img/bedroom-02-green-velvet-1024.webp 1024w",
+    "width": 1024,
+    "height": 543,
+    "blurDataURL": "data:image/webp;base64,UklGRmAAAABXRUJQVlA4IFQAAADwAQCdASoQAAgAA4BaJQBOgCFcAJ43GAAA/u7OYOr2FdRXgUSwPsxeMw5DRnXxqmUspMX3VUct5W2p2mBcjCqz8xIelkPPkH6EQFsAaYhSxk3wAAA=",
+    "alpha": false
+  },
+  "bedroom-03-carved-teal": {
+    "src": "/img/bedroom-03-carved-teal-1024.webp",
+    "srcSet": "/img/bedroom-03-carved-teal-480.webp 480w, /img/bedroom-03-carved-teal-768.webp 768w, /img/bedroom-03-carved-teal-1024.webp 1024w",
+    "width": 1024,
+    "height": 563,
+    "blurDataURL": "data:image/webp;base64,UklGRlwAAABXRUJQVlA4IFAAAAAQAgCdASoQAAkAA4BaJZACdAD6ddJuJDwAAP6HO6agpVyms3YJ86TAu3eKIQ1zwMbMZhq0bs4pGcQZLRAqlTVsoHO6kMXJuljwa9XmL2AAAA==",
+    "alpha": false
+  },
+  "bedroom-04-dressing-table": {
+    "src": "/img/bedroom-04-dressing-table-1024.webp",
+    "srcSet": "/img/bedroom-04-dressing-table-480.webp 480w, /img/bedroom-04-dressing-table-768.webp 768w, /img/bedroom-04-dressing-table-1024.webp 1024w",
+    "width": 1024,
+    "height": 614,
+    "blurDataURL": "data:image/webp;base64,UklGRloAAABXRUJQVlA4IE4AAADwAQCdASoQAAoAA4BaJYwCdADHWvQgfAAA/tawScNHW/hfd26j1QbREtXdG5/zGXW0wCAv+6F8Q7QJ6XavbUm4oUv5w245pfb0+NN3oAA=",
+    "alpha": false
+  },
+  "bespoke-02-swing-black": {
+    "src": "/img/bespoke-02-swing-black-864.webp",
+    "srcSet": "/img/bespoke-02-swing-black-480.webp 480w, /img/bespoke-02-swing-black-768.webp 768w, /img/bespoke-02-swing-black-864.webp 864w",
+    "width": 864,
+    "height": 1184,
+    "blurDataURL": "data:image/webp;base64,UklGRoIAAABXRUJQVlA4IHYAAADwAwCdASoQABYAPu1iqU2ppaQiMAgBMB2JYwAASoa8Nfi0d/NXXH+AAP7TnX/YIzmDBK7pbw0cA0iu4tvAjn7GbjcAH0LeQs5g01ywMqMxuh4aHphkZe5Pkg2xNyzmVvUA3IyGJOa5fQD7yNEFHVKVHstLwAAA",
+    "alpha": false
+  },
+  "bespoke-03-swing-cream": {
+    "src": "/img/bespoke-03-swing-cream-872.webp",
+    "srcSet": "/img/bespoke-03-swing-cream-480.webp 480w, /img/bespoke-03-swing-cream-768.webp 768w, /img/bespoke-03-swing-cream-872.webp 872w",
+    "width": 872,
+    "height": 1192,
+    "blurDataURL": "data:image/webp;base64,UklGRnIAAABXRUJQVlA4IGYAAADQAwCdASoQABYAPu1iqU2ppaQiMAgBMB2JZQAAW6Z3A8TefiZRLaAA4MTu/Q5rhwKgpFwlP7jQKirfA3oNQth5JYjiQjOIx5HYN314p4yIK/b/kDyrwX4wboA5ymB9Ex+RgCInAAA=",
+    "alpha": false
+  },
   "bespoke-chairs-01": {
     "src": "/img/bespoke-chairs-01-1024.webp",
     "srcSet": "/img/bespoke-chairs-01-480.webp 480w, /img/bespoke-chairs-01-768.webp 768w, /img/bespoke-chairs-01-1024.webp 1024w",
@@ -40,6 +80,30 @@ export const photos = {
     "blurDataURL": "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAABQAgCdASoQAAoAA4BaJbACdAYrJdW1jB35GPAA/t30en1BaXWbJ4XFAFMJ9HMUJ7sE8oSmRu7XuczfzoGI7oZyaw5qNEU9knGv2BpfSDovF7+rXvS7R9mJZXUlyMZWI8RAAA==",
     "alpha": false
   },
+  "dining-03-glass-top": {
+    "src": "/img/dining-03-glass-top-1536.webp",
+    "srcSet": "/img/dining-03-glass-top-480.webp 480w, /img/dining-03-glass-top-768.webp 768w, /img/dining-03-glass-top-1024.webp 1024w, /img/dining-03-glass-top-1536.webp 1536w",
+    "width": 1536,
+    "height": 2048,
+    "blurDataURL": "data:image/webp;base64,UklGRp4AAABXRUJQVlA4IJIAAABwBACdASoQABUAPu1iqU2ppaOiMAgBMB2JZQC2yYvgxog/wllW3JGBxPXq+AD+yc1mg5BQdOTlCqrov5/1s5xn+FPUhTphKK3ocrv0S0qOViX5SWskJX94XHZR8p3M225arppj7D8vqwp+zH30BfhVKUs70evp8BHzAn7fXRGu77Q206yaCTa9WOAOPmn85RgAAA==",
+    "alpha": false
+  },
+  "dining-04-gold-round": {
+    "src": "/img/dining-04-gold-round-1536.webp",
+    "srcSet": "/img/dining-04-gold-round-480.webp 480w, /img/dining-04-gold-round-768.webp 768w, /img/dining-04-gold-round-1024.webp 1024w, /img/dining-04-gold-round-1536.webp 1536w",
+    "width": 1536,
+    "height": 2048,
+    "blurDataURL": "data:image/webp;base64,UklGRo4AAABXRUJQVlA4IIIAAADwAwCdASoQABUAPu1iqU2ppaOiMAgBMB2JYwC2yBd5oTbEKJFuYrwAAP6OJTXG5lyqNW3QpCKa8uX9qj788sf989fwQDiW2V/ldffgfagjIyX9PRgmbPgSMBmk3SOkTrf2gekTIvxT2CZgvvTLuMJJuOvveRziRP6KSbCNYGloAAAA",
+    "alpha": false
+  },
+  "dining-05-white-set": {
+    "src": "/img/dining-05-white-set-1024.webp",
+    "srcSet": "/img/dining-05-white-set-480.webp 480w, /img/dining-05-white-set-768.webp 768w, /img/dining-05-white-set-1024.webp 1024w",
+    "width": 1024,
+    "height": 625,
+    "blurDataURL": "data:image/webp;base64,UklGRlgAAABXRUJQVlA4IEwAAADQAQCdASoQAAoAA4BaJQBOgBbbRuiSoAD2t3FWoHs9vtqNcBIuWif+9vrPTndSBkiOH+6XsCNujopc0uwm8333CG3yHJ+sesnfrAAA",
+    "alpha": false
+  },
   "hero-sofa-01-frontal": {
     "src": "/img/hero-sofa-01-frontal-1024.webp",
     "srcSet": "/img/hero-sofa-01-frontal-480.webp 480w, /img/hero-sofa-01-frontal-768.webp 768w, /img/hero-sofa-01-frontal-1024.webp 1024w",
@@ -70,6 +134,126 @@ export const photos = {
     "width": 1024,
     "height": 625,
     "blurDataURL": "data:image/webp;base64,UklGRmYAAABXRUJQVlA4IFoAAACwAQCdASoQAAoAA4BaJaACdACDOB8AAPvc3Fn76su7Gb9+Rqf8Wfl1su2q2gEun8t3fRxaAyyg4Ej/t9mrxo10S1dEOv+vs/lDpYpap6bDk1E7cnK0VlYoAAA=",
+    "alpha": false
+  },
+  "living-04-gold-armchairs": {
+    "src": "/img/living-04-gold-armchairs-1536.webp",
+    "srcSet": "/img/living-04-gold-armchairs-480.webp 480w, /img/living-04-gold-armchairs-768.webp 768w, /img/living-04-gold-armchairs-1024.webp 1024w, /img/living-04-gold-armchairs-1536.webp 1536w",
+    "width": 1536,
+    "height": 2048,
+    "blurDataURL": "data:image/webp;base64,UklGRoIAAABXRUJQVlA4IHYAAAAQBACdASoQABUAPu1iqU2ppaOiMAgBMB2JQBWAA3ZWwp6cKclzHOsZgAD+1y/arAUjWZq+kKBLgvmUMxbPZPnFOhPnvDHAJJB1kODiLTvswjx9qpYTOzQbfiKWSWfyyOBU5Qw5jzlYLYO/AbOibauc9q+yAAAA",
+    "alpha": false
+  },
+  "living-05-carved-armchair": {
+    "src": "/img/living-05-carved-armchair-1536.webp",
+    "srcSet": "/img/living-05-carved-armchair-480.webp 480w, /img/living-05-carved-armchair-768.webp 768w, /img/living-05-carved-armchair-1024.webp 1024w, /img/living-05-carved-armchair-1536.webp 1536w",
+    "width": 1536,
+    "height": 2048,
+    "blurDataURL": "data:image/webp;base64,UklGRrQAAABXRUJQVlA4IKgAAABQBACdASoQABUAPu1iqU2ppaOiMAgBMB2JZgCsBpgAbr78L7lYnudw7UrAAP7sJQQFtKhr5ursT2/Cz/C2QF+AgRutojK68YOBSeywzdbhPBHl5NvS95niKpd+YBZ4kxNeNKKLBcZl5oNu18Rp/YwKjdp6esaXmXDQZlt9h/SLs43kOxl+nN6tnurPYybnaOizOp+EtEpw+x30aRke71OB3G7Rlw5QAAA=",
+    "alpha": false
+  },
+  "living-06-black-console": {
+    "src": "/img/living-06-black-console-1503.webp",
+    "srcSet": "/img/living-06-black-console-480.webp 480w, /img/living-06-black-console-768.webp 768w, /img/living-06-black-console-1024.webp 1024w, /img/living-06-black-console-1503.webp 1503w",
+    "width": 1503,
+    "height": 2048,
+    "blurDataURL": "data:image/webp;base64,UklGRngAAABXRUJQVlA4IGwAAADQAwCdASoQABYAPu1qrU8ppiQiMAgBMB2JZQAAW9oosE7S2ua+dwAA/u2VFs/BiDfC+EgvO6BiqFoQLG5NSQP/zUW0i4Vx/KA4Jjg7YMMR+ev/wX06uZqPJ4dA355oCoaNd4hT7g9KO+SRvAA=",
+    "alpha": false
+  },
+  "living-07-gold-display": {
+    "src": "/img/living-07-gold-display-1024.webp",
+    "srcSet": "/img/living-07-gold-display-480.webp 480w, /img/living-07-gold-display-768.webp 768w, /img/living-07-gold-display-1024.webp 1024w",
+    "width": 1024,
+    "height": 584,
+    "blurDataURL": "data:image/webp;base64,UklGRkwAAABXRUJQVlA4IEAAAACwAQCdASoQAAkAA4BaJbACdADFym4AAP7qSUoSAa6byGV9ckGCNkQZWaShX4nMn8IT2qXiNtb+9x4Mj4XVIAAA",
+    "alpha": false
+  },
+  "living-08-black-sideboard": {
+    "src": "/img/living-08-black-sideboard-1024.webp",
+    "srcSet": "/img/living-08-black-sideboard-480.webp 480w, /img/living-08-black-sideboard-768.webp 768w, /img/living-08-black-sideboard-1024.webp 1024w",
+    "width": 1024,
+    "height": 655,
+    "blurDataURL": "data:image/webp;base64,UklGRloAAABXRUJQVlA4IE4AAADwAQCdASoQAAoAA4BaJZACdAEPdlio7zgA/tohYAHfz4tesEj+ARHOTOkTggtyY3G6Z27AF0ZetCiImTqIm/XlY0TfoNZikcj9lzKAAAA=",
+    "alpha": false
+  },
+  "living-09-mirrored-console": {
+    "src": "/img/living-09-mirrored-console-1536.webp",
+    "srcSet": "/img/living-09-mirrored-console-480.webp 480w, /img/living-09-mirrored-console-768.webp 768w, /img/living-09-mirrored-console-1024.webp 1024w, /img/living-09-mirrored-console-1536.webp 1536w",
+    "width": 1536,
+    "height": 2048,
+    "blurDataURL": "data:image/webp;base64,UklGRnQAAABXRUJQVlA4IGgAAABQAwCdASoQABUAPu1iqU2ppaOiMAgBMB2JYwCdAAn5eSWbrAD8Wv3Bbxw6VdXW5e3tL54LyZbDn2azCpqVBNS2gXXAuHUz8VCRc9JeBEpZb8xKc8PMNLnsURK4RBnpU/QB4nVytUAAAA==",
+    "alpha": false
+  },
+  "living-10-blue-set": {
+    "src": "/img/living-10-blue-set-1536.webp",
+    "srcSet": "/img/living-10-blue-set-480.webp 480w, /img/living-10-blue-set-768.webp 768w, /img/living-10-blue-set-1024.webp 1024w, /img/living-10-blue-set-1536.webp 1536w",
+    "width": 1536,
+    "height": 2048,
+    "blurDataURL": "data:image/webp;base64,UklGRogAAABXRUJQVlA4IHwAAADwAwCdASoQABUAPu1iqU2ppaOiMAgBMB2JZQB3AAPfdU1R04Z+mkWAAOHVskCCddgc6nIdK6OfnaTdjUeK9jTb5zc2htNsnXPq7Y14kb6XnDlQwMOwLpyjT2FvCKPeRNPeggDwqOMfwmSzqqrOCCGSBu6GQwva/YoRAAAA",
+    "alpha": false
+  },
+  "living-11-green-set": {
+    "src": "/img/living-11-green-set-2048.webp",
+    "srcSet": "/img/living-11-green-set-480.webp 480w, /img/living-11-green-set-768.webp 768w, /img/living-11-green-set-1024.webp 1024w, /img/living-11-green-set-1600.webp 1600w, /img/living-11-green-set-2048.webp 2048w",
+    "width": 2048,
+    "height": 1536,
+    "blurDataURL": "data:image/webp;base64,UklGRmQAAABXRUJQVlA4IFgAAADQAQCdASoQAAwAA4BaJQBOgBSlp7gpgADOMg+ERd36OuzDmtZ9uwwFREH4Go4/EC9skCmXpcRCww1sINdD6Gy87LAYuHp7cK3BZfnjaRuJTfDS5fdrvhgA",
+    "alpha": false
+  },
+  "living-12-yellow-curve": {
+    "src": "/img/living-12-yellow-curve-1536.webp",
+    "srcSet": "/img/living-12-yellow-curve-480.webp 480w, /img/living-12-yellow-curve-768.webp 768w, /img/living-12-yellow-curve-1024.webp 1024w, /img/living-12-yellow-curve-1536.webp 1536w",
+    "width": 1536,
+    "height": 2048,
+    "blurDataURL": "data:image/webp;base64,UklGRpAAAABXRUJQVlA4IIQAAAAQBACdASoQABUAPu1iqU2ppaOiMAgBMB2JaACdMoADNgxwivt/oq4LEAD3f1CkOiSOo00DZnvjjFX3Ua90/2Ja2IMLXBmz/0CJJakr1c/t0WfIYOhuePmoWNkr8UYz8ffHhx5U5gmdJ4wJpB1v01rXOB7+GzWYGy7qNTEjCjVE3PLzwAA=",
+    "alpha": false
+  },
+  "living-13-striped-armchair": {
+    "src": "/img/living-13-striped-armchair-1536.webp",
+    "srcSet": "/img/living-13-striped-armchair-480.webp 480w, /img/living-13-striped-armchair-768.webp 768w, /img/living-13-striped-armchair-1024.webp 1024w, /img/living-13-striped-armchair-1536.webp 1536w",
+    "width": 1536,
+    "height": 2048,
+    "blurDataURL": "data:image/webp;base64,UklGRroAAABXRUJQVlA4IK4AAACwBACdASoQABUAPu1iqU2ppaOiMAgBMB2JbACdMoMrZ0f9Oez6fSYW3bIaD8gAAP7hVZDq+BzMgytWmPb1BL8BfcuhOYE22/8hyX2LM4mnmcWX+uWMXso6w1WJp5VqQBlvaki0RwNiyXdE5u4t+TfgFrNGEGyywQJoOAZLQNgYdhwC9ejK1ewlX7Q24+L9/+bfJx7sMSv4/5QgyzpE2Xx/+hgEmG+aTLBPQ9/IAAA=",
+    "alpha": false
+  },
+  "living-14-cream-set": {
+    "src": "/img/living-14-cream-set-1024.webp",
+    "srcSet": "/img/living-14-cream-set-480.webp 480w, /img/living-14-cream-set-768.webp 768w, /img/living-14-cream-set-1024.webp 1024w",
+    "width": 1024,
+    "height": 625,
+    "blurDataURL": "data:image/webp;base64,UklGRlgAAABXRUJQVlA4IEwAAADwAQCdASoQAAoAA4BaJZACdADh8LQeb4AA+97Jx9E0pWCqGO8QzYdYnbTPU0+aJTHulSJgJ/Dyy+13deV5+lFedhybXsuVeryuAAAA",
+    "alpha": false
+  },
+  "living-15-carved-pair": {
+    "src": "/img/living-15-carved-pair-1024.webp",
+    "srcSet": "/img/living-15-carved-pair-480.webp 480w, /img/living-15-carved-pair-768.webp 768w, /img/living-15-carved-pair-1024.webp 1024w",
+    "width": 1024,
+    "height": 635,
+    "blurDataURL": "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAABwAgCdASoQAAoAA4BaJYwCdAYvDjWdYKLtR2GAAP5JU9eggtwaoizMNOlAf3jFRGRDFCad2Ns2j2MoiEYmqmw7KdrOgXt69vMdBS86dbdztl233DVfmyzzjr2xiwsshgAAAA==",
+    "alpha": false
+  },
+  "office-02-conference": {
+    "src": "/img/office-02-conference-1080.webp",
+    "srcSet": "/img/office-02-conference-480.webp 480w, /img/office-02-conference-768.webp 768w, /img/office-02-conference-1024.webp 1024w, /img/office-02-conference-1080.webp 1080w",
+    "width": 1080,
+    "height": 1080,
+    "blurDataURL": "data:image/webp;base64,UklGRmIAAABXRUJQVlA4IFYAAADwAQCdASoQABAAA4BaJQBOgCPcOJB/0SAA/lvg2ZN5Cz3sOy818i4LHqrazo9MtGKbUsmssXCtHDHGlN7djxhLLofavl7RmmlNpSZb9kz0h6mUREAAAA==",
+    "alpha": false
+  },
+  "office-03-executive-desk": {
+    "src": "/img/office-03-executive-desk-1080.webp",
+    "srcSet": "/img/office-03-executive-desk-480.webp 480w, /img/office-03-executive-desk-768.webp 768w, /img/office-03-executive-desk-1024.webp 1024w, /img/office-03-executive-desk-1080.webp 1080w",
+    "width": 1080,
+    "height": 1080,
+    "blurDataURL": "data:image/webp;base64,UklGRlwAAABXRUJQVlA4IFAAAADwAQCdASoQABAAA4BaJZwCdAEf/m34pAAA/rPZGDurfmHIGwYOeFT9VwCj+sysLiGw76w8XkgEGkVbhNMsQj99P+R38v2mvmlDb0feZc8AAA==",
+    "alpha": false
+  },
+  "office-04-director-desk": {
+    "src": "/img/office-04-director-desk-1080.webp",
+    "srcSet": "/img/office-04-director-desk-480.webp 480w, /img/office-04-director-desk-768.webp 768w, /img/office-04-director-desk-1024.webp 1024w, /img/office-04-director-desk-1080.webp 1080w",
+    "width": 1080,
+    "height": 1080,
+    "blurDataURL": "data:image/webp;base64,UklGRmYAAABXRUJQVlA4IFoAAAAQAgCdASoQABAAA4BaJZQCdADdro05NysAAP7I2ezU0vuAWvIeKfjypWQncawoint+32rJsYUiyXkZ8Uvf2arVlSvwZMh0/Eq8VpCb+JrpJcJ7gvKgK8QAAAA=",
     "alpha": false
   },
   "office-storage-01-black-cabinet": {

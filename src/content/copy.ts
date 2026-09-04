@@ -250,6 +250,22 @@ export const catalogue = {
         { img: 'living-03-wood-set', title: 'Full wooden living set', specs: ['SEASONED HARDWOOD', 'IN-HOUSE FINISH', 'ROOM-MATCHED'] },
         { img: 'detail-01-blue-sofa', title: 'Upholstery detail, blue velvet', specs: ['PIPED EDGE', 'DENSITY TO ORDER'] },
         { img: 'hero-sofa-01-frontal', title: 'Carved three-seat sofa', specs: ['CENTREPIECE FRAME', 'YOUR FABRIC', 'YOUR FINISH'] },
+        /* second batch, 2026-09-04: the client's own Facebook photography.
+           Every spec below is either visible in the photograph or one of the
+           brief's own promises. Nothing about a mechanism, a timber species
+           or a finish is claimed, because none of that was given. */
+        { img: 'living-10-blue-set', title: 'Sofa set, powder blue', specs: ['THREE PLUS TWO', 'WOODEN FRAME', 'FABRIC OF YOUR CHOICE'] },
+        { img: 'living-11-green-set', title: 'Carved room set, sage green', specs: ['FULL ROOM SET', 'HAND-CARVED FRAME', 'YOUR UPHOLSTERY'] },
+        { img: 'living-12-yellow-curve', title: 'Curved settee, ochre', specs: ['CURVED FRAME', 'ONE-OFF SHAPE', 'YOUR FABRIC'] },
+        { img: 'living-14-cream-set', title: 'Sofa set, cream and gold', specs: ['SOFA, SEATS AND TABLE', 'CARVED FRAME', 'YOUR FABRIC'] },
+        { img: 'living-04-gold-armchairs', title: 'Armchair pair, tufted', specs: ['MATCHED PAIR', 'BUTTON-TUFTED BACK', 'YOUR FABRIC'] },
+        { img: 'living-13-striped-armchair', title: 'Armchair, gilt carved frame', specs: ['HAND-CARVED FRAME', 'SINGLE OR PAIR', 'YOUR FABRIC'] },
+        { img: 'living-05-carved-armchair', title: 'Carved chair and glass table', specs: ['HAND-CARVED FRAME', 'GLASS TOP', 'SIZED TO YOUR CORNER'] },
+        { img: 'living-15-carved-pair', title: 'Chair pair and glass table', specs: ['MATCHED PAIR', 'CARVED CRESTS', 'GLASS TOP'] },
+        { img: 'living-07-gold-display', title: 'Display cabinet, gilded', specs: ['GLAZED DOORS', 'GLASS SHELVES', 'TO YOUR CEILING HEIGHT'] },
+        { img: 'living-06-black-console', title: 'Console cabinet, black and brass', specs: ['BRASS HARDWARE', 'OPEN AND CLOSED STORAGE', 'BUILT TO THE WALL'] },
+        { img: 'living-08-black-sideboard', title: 'Sideboard, black with brass', specs: ['BRASS HARDWARE', 'OPEN SHELF END', 'BUILT TO THE WALL'] },
+        { img: 'living-09-mirrored-console', title: 'Console table, mirrored front', specs: ['MIRRORED PANELS', 'DRAWER STORAGE', 'TO YOUR SPAN'] },
       ],
     },
     {
@@ -260,6 +276,9 @@ export const catalogue = {
       cover: 'bedroom-01-royal-bed',
       pieces: [
         { img: 'bedroom-01-royal-bed', title: 'Carved king bed, royal headboard', specs: ['KING OR CUSTOM SPAN', 'HAND-CARVED HEADBOARD', 'MATCHING SIDE PIECES'] },
+        { img: 'bedroom-02-green-velvet', title: 'Upholstered bed, emerald velvet', specs: ['PANELLED HEADBOARD', 'END BENCH', 'KING OR CUSTOM SPAN'] },
+        { img: 'bedroom-03-carved-teal', title: 'Carved bed, gilded relief', specs: ['HAND-CARVED POSTS', 'GILDED RELIEF', 'MATCHING SIDE PIECES'] },
+        { img: 'bedroom-04-dressing-table', title: 'Dressing table and round mirror', specs: ['ROUND MIRROR', 'DRAWER STORAGE', 'SIZED TO YOUR WALL'] },
       ],
     },
     {
@@ -271,6 +290,9 @@ export const catalogue = {
       pieces: [
         { img: 'dining-01-cream', title: 'Dining set, cream and gold', specs: ['SIX TO TWELVE SEATS', 'CARVED LEGS', 'YOUR TABLE LENGTH'] },
         { img: 'dining-02-peach', title: 'Dining set, peach upholstery', specs: ['UPHOLSTERED SEATS', 'MATCHED CABINET AVAILABLE'] },
+        { img: 'dining-03-glass-top', title: 'Dining table, glass on carved base', specs: ['CARVED BASE', 'GLASS TOP', 'FOUR TO EIGHT SEATS'] },
+        { img: 'dining-04-gold-round', title: 'Round table, gilded base', specs: ['ROUND TOP', 'GILDED BASE', 'TO YOUR DIAMETER'] },
+        { img: 'dining-05-white-set', title: 'Dining set, ivory and silver', specs: ['SIX TO TWELVE SEATS', 'UPHOLSTERED BACKS', 'YOUR TABLE LENGTH'] },
       ],
     },
     {
@@ -281,6 +303,9 @@ export const catalogue = {
       cover: 'office-storage-01-black-cabinet',
       pieces: [
         { img: 'office-storage-01-black-cabinet', title: 'Storage cabinet, black and brass', specs: ['FLOOR TO CEILING OPTION', 'BRASS HARDWARE', 'BUILT TO THE ALCOVE'] },
+        { img: 'office-03-executive-desk', title: 'Executive desk and workstation', specs: ['DESK AND RETURN', 'DRAWER PEDESTAL', 'BUILT TO THE ROOM'] },
+        { img: 'office-04-director-desk', title: 'Director’s desk with storage wall', specs: ['DESK PLUS STORAGE', 'FLOOR TO CEILING OPTION', 'TO YOUR FLOOR PLAN'] },
+        { img: 'office-02-conference', title: 'Conference table and seating', specs: ['SEATS TO YOUR ROOM', 'ONE-PIECE TOP', 'MATCHING STORAGE'] },
       ],
     },
     {
@@ -291,6 +316,11 @@ export const catalogue = {
       cover: 'bespoke-chairs-01',
       pieces: [
         { img: 'bespoke-chairs-01', title: 'Occasional chairs, carved frame', specs: ['ONE-OFF COMMISSION', 'YOUR TIMBER', 'YOUR FABRIC'] },
+        /* the dolna is the category's own argument: a hanging swing is not a
+           catalogue line anywhere, and it is the piece on this page that most
+           obviously exists because a customer asked for it */
+        { img: 'bespoke-02-swing-black', title: 'Hanging dolna, dark frame', specs: ['INDOOR OR VERANDA', 'WOVEN SEAT', 'CUSHION IN YOUR FABRIC'] },
+        { img: 'bespoke-03-swing-cream', title: 'Hanging dolna, cream weave', specs: ['INDOOR OR VERANDA', 'WOVEN SEAT', 'CUSHION IN YOUR FABRIC'] },
       ],
     },
   ],

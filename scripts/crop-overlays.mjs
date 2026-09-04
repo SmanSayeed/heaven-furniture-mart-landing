@@ -39,6 +39,13 @@ const OUT = join(ROOT, 'assets-raw', 'photos', 'graded')
 /** clears the logo, the headline and the contact bar on a 1:1 ad graphic */
 const DEFAULT_CROP = { top: 0.27, bottom: 0.12 }
 
+/* Not every photograph the client sends is an ad. The second batch
+   (2026-09-04) is mostly straight showroom and product photography with
+   nothing burned in, and cropping a quarter off the top of a clean photo
+   beheads the piece for no reason. Named explicitly rather than guessed at:
+   a file is only left whole because it was looked at. */
+const NO_CROP = { top: 0, bottom: 0 }
+
 /** per-file overrides, keyed by filename without extension */
 const CROPS = {
   /* 0.22 left the headline visible over the wall; the headboard survives 0.32 */
@@ -50,6 +57,40 @@ const CROPS = {
   /* the headline runs down the right side of this one, so it needs the
      deepest top crop of the set; the cabinet still clears it */
   'office-storage-01-black-cabinet': { top: 0.33, bottom: 0.12 },
+
+  /* ---- second batch, 2026-09-04 ----
+     Photographs with nothing burned in. Showroom and product shots: the
+     piece fills the frame and there is no overlay to remove. */
+  'living-04-gold-armchairs': NO_CROP,
+  'living-05-carved-armchair': NO_CROP,
+  'living-06-black-console': NO_CROP,
+  'living-09-mirrored-console': NO_CROP,
+  'living-10-blue-set': NO_CROP,
+  'living-11-green-set': NO_CROP,
+  'living-12-yellow-curve': NO_CROP,
+  'living-13-striped-armchair': NO_CROP,
+  'dining-03-glass-top': NO_CROP,
+  'dining-04-gold-round': NO_CROP,
+  'office-02-conference': NO_CROP,
+  'office-03-executive-desk': NO_CROP,
+  'office-04-director-desk': NO_CROP,
+  'bespoke-02-swing-black': NO_CROP,
+  'bespoke-03-swing-cream': NO_CROP,
+
+  /* ...and the ones that ARE ads. A "MEGA SALE" roundel or a CRAFTED FOR
+     LUXURY LIVING band is the crowded, marketplace look the brief tells us
+     to avoid, and it puts a second Heaven logo inside our own layout. Every
+     value below was set by looking at the result, not by guessing: the
+     dressing table's mirror and the display cabinet's cornice both reach
+     higher into the frame than the default allows for. */
+  'bedroom-02-green-velvet': { top: 0.34, bottom: 0.13 },
+  'bedroom-03-carved-teal': { top: 0.32, bottom: 0.13 },
+  'bedroom-04-dressing-table': { top: 0.3, bottom: 0.1 },
+  'living-07-gold-display': { top: 0.31, bottom: 0.12 },
+  'living-08-black-sideboard': { top: 0.24, bottom: 0.12 },
+  'living-14-cream-set': { top: 0.26, bottom: 0.13 },
+  'living-15-carved-pair': { top: 0.26, bottom: 0.12 },
+  'dining-05-white-set': { top: 0.29, bottom: 0.1 },
 }
 
 const EXT = /\.(jpe?g|png|webp)$/i
