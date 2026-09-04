@@ -706,17 +706,21 @@ export const night = {
        The first entry is the room's own photograph, so the reel begins on
        exactly what the server rendered. */
     reel: [
-      { photo: 'living-03-wood-set', focal: '50% 62%' },
-      { photo: 'hero-room-01-palace', focal: '50% 58%' },
-      { photo: 'living-11-green-set', focal: '50% 55%' },
-      { photo: 'hero-room-02-leather-chair', focal: '58% 52%' },
+      { photo: 'living-03-wood-set', tall: 'living-03-wood-set-tall', focal: '50% 62%' },
+      { photo: 'hero-room-01-palace', tall: 'hero-room-01-palace-tall', focal: '50% 58%' },
+      /* 2048x1536 is 1.33 wide; the hero is 1.6, so a quarter of that
+         photograph's height was being thrown away before the drift even
+         started. Every frame here is between 1.6 and 1.8, which is what a
+         full-bleed landscape hero can show whole. */
+      { photo: 'living-01-beige-set', tall: 'living-01-beige-set-tall', focal: '50% 58%' },
+      { photo: 'hero-room-02-leather-chair', tall: 'hero-room-02-leather-chair-tall', focal: '58% 52%' },
     ],
     /* three views of Heaven's own rooms; `focal` is the point the zoom
        portal pushes into (the fabric of the seat), per photograph */
     views: [
-      { photo: 'living-03-wood-set', focal: '50% 62%', alt: 'A full wooden living room set, styled in the Agrabad showroom.' },
-      { photo: 'living-02-blue-pair', focal: '52% 60%', alt: 'A matched pair of deep blue two-seat sofas by Heaven Furniture Mart.' },
-      { photo: 'bespoke-chairs-01', focal: '58% 62%', alt: 'Bespoke upholstered chairs, built to order in Chattogram.' },
+      { photo: 'living-03-wood-set', tall: 'living-03-wood-set-tall', focal: '50% 62%', alt: 'A full wooden living room set, styled in the Agrabad showroom.' },
+      { photo: 'living-02-blue-pair', tall: 'living-02-blue-pair-tall', focal: '52% 60%', alt: 'A matched pair of deep blue two-seat sofas by Heaven Furniture Mart.' },
+      { photo: 'bespoke-chairs-01', tall: 'bespoke-chairs-01-tall', focal: '58% 62%', alt: 'Bespoke upholstered chairs, built to order in Chattogram.' },
     ],
   },
   /* CH.2 · THE STUDIO. NOBODY READS A PARAGRAPH (client, verbatim: "avoid

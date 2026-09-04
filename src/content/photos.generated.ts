@@ -56,6 +56,14 @@ export const photos = {
     "blurDataURL": "data:image/webp;base64,UklGRmQAAABXRUJQVlA4IFgAAAAwAgCdASoQAAkAA4BaJYwCdAYtzSRmBssccAD+QNa5PFrQwglXgGRpdL3Zq1uiQ3mZGpy0eayNz41u65q3rHgd373cAJqszlqWWLzO4cP6xevu91UmAAAA",
     "alpha": false
   },
+  "bespoke-chairs-01-tall": {
+    "src": "/img/bespoke-chairs-01-tall-438.webp",
+    "srcSet": "/img/bespoke-chairs-01-tall-438.webp 438w",
+    "width": 438,
+    "height": 584,
+    "blurDataURL": "data:image/webp;base64,UklGRqIAAABXRUJQVlA4IJYAAABwBACdASoQABYAPu1kqU2ppaOiMAgBMB2JZwCo9YtyyAlFOjIUwOsrpoqxGAD+VHJbhX3mZW11+81VtYlA0sOqNxH/bCLISnEAD40rfoQBhtyn7giJfTKPNkOEw90qILMbfRhdRHmx/Q334bgbmqH+szx2vX1+ja6EHbIwdvVu9LFWGGn4cBnfzYxuJ0Ht3BM1BGDwAAA=",
+    "alpha": false
+  },
   "detail-01-blue-sofa": {
     "src": "/img/detail-01-blue-sofa-1024.webp",
     "srcSet": "/img/detail-01-blue-sofa-480.webp 480w, /img/detail-01-blue-sofa-768.webp 768w, /img/detail-01-blue-sofa-1024.webp 1024w",
@@ -112,12 +120,28 @@ export const photos = {
     "blurDataURL": "data:image/webp;base64,UklGRl4AAABXRUJQVlA4IFIAAACQAQCdASoQAAkAA4BaJQBOgBM4BSAA/moYi0S6dlU91AjNQBGUli9tPIYHfZ1amlldg3Ut6I0712ATnfvz3cQOOxnUw10w8JpmE1LnJy8TPkAA",
     "alpha": false
   },
+  "hero-room-01-palace-tall": {
+    "src": "/img/hero-room-01-palace-tall-810.webp",
+    "srcSet": "/img/hero-room-01-palace-tall-480.webp 480w, /img/hero-room-01-palace-tall-768.webp 768w, /img/hero-room-01-palace-tall-810.webp 810w",
+    "width": 810,
+    "height": 1080,
+    "blurDataURL": "data:image/webp;base64,UklGRooAAABXRUJQVlA4IH4AAADQAwCdASoQABUAPu1iqU2ppaOiMAgBMB2JQBOgA6eOFT6jbpVCvhAA/rUfDTjmZgPb1os28sTeRYa4x0Jyucch0a9JLe1TvrwPlJM3g0WEFMfWVdT0MYvD0EGB6XPhL5BqUqEf1/YuHglHvpmLbww1+BtJyPbo1d/NzndgAAA=",
+    "alpha": false
+  },
   "hero-room-02-leather-chair": {
     "src": "/img/hero-room-02-leather-chair-1920.webp",
     "srcSet": "/img/hero-room-02-leather-chair-480.webp 480w, /img/hero-room-02-leather-chair-768.webp 768w, /img/hero-room-02-leather-chair-1024.webp 1024w, /img/hero-room-02-leather-chair-1600.webp 1600w, /img/hero-room-02-leather-chair-1920.webp 1920w",
     "width": 1920,
     "height": 1080,
     "blurDataURL": "data:image/webp;base64,UklGRlYAAABXRUJQVlA4IEoAAAAQAgCdASoQAAkAA4BaJZgCdADdZ0tJ+aEAAP7u84kRNHqRJZk0Gmg1k37uJ4aU3sTbn9hi3k+YbGskVhmW4RimPalYkMpD9yAAAA==",
+    "alpha": false
+  },
+  "hero-room-02-leather-chair-tall": {
+    "src": "/img/hero-room-02-leather-chair-tall-810.webp",
+    "srcSet": "/img/hero-room-02-leather-chair-tall-480.webp 480w, /img/hero-room-02-leather-chair-tall-768.webp 768w, /img/hero-room-02-leather-chair-tall-810.webp 810w",
+    "width": 810,
+    "height": 1080,
+    "blurDataURL": "data:image/webp;base64,UklGRn4AAABXRUJQVlA4IHIAAAAQBACdASoQABUAPu1iqU2ppaQiMAgBMB2JZgCdMoADCu3jNr5D9xHbMAD+0DmKwm8DrV+UdoIp+jkKMo4Hn7umW6b+d223afs9MzazsLzN+UUCflVh/9BVz28Ua0LL71kWmY5jV/uXKyujCRIzqPogQAA=",
     "alpha": false
   },
   "hero-sofa-01-frontal": {
@@ -136,6 +160,14 @@ export const photos = {
     "blurDataURL": "data:image/webp;base64,UklGRloAAABXRUJQVlA4IE4AAADwAQCdASoQAAoAA4BaJZACdACXjpfLQ4AA++P7suEmV4EhOxkwrXO5j3SIP840z+aOrZtedkgGJMR906sMgImyQFtxiw8Pk2ygTzQAAAA=",
     "alpha": false
   },
+  "living-01-beige-set-tall": {
+    "src": "/img/living-01-beige-set-tall-469.webp",
+    "srcSet": "/img/living-01-beige-set-tall-469.webp 469w",
+    "width": 469,
+    "height": 625,
+    "blurDataURL": "data:image/webp;base64,UklGRowAAABXRUJQVlA4IIAAAADwAwCdASoQABYAPu1iqU2ppaOiMAgBMB2JQBYdhFhpeny9oKwH2zqIAMliUeM8zeUY6JOwnEi98rOo99b0BOXYMsd99oadEzDADQJOMyCDNV65cu4GiFVhGXMekulyGOx76+UUsoLgxIal20qK27ouJEw/sXu2KGtdkPuM1UwAAA==",
+    "alpha": false
+  },
   "living-02-blue-pair": {
     "src": "/img/living-02-blue-pair-1024.webp",
     "srcSet": "/img/living-02-blue-pair-480.webp 480w, /img/living-02-blue-pair-768.webp 768w, /img/living-02-blue-pair-1024.webp 1024w",
@@ -144,12 +176,28 @@ export const photos = {
     "blurDataURL": "data:image/webp;base64,UklGRmAAAABXRUJQVlA4IFQAAAAwAgCdASoQAAoAA4BaJbACdAEQA4+qPflHAAD+vGWoPgWo/SMeGkOqXEUIsQ55SV9zdHgk9M700Gbrs0BsxYricK7u1CkTvjY/kFDHUU+ABN0QAAA=",
     "alpha": false
   },
+  "living-02-blue-pair-tall": {
+    "src": "/img/living-02-blue-pair-tall-484.webp",
+    "srcSet": "/img/living-02-blue-pair-tall-480.webp 480w, /img/living-02-blue-pair-tall-484.webp 484w",
+    "width": 484,
+    "height": 645,
+    "blurDataURL": "data:image/webp;base64,UklGRpAAAABXRUJQVlA4IIQAAABwBACdASoQABUAPu1iqU2ppaOiMAgBMB2JQBOmUGQ6hwsz/H6BpZ9BW074AAD+qdNi1bFwBjVZBpUBCgWl9Ez2XwqrM0APNODu22QXJGa3rQpzpMcO557dIg7WnulWDJ+Rtput/nsY2adiO2OV8LVV5cVd+rmn+qCFsgbJfxye+UAAAAA=",
+    "alpha": false
+  },
   "living-03-wood-set": {
     "src": "/img/living-03-wood-set-1024.webp",
     "srcSet": "/img/living-03-wood-set-480.webp 480w, /img/living-03-wood-set-768.webp 768w, /img/living-03-wood-set-1024.webp 1024w",
     "width": 1024,
     "height": 625,
     "blurDataURL": "data:image/webp;base64,UklGRmYAAABXRUJQVlA4IFoAAACwAQCdASoQAAoAA4BaJaACdACDOB8AAPvc3Fn76su7Gb9+Rqf8Wfl1su2q2gEun8t3fRxaAyyg4Ej/t9mrxo10S1dEOv+vs/lDpYpap6bDk1E7cnK0VlYoAAA=",
+    "alpha": false
+  },
+  "living-03-wood-set-tall": {
+    "src": "/img/living-03-wood-set-tall-469.webp",
+    "srcSet": "/img/living-03-wood-set-tall-469.webp 469w",
+    "width": 469,
+    "height": 625,
+    "blurDataURL": "data:image/webp;base64,UklGRp4AAABXRUJQVlA4IJIAAABwBACdASoQABYAPu1iqU2ppaOiMAgBMB2JQBOmUGMACI8+afO1hnefG1O7AAD3w/WW364oJYgcI46YZu2LPyNcQ2pCVJqUmb4tVh7tkPbwrj3qmxDxu6ia0zrNv+VyuBMerxlfAwVEVSFN9TXlDHP7yzUwJFlolY1h10J+BcDnyj1UYbtz/1C0BOZSMpvhtCAAAA==",
     "alpha": false
   },
   "living-04-gold-armchairs": {

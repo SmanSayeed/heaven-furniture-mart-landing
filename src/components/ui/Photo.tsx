@@ -29,12 +29,28 @@ export function Photo({
   priority = false,
   low = false,
   eager = false,
+  tall,
 }: {
   name: PhotoName | (string & {})
   alt: string
   sizes?: string
   className?: string
   priority?: boolean
+  /**
+   * ART DIRECTION, not a second size.
+   *
+   * A full-bleed hero is 1.6 wide on a desktop and 0.43 on a phone. Feeding
+   * both the same landscape photograph and letting `object-fit: cover` sort
+   * it out shows 96% of the piece on the desktop and 26% of it on the phone
+   * - measured (client: "images are looking like big and partial, full image
+   * not showing"). There is no `sizes` value that fixes that, because the
+   * problem is the SHAPE, not the number of pixels.
+   *
+   * So a phone gets a different photograph: a 3:4 window cut from the same
+   * cleaned original, centred on the same focal point. `<picture>` picks it
+   * before the request is made, so the phone never downloads the wide one.
+   */
+  tall?: PhotoName | (string & {})
   /** deliberately BEHIND everything else: the deck's later plates are
       lazy, but Chrome's lazy threshold on a slow link is wide enough that
       four of them were downloading alongside the hero's LCP image */
@@ -45,8 +61,9 @@ export function Photo({
 }) {
   const photo = photos[name as PhotoName]
   if (!photo) return null
+  const portrait = tall ? photos[tall as PhotoName] : undefined
 
-  return (
+  const img = (
     /* eslint-disable-next-line @next/next/no-img-element --
        deliberate, and explained in the doc comment above: the widths and the
        LQIP are build output, so next/image would re-encode finished work and
@@ -66,6 +83,15 @@ export function Photo({
       decoding="async"
       style={{ backgroundImage: `url(${photo.blurDataURL})` }}
     />
+  )
+
+  if (!portrait) return img
+
+  return (
+    <picture>
+      <source media="(max-width: 860px)" srcSet={portrait.srcSet} sizes={sizes} />
+      {img}
+    </picture>
   )
 }
 

@@ -82,9 +82,17 @@ export function Points() {
 
   return (
     <>
-      <div className={s.points} data-points>
+      {/* `data-stagger`: the three arrive one after another rather than
+          together, which is what makes three cards read as a sequence -
+          drawn, then built, then delivered - instead of a row */}
+      <div className={s.points} data-points data-stagger>
         {st.points.map((p, i) => (
-          <article key={p.key} className={s.point} data-reveal="rise">
+          <article
+            key={p.key}
+            className={s.point}
+            data-reveal="rise"
+            style={{ '--i': i } as React.CSSProperties}
+          >
             <span className={s.pointMark}>
               <Mark kind={p.icon} />
             </span>

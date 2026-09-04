@@ -82,6 +82,15 @@ const CROPS = {
   'hero-room-01-palace': NO_CROP,
   'hero-room-02-leather-chair': NO_CROP,
   'office-05-conference-hd': NO_CROP,
+  /* the phone's hero. These are already 3:4 windows cut out of photographs
+     this script has ALREADY cleaned, so there is nothing left to remove and
+     a second crop would only eat the piece. */
+  'living-03-wood-set-tall': NO_CROP,
+  'hero-room-01-palace-tall': NO_CROP,
+  'living-01-beige-set-tall': NO_CROP,
+  'hero-room-02-leather-chair-tall': NO_CROP,
+  'living-02-blue-pair-tall': NO_CROP,
+  'bespoke-chairs-01-tall': NO_CROP,
 
   /* ...and the ones that ARE ads. A "MEGA SALE" roundel or a CRAFTED FOR
      LUXURY LIVING band is the crowded, marketplace look the brief tells us

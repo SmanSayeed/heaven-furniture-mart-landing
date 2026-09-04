@@ -103,10 +103,15 @@ export function NightMotion() {
               const inward = n % 2 === 0
               gsap.fromTo(
                 img,
-                { scale: inward ? 1.02 : 1.14, xPercent: inward ? 0 : -1.2 },
+                /* 1.14 cut a quarter off the sides of every photograph at
+                   the end of its dwell, on top of what `object-fit: cover`
+                   already takes (client: "images are looking like big and
+                   partial, full image not showing"). 1.06 still reads as a
+                   camera and keeps the piece whole. */
+                { scale: inward ? 1.0 : 1.06, xPercent: inward ? 0 : -0.6 },
                 {
-                  scale: inward ? 1.14 : 1.02,
-                  xPercent: inward ? -1.2 : 0,
+                  scale: inward ? 1.06 : 1.0,
+                  xPercent: inward ? -0.6 : 0,
                   duration: DWELL + FADE,
                   ease: 'none',
                   overwrite: 'auto',

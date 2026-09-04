@@ -4,7 +4,6 @@ import { Torch } from '@/components/ui/Torch'
 import { WhatsApp } from '@/components/ui/Icons'
 import { whatsappUrl } from '@/lib/whatsapp'
 import { Words } from './Words'
-import { Proof } from './Proof'
 import s from './night.module.css'
 import d from '@/components/deck/deck.module.css'
 
@@ -75,6 +74,7 @@ export function Hero() {
                 >
                   <Photo
                     name={r.photo}
+                    tall={r.tall}
                     alt={k === 0 ? v.alt : ''}
                     sizes="100vw"
                     priority={k === 0}
@@ -87,6 +87,7 @@ export function Hero() {
             ) : (
               <Photo
                 name={v.photo}
+                tall={v.tall}
                 alt=""
                 sizes="100vw"
                 eager
@@ -99,6 +100,10 @@ export function Hero() {
       </div>
       <div className={s.scrim} data-hero-scrim aria-hidden="true" />
       <div className={s.night} aria-hidden="true" />
+      {/* the room arriving in colour, and the sheet coming off it. Both are
+          one-shot CSS on first paint: no JavaScript, nothing left behind. */}
+      <div className={s.desat} aria-hidden="true" />
+      <div className={s.wipe} aria-hidden="true" />
       <span className={s.beam} data-beam aria-hidden="true">
         <span className={s.beamShaft} />
       </span>
@@ -110,12 +115,23 @@ export function Hero() {
           <span className="only-narrow">{h.tagShort}</span>
           <span className="only-wide">{h.tag}</span>
         </span>
-        {/* ONE CELL, THREE MESSAGES. The photographs change twice as the
-            hero is scrolled; the words change with them (NightMotion moves
-            `data-on`). Message 1 is the h1 and the LCP and is lit in the
-            server HTML, so with no JS the hero is simply the first message,
-            finished. 2 and 3 are a visual continuation of copy the studio
-            chapter states in full, so they are not headings. */}
+        {/* ONE CELL, THREE MESSAGES: one title and one line per room, and
+            nothing else. The three-row proof strip and the marks line that
+            used to sit under the CTA are gone (client: "remove texts and
+            keep it cleaner - keep one title, one sub title in each
+            sections"); the studio chapter states those three facts in full,
+            with the detail behind its buttons.
+
+            EACH ONE ARRIVES FROM THE SIDE ITS ROOM ARRIVES FROM. Room 2
+            blooms out of the beam's origin at the top left, so its words
+            come in from the left; room 3 slides in from the right edge, so
+            its words follow it in from the right. The words and the
+            photograph read as one movement rather than two.
+
+            Message 1 is the h1 and the LCP and is lit in the server HTML,
+            so with no JS the hero is simply the first message, finished.
+            2 and 3 continue the same copy visually, so they are not
+            headings. */}
         <div className={s.heroSay} data-hero-say>
           {h.messages.map((msg, i) => (
             <div
@@ -123,6 +139,12 @@ export function Hero() {
               className={s.heroMsg}
               data-hero-msg
               data-on={i === 0 ? '' : undefined}
+              style={
+                {
+                  '--from-x': i === 1 ? '-4.5rem' : i === 2 ? '4.5rem' : '0rem',
+                  '--from-y': i === 0 ? '1.1rem' : '0rem',
+                } as React.CSSProperties
+              }
               {...(i > 0 ? { 'aria-hidden': true as const } : {})}
             >
               {i === 0 ? (
@@ -137,28 +159,27 @@ export function Hero() {
                 </p>
               )}
               <p className={s.sub}>{msg.sub}</p>
+              {/* THE CTA TRAVELS WITH THE ROOM (client: "hero each sections
+                  should have CTA buttons"). It is the same one action, said
+                  again in each room rather than parked once underneath them:
+                  a visitor who is convinced by room three should not have to
+                  look for the button that belonged to room one. */}
+              <div className={s.row}>
+                <a
+                  className={`${d.pill} ${d.pillBrass}`}
+                  href={whatsappUrl()}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  tabIndex={i === 0 ? 0 : -1}
+                >
+                  <WhatsApp />
+                  Request a Quote
+                </a>
+                <span className={s.quiet}>Free design consultation</span>
+              </div>
             </div>
           ))}
         </div>
-        <div className={s.row}>
-          <a
-            className={`${d.pill} ${d.pillBrass}`}
-            href={whatsappUrl()}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <WhatsApp />
-            Request a Quote
-          </a>
-          <span className={s.quiet}>Free design consultation</span>
-        </div>
-        {/* 2026-09-03: the narrator line ("The power is out. You have a
-            light.") left the hero. It was atmosphere in the one place a
-            first-time visitor is asking a question, and it left a gap under
-            the CTA on phones. `Proof` answers instead — who draws it, who
-            builds it, who delivers it — and the blackout concept keeps its
-            own beat further down the page. */}
-        <Proof />
       </div>
 
       <div className={s.counter} data-hero-counter aria-hidden="true">
