@@ -300,6 +300,38 @@
   will-change: transform;
 }
 
+/* ---- THE THREE MESSAGES, IN ONE CELL ----
+   Every message occupies the same grid area, so the block is exactly as tall
+   as its tallest message and the CTA beneath it never jumps as the words
+   change. Only `data-on` moves (NightMotion); everything here is opacity and
+   transform, which is compositor work. */
+.heroSay {
+  display: grid;
+  align-items: end;
+}
+
+.heroMsg {
+  grid-area: 1 / 1;
+  display: grid;
+  gap: clamp(0.5rem, 1vh, 0.85rem);
+  opacity: 0;
+  transform: translateY(18px);
+  pointer-events: none;
+  transition: opacity 0.55s ease, transform 0.75s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.heroMsg[data-on] {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+/* messages 2 and 3 are set as one paragraph, so their lines need the break
+   the h1's `Words` gives message 1 for free */
+.heroLine {
+  display: block;
+}
+
 .counter {
   position: absolute;
   right: var(--pad-x);
@@ -2523,6 +2555,34 @@
   transition: opacity 0.5s ease;
 }
 
+/* ON A PHONE THE STRIP IS A SLIDER, not a list.
+
+   Under a headline, a tagline and a CTA, three rows plus a marks line is six
+   blocks of type over a photograph on a 390px screen - it read as a wall
+   (client: "hero section not looking good - looking messy"). The hero already
+   changes room three times, so the three answers ride those changes: one
+   cell, one line lit, a third of the height. Wide screens keep the list;
+   there it was never the problem. */
+@media (max-width: 860px) {
+  .proofList {
+    display: grid;
+    gap: 0;
+  }
+
+  .proofItem {
+    grid-area: 1 / 1;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.5s ease, transform 0.6s cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+
+  .proofItem[data-on] {
+    opacity: 1;
+    transform: none;
+  }
+
+}
+
 /* the rule DRAWS: scaleX from the left, one item after another */
 .proofRule {
   position: absolute;
@@ -2590,6 +2650,17 @@
   letter-spacing: 0.22em;
   text-transform: uppercase;
   opacity: 0.55;
+}
+
+/* EST. 2020 / AGRABAD / FULLY BESPOKE all appear again in the footer and in
+   the studio's own specimen line. Over the hero photograph on a phone they
+   were the sixth block of type on one screen, so they go. This has to sit
+   AFTER the declaration above: a media query adds no specificity, and the
+   first attempt at it, written earlier in the file, simply lost. */
+@media (max-width: 860px) {
+  .proofMarks {
+    display: none;
+  }
 }
 
 .proofMark {

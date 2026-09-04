@@ -19,6 +19,16 @@ import s from './night.module.css'
  *     carries a pool of warm light (`Torch`), and an item lit by it lifts
  *     its rule to full brass
  *
+ * ON A PHONE THE STRIP IS A SLIDER (client, 2026-09-03: "hero section ...
+ * looking messy", "as on scroll changing hero sections, we can divide texts
+ * to multiple sections"). Three rows plus a marks line under a headline, a
+ * tagline and a CTA is six blocks of type over a photograph on a 390px
+ * screen, and it read as a wall. The hero already changes photograph three
+ * times as it is scrolled, so the three answers ride those changes: the
+ * items stack in ONE cell and NightMotion lights item `v` as view `v`
+ * arrives. One line at a time, the same three facts, a third of the height.
+ * Wide screens keep all three - there the strip was never the problem.
+ *
  * Server Component. Every word is in the HTML; with JavaScript off the
  * strip is simply present and lit — nothing here is required to read it.
  */
@@ -31,6 +41,10 @@ export function Proof() {
           <li
             key={p.no}
             className={s.proofItem}
+            data-proof-item
+            /* item 1 is lit in the server HTML: with no JS, on a phone, the
+               strip is one finished line rather than an empty slot */
+            data-on={i === 0 ? '' : undefined}
             style={{ '--i': i } as React.CSSProperties}
           >
             <span className={s.proofRule} aria-hidden="true" />

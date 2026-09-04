@@ -1522,40 +1522,115 @@
 }
 
 /* the panel drops from under the header: a clip, half a second */
+/* THE ROOMS MENU IS A ROOM, NOT A DRAWER.
+
+   It hung off the header at `top: 100%` with no z-index of its own, so a
+   strip of the chapter behind it showed above it, the page's own fixed
+   furniture painted straight through the photograph, and the only way out
+   was to move the mouse off it. Full screen settles all three: nothing
+   behind it shows, nothing behind it can be clicked by accident, and the
+   visitor leaves it on purpose. It wipes down from the top, which is the
+   same gesture the drawer made, over the whole viewport. */
 .mega {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: grid;
+  grid-template-rows: auto 1fr;
   background: var(--ink);
   color: var(--ivory);
-  border-top: 1px solid var(--line-on-ink);
-  border-bottom: 1px solid var(--line-on-ink);
-  box-shadow: 0 40px 80px -30px rgba(0, 0, 0, 0.8);
-  clip-path: inset(0 0 100% 0);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  /* IT ARRIVES BY TRANSFORM, NOT BY CLIP.
+
+     The drawer wiped itself open with `clip-path: inset(0 0 100% 0)`, which
+     was right for a panel hanging inside the header. Full screen it is the
+     wrong tool twice over: clip-path clips HIT-TESTING as well as paint, so
+     a panel whose wipe stalls for any reason is visible and completely
+     unclickable, and it is the one property in this animation that is not
+     free on the compositor. A translate does the same gesture - the room
+     dropping in from the top - and can never leave the menu open but dead. */
+  transform: translateY(-100%);
   visibility: hidden;
   pointer-events: none;
   transition:
-    clip-path 0.5s cubic-bezier(0.22, 0.61, 0.36, 1),
-    visibility 0s linear 0.5s;
+    transform 0.55s cubic-bezier(0.22, 0.61, 0.36, 1),
+    visibility 0s linear 0.55s;
 }
 
 .mega[data-on] {
-  clip-path: inset(0 0 0 0);
+  transform: none;
   visibility: visible;
   pointer-events: auto;
-  transition: clip-path 0.5s cubic-bezier(0.22, 0.61, 0.36, 1), visibility 0s;
+  transition: transform 0.55s cubic-bezier(0.22, 0.61, 0.36, 1), visibility 0s;
+}
+
+/* the titles and the photograph arrive a beat after the room does */
+.mega[data-on] .megaInner {
+  animation: mega-in 0.6s cubic-bezier(0.22, 0.61, 0.36, 1) 0.18s both;
+}
+
+@keyframes mega-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+
+/* the menu's own header: the page's header row, repeated, so the wordmark
+   never moves - plus the way out, which stays at the top however far the
+   menu is scrolled */
+.megaHead {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.1rem var(--pad-x);
+  background: var(--ink);
+  border-bottom: 1px solid var(--line-on-ink);
+}
+
+.megaClose {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.75rem;
+  padding: 0 0.25rem;
+  border: 0;
+  background: none;
+  color: var(--brass);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+}
+
+.megaClose:hover {
+  opacity: 0.7;
+}
+
+.megaClose:focus-visible {
+  outline: 1px solid var(--brass);
+  outline-offset: 4px;
 }
 
 .megaInner {
   width: 100%;
   max-width: 1320px;
   margin-inline: auto;
-  padding: 2.25rem var(--pad-x) 2.5rem;
+  padding: clamp(1.25rem, 4vh, 3rem) var(--pad-x) clamp(1.75rem, 5vh, 3.5rem);
   display: grid;
   grid-template-columns: 1.15fr 1fr;
   gap: clamp(2rem, 4vw, 4rem);
-  align-items: start;
+  align-items: center;
+  align-content: center;
 }
 
 .megaList {
@@ -1646,7 +1721,13 @@
 /* the one large photograph, an ivory mat in a brass frame */
 .megaArt {
   position: relative;
+  /* height-led, not width-led: on a full screen a 4:3 box taking half the
+     viewport's width is taller than the titles beside it */
+  height: min(58vh, 520px);
   aspect-ratio: 4 / 3;
+  width: auto;
+  max-width: 100%;
+  justify-self: end;
   background: var(--ivory);
   border: 1px solid var(--brass);
   overflow: hidden;

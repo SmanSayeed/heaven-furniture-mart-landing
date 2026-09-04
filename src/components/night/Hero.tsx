@@ -17,6 +17,9 @@ import d from '@/components/deck/deck.module.css'
  *   views    - three photographs of Heaven's own rooms. View 1 is the only
  *              one visible without JS; NightMotion reveals 2 and 3 into
  *              their hidden poses and scrubs them in (iris, then slide).
+ *   say      - and three MESSAGES, one per view, in one cell. The words
+ *              change with the room they are standing in; views 2 and 3
+ *              used to arrive with nothing to read.
  *   night    - the darkness, lifting on load (CSS, compositor-only)
  *   beam     - THE FLOODLIGHT, top-left, 45 degrees, sweeping once on load;
  *              NightMotion widens it as the visitor scrolls the room lit
@@ -71,8 +74,36 @@ export function Hero() {
           <span className="only-narrow">{h.tagShort}</span>
           <span className="only-wide">{h.tag}</span>
         </span>
-        <Words as="h1" lines={h.headline} className={`${s.title} ${s.titleHero}`} />
-        <p className={s.sub}>{h.sub}</p>
+        {/* ONE CELL, THREE MESSAGES. The photographs change twice as the
+            hero is scrolled; the words change with them (NightMotion moves
+            `data-on`). Message 1 is the h1 and the LCP and is lit in the
+            server HTML, so with no JS the hero is simply the first message,
+            finished. 2 and 3 are a visual continuation of copy the studio
+            chapter states in full, so they are not headings. */}
+        <div className={s.heroSay} data-hero-say>
+          {h.messages.map((msg, i) => (
+            <div
+              key={msg.headline.join(' ')}
+              className={s.heroMsg}
+              data-hero-msg
+              data-on={i === 0 ? '' : undefined}
+              {...(i > 0 ? { 'aria-hidden': true as const } : {})}
+            >
+              {i === 0 ? (
+                <Words as="h1" lines={msg.headline} className={`${s.title} ${s.titleHero}`} />
+              ) : (
+                <p className={`${s.title} ${s.titleHero}`}>
+                  {msg.headline.map((line) => (
+                    <span key={line} className={s.heroLine}>
+                      {line}
+                    </span>
+                  ))}
+                </p>
+              )}
+              <p className={s.sub}>{msg.sub}</p>
+            </div>
+          ))}
+        </div>
         <div className={s.row}>
           <a
             className={`${d.pill} ${d.pillBrass}`}

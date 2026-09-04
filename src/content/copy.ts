@@ -628,6 +628,25 @@ export const night = {
     headline: ['Furnished', 'to you.'],
     sub: brand.tagline,
     cue: 'Scroll',
+    /* THREE VIEWS, THREE THINGS TO SAY (client, 2026-09-03: "3rd hero
+       showing empty - add like text going on scroll for each top sections").
+       The hero changes photograph twice as it is scrolled and the headline
+       used to sit still through all of it, so views 2 and 3 arrived as
+       pictures with nothing to read. Each view carries its own line now.
+       Message 1 is the h1 and the LCP; 2 and 3 are the same three facts the
+       studio chapter states, said one at a time over the room they describe.
+       Nothing here is new: every claim is the brief's. */
+    messages: [
+      { headline: ['Furnished', 'to you.'], sub: brand.tagline },
+      {
+        headline: ['Drawn', 'to your room.'],
+        sub: 'Free design consultation, at the showroom or on WhatsApp.',
+      },
+      {
+        headline: ['Built', 'and fitted.'],
+        sub: 'Premium wood, our own craftsmen, delivery and installation included.',
+      },
+    ],
     /* THE PROOF STRIP (2026-09-03, client): the hero had a gap under the CTA
        and a narrator line ("The power is out. You have a light.") that read as
        atmosphere rather than as an answer. A first-time visitor's three

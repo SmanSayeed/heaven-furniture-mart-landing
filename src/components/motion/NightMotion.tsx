@@ -41,7 +41,8 @@ export function NightMotion() {
          layer drives the page */
       root.dataset.night = ''
       const tier = detectTier()
-      const wide = window.matchMedia('(min-width: 900px)').matches
+      /* the rail runs on every screen now, so there is no `wide` branch left
+         to take; only the pointer still decides anything (the wall's cursor) */
       const fine = window.matchMedia('(pointer: fine)').matches
       const cleanups: Array<() => void> = []
 
@@ -62,6 +63,8 @@ export function NightMotion() {
         const text = q('[data-hero-text]')
         const counter = q('[data-hero-counter]')
         const now = q('[data-hero-now]')
+        const says = gsap.utils.toArray<HTMLElement>('[data-hero-msg]', hero)
+        const proofs = gsap.utils.toArray<HTMLElement>('[data-proof-item]', hero)
         const cue = q('[data-cue]')
         const out = q('[data-lights-out]')
 
@@ -84,10 +87,22 @@ export function NightMotion() {
             onUpdate: (st) => {
               const p = st.progress
               const v = p < 0.22 ? 1 : p < 0.5 ? 2 : 3
-              if (v !== shown && now) {
+              if (v !== shown) {
                 shown = v
-                now.textContent = String(v)
-                gsap.fromTo(now, { y: 8, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4, ease: 'power2.out' })
+                if (now) {
+                  now.textContent = String(v)
+                  gsap.fromTo(now, { y: 8, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4, ease: 'power2.out' })
+                }
+                /* THE WORDS TRAVEL WITH THE ROOM. One message per view: the
+                   photographs used to change twice under a headline that
+                   never did, so views 2 and 3 read as pictures with nothing
+                   to say. `data-on` is the only switch; the fade and the
+                   lift are CSS transitions on the compositor, so this costs
+                   one attribute write per view change and nothing per frame.
+                   The proof strip rides the same switch, which is what makes
+                   it a single line on a phone instead of three. */
+                says.forEach((el, i) => el.toggleAttribute('data-on', i === v - 1))
+                proofs.forEach((el, i) => el.toggleAttribute('data-on', i === v - 1))
               }
             },
           },
@@ -217,8 +232,26 @@ export function NightMotion() {
       if (floor && track) {
         const cards = gsap.utils.toArray<HTMLElement>('[data-rcard]', track)
         const bar = q('[data-rail-bar] i')
-        if (wide) {
+        /* THE RAIL IS THE CHAPTER, ON EVERY SCREEN.
+
+           The phone used to get a native scroll-snap carousel instead: the
+           reasoning was that a pinned rail under a thumb fights vertical
+           momentum. In practice it meant the one chapter that moves did not
+           move on the device most visitors are holding - the visitor had to
+           find the strip and swipe it sideways, and most never did (client:
+           "in mobile view categories section on scroll not gsap way not auto
+           scrolling ... every sections should have some effects on scroll").
+
+           So the pin runs everywhere and the phone simply travels less: the
+           plates are smaller there, so `dist()` is smaller, and the chapter
+           holds for about a screen and a half rather than three. Vertical
+           scrolling still drives it - nothing here asks for a sideways
+           gesture. The server HTML is still the snap carousel, which is what
+           a no-JS or reduced-motion visitor keeps. */
+        {
           floor.dataset.rail = ''
+          const dots = gsap.utils.toArray<HTMLElement>('[data-dots] i')
+          const swipe = q('[data-swipe]')
           const dist = () => Math.max(0, track.scrollWidth - track.clientWidth)
           const travel = gsap.to(track, {
             x: () => -dist(),
@@ -231,7 +264,21 @@ export function NightMotion() {
               scrub: 1,
               invalidateOnRefresh: true,
               anticipatePin: 1,
-              onUpdate: (st) => bar && gsap.set(bar, { scaleX: st.progress }),
+              onUpdate: (st) => {
+                if (bar) gsap.set(bar, { scaleX: st.progress })
+                /* the dots read the rail's progress rather than the track's
+                   scrollLeft, which no longer moves now that GSAP owns the
+                   transform */
+                const i = Math.min(
+                  cards.length - 1,
+                  Math.round(st.progress * (cards.length - 1)),
+                )
+                dots.forEach((dot, j) => {
+                  if (j === i) dot.dataset.on = ''
+                  else delete dot.dataset.on
+                })
+                if (swipe) swipe.style.opacity = st.progress > 0.02 ? '0' : ''
+              },
             },
           })
           /* each frame turns to face the visitor as it enters from the right */
@@ -254,31 +301,6 @@ export function NightMotion() {
                 },
               },
             )
-          })
-        } else {
-          /* a phone: native snap; the dots follow the scroll position */
-          const dots = gsap.utils.toArray<HTMLElement>('[data-dots] i')
-          const swipe = q('[data-swipe]')
-          let raf = 0
-          const onScroll = () => {
-            if (raf) return
-            raf = requestAnimationFrame(() => {
-              raf = 0
-              const w = cards[0]?.offsetWidth || 1
-              const gap = 12
-              const i = Math.round(track.scrollLeft / (w + gap))
-              dots.forEach((dot, j) => {
-                if (j === i) dot.dataset.on = ''
-                else delete dot.dataset.on
-              })
-              if (swipe && track.scrollLeft > 20) swipe.style.opacity = '0'
-            })
-          }
-          track.addEventListener('scroll', onScroll, { passive: true })
-          ScrollTrigger.addEventListener('refreshInit', onScroll)
-          cleanups.push(() => {
-            track.removeEventListener('scroll', onScroll)
-            ScrollTrigger.removeEventListener('refreshInit', onScroll)
           })
         }
 

@@ -11,11 +11,19 @@ import s from './deck.module.css'
 /**
  * THE MEGA MENU (PLAN-V6 PART B5): the customer's path to the rooms.
  *
- * Wide screens: "Rooms" in the header opens a full-width panel under it
- * (a clip-path drop, half a second) with the five rooms as big titles and
- * one large photograph that changes as a title is hovered, plus "All
- * pieces". Every title is a real link to that room's page, so the panel
- * works with the keyboard and the links exist in the HTML for a crawler.
+ * Wide screens: "Rooms" opens a FULL-SCREEN room of its own (a clip-path
+ * wipe, half a second) carrying its own header - the wordmark where the
+ * wordmark always is, and the way out fixed at the top right. Inside: the
+ * five rooms as big titles and one large photograph that changes as a title
+ * is hovered, plus "All pieces". Every title is a real link to that room's
+ * page, so it works with the keyboard and the links exist in the HTML for a
+ * crawler.
+ *
+ * It used to be a dropdown hanging off the header at `top: 100%`, which
+ * left a strip of the chapter behind it showing above, let the page's own
+ * fixed furniture paint through it, and offered no way out but moving the
+ * mouse away (client: "menu is not proper, make it full screen - keep it
+ * like header with cancel fixed at top").
  *
  * Phones: the wordmark row gains a burger, and the menu is a full-screen
  * <dialog> - the same system the modals use (Escape, backdrop, focus
@@ -56,18 +64,19 @@ export function MegaMenu({
         button.current?.focus()
       }
     }
-    const onClick = (e: MouseEvent) => {
-      const t = e.target as Node
-      if (panel.current?.contains(t) || button.current?.contains(t)) return
-      close()
-    }
+    /* NO outside-click and NO scroll-to-close: the panel now covers the
+       viewport, so there is no outside to click, and the page beneath it is
+       held still rather than being allowed to scroll the menu away. The
+       Escape key and the button are the two ways out, and both are visible. */
+    const lenis = getLenis()
+    lenis?.stop()
+    const prevOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
     window.addEventListener('keydown', onKey)
-    document.addEventListener('click', onClick)
-    window.addEventListener('scroll', close, { passive: true })
     return () => {
       window.removeEventListener('keydown', onKey)
-      document.removeEventListener('click', onClick)
-      window.removeEventListener('scroll', close)
+      document.body.style.overflow = prevOverflow
+      lenis?.start()
     }
   }, [open, close])
 
@@ -146,7 +155,6 @@ export function MegaMenu({
           aria-expanded={open}
           aria-controls="rooms-menu"
           onClick={() => setOpen((o) => !o)}
-          onPointerEnter={(e) => e.pointerType === 'mouse' && setOpen(true)}
         >
           {m.rooms}
           <span className={s.navCaret} aria-hidden="true" />
@@ -164,9 +172,28 @@ export function MegaMenu({
         ref={panel}
         className={s.mega}
         data-on={open ? '' : undefined}
-        onPointerLeave={(e) => e.pointerType === 'mouse' && close()}
         aria-hidden={!open}
       >
+        {/* the same row the page's header is, so the menu reads as the site
+            rather than as a layer on top of it - and the way out is here,
+            sticky, where a full-screen takeover has to put it */}
+        <div className={s.megaHead}>
+          <span className={s.brand} aria-hidden="true">
+            HE<span className="tri" />VEN
+            <span className={s.brandSub}>FURNITURE MART</span>
+          </span>
+          <button
+            type="button"
+            className={s.megaClose}
+            onClick={() => {
+              close()
+              button.current?.focus()
+            }}
+            tabIndex={open ? 0 : -1}
+          >
+            {m.close.toUpperCase()} ×
+          </button>
+        </div>
         <div className={s.megaInner}>
           <ul className={s.megaList}>
             {rooms.map((c, i) => (
