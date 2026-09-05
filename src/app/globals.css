@@ -123,7 +123,30 @@
 }
 
 html {
+  /* the header is fixed and ~79 px tall, and `auto` let every anchor jump
+     land the target's first line underneath it (measured: menu -> Rooms
+     put #floor at top: 0 with the chapter tag covered). This is the
+     native path - no JS, a cross-page /#floor, a bookmarked hash; the
+     motion layer's own scrollTo carries the same offset. */
+  scroll-padding-top: 6rem;
   scroll-behavior: smooth;
+}
+
+/*
+  ...but NOT while Lenis is driving.
+
+  Lenis adds these classes to the root when it takes the scroll over. With
+  `scroll-behavior: smooth` still winning, one anchor jump ran the browser's
+  native easing AND Lenis's easing at the same time, and the two fought:
+  the jump read as slow, or as overshooting and settling back. Lenis tries
+  to set this itself; a rule with higher specificity beat it.
+
+  The no-JS and reduced-motion paths keep the native smooth above, which is
+  the only smoothing they get.
+*/
+html.lenis,
+html.lenis-smooth {
+  scroll-behavior: auto;
 }
 
 body {

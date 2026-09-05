@@ -90,7 +90,24 @@ export function SocialDock() {
     }
   }, [open])
 
-  const toggle = useCallback(() => setOpen((v) => !v), [])
+  /*
+    A MOUSE ALREADY OPENED IT, so a mouse click must not close it.
+
+    Hover opens the fan on a fine pointer, and this button then toggled on
+    top of that: hover -> open, click the ring you are hovering -> closed,
+    and because the pointer never LEFT, pointerenter could not fire again.
+    The four links vanished under the cursor and stayed gone until the
+    visitor moved away and came back. Touch has no hover, so there the
+    toggle is the only way in and must keep working.
+
+    A click from the keyboard reports pointerType '' (no pointer), which is
+    the case that must also toggle - Enter and Space on the trigger are how
+    this opens without a pointer at all.
+  */
+  const onTrigger = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+    if (e.nativeEvent instanceof PointerEvent && e.nativeEvent.pointerType === 'mouse') return
+    setOpen((v) => !v)
+  }, [])
 
   return (
     <div
@@ -140,7 +157,7 @@ export function SocialDock() {
         aria-expanded={open}
         aria-controls="dock-fan"
         aria-label={open ? 'Close contact links' : 'Contact Heaven Furniture Mart'}
-        onClick={toggle}
+        onClick={onTrigger}
       >
         {/* the ring turns slowly on its own; the glyph inside is a speech
             mark that becomes a close cross when the fan is out */}

@@ -1263,16 +1263,62 @@
     aspect-ratio: 4 / 3;
     max-height: 46svh;
   }
+
+  /* ---- PINNED ON A PHONE: THE PIECE STAYS IN THE MIDDLE ----
+
+     The chapter is exactly one viewport tall and its column was taller than
+     that, so the stage got pushed off the top and clipped by the section's
+     own `overflow: hidden` - the piece scrolled away while the words that
+     describe it stayed (client: "3d sofa is going too much up on scroll -
+     sticky it in center").
+
+     The cause was giving the stage a FIXED share of the viewport (46svh)
+     and then stacking six more things under it. So it is given WHAT IS
+     LEFT instead: minmax(0, 1fr) for the stage's row, auto for everything
+     else. It can no longer be cut off at any phone height, and it sits in
+     the middle of whatever room it has. */
+  .table[data-pinned] .tableGrid {
+    height: 100svh;
+    /* the fixed header above it, the sticky CTA below it */
+    padding-block: 4.75rem 4.25rem;
+    grid-template-rows: minmax(0, 1fr) auto;
+    align-content: stretch;
+    gap: 1rem;
+  }
+  .table[data-pinned] .stageCol {
+    min-height: 0;
+    grid-template-rows: minmax(0, 1fr) auto;
+    align-items: center;
+  }
+  .table[data-pinned] .stage {
+    aspect-ratio: auto;
+    max-height: none;
+    height: 100%;
+    min-height: 0;
+  }
+  .table[data-pinned] .tableCol {
+    min-height: 0;
+    align-content: end;
+  }
+  /* the dimension line directly under the stage already prints the
+     millimetres; the specs list says them again, and a pinned phone does
+     not have the height for both */
+  .table[data-pinned] .specs {
+    display: none;
+  }
   .table[data-pinned] .stepLine {
     display: none;
   }
-  .table[data-pinned] .stepWord {
-    font-size: 1.5rem;
-  }
+  /* three words on one line, sized to the viewport rather than to a guess:
+     at a flat 1.5rem "Designed. Crafted. Customized." ran off the right
+     edge of a 390 px phone, and badly off a narrower one */
   .table[data-pinned] .steps {
     grid-template-columns: repeat(3, auto);
     justify-content: start;
-    gap: 1rem;
+    gap: clamp(0.4rem, 2.2vw, 1rem);
+  }
+  .table[data-pinned] .stepWord {
+    font-size: clamp(0.9rem, 4.4vw, 1.5rem);
   }
 }
 

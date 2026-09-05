@@ -22,14 +22,24 @@ import s from './deck.module.css'
  * loosely validated (Bangladeshi mobiles are 11 digits; the country code
  * form is allowed), and the URL is built with encodeURIComponent.
  */
-const ROOMS = ['Living room', 'Bedroom', 'Dining', 'Office / study', 'Whole home'] as const
+/*
+  THE ROOM SELECT IS GONE, AND SO IS THE CONTRADICTION.
 
+  There used to be a second list here - Living room / Bedroom / Dining /
+  Office / Whole home - behind a "Which room?" question on step 2, which is
+  the same question step 1 already asks with tiles. Worse, it defaulted to
+  ROOMS[0] and was never prefilled from step 1, so a visitor who tapped
+  Bedroom and then left step 2 alone sent Heaven a message that said
+  "Looking for: Bedroom" and, one line down, "Room: Living room".
+
+  This message is the entire output of the page. It is now two questions:
+  what you want (and roughly how big), and where to reach you.
+*/
 export function QuoteModal({ label = deck.cta }: { label?: string }) {
   const id = useId()
   const [open, setOpen] = useState(false)
   const [step, setStep] = useState(0)
   const [category, setCategory] = useState('')
-  const [room, setRoom] = useState<string>(ROOMS[0])
   const [size, setSize] = useState('')
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
@@ -52,7 +62,7 @@ export function QuoteModal({ label = deck.cta }: { label?: string }) {
       `Hi Heaven, I would like a free design consultation.`,
       ``,
       category ? `Looking for: ${cap(category, 40)}` : '',
-      `Room: ${cap(room, 40)}${size.trim() ? ` · ${cap(size, 40)}` : ''}`,
+      size.trim() ? `Space: ${cap(size, 40)}` : '',
       `Name: ${cap(name, 80)}`,
       `Phone: ${cap(phone, 20)}`,
     ].filter(Boolean)
@@ -64,7 +74,8 @@ export function QuoteModal({ label = deck.cta }: { label?: string }) {
     close()
   }
 
-  const titles = [deck.quoteSteps[0], deck.quoteSteps[1], deck.quoteSteps[2]]
+  const titles = [deck.quoteSteps[0], deck.quoteSteps[1]]
+  const LAST = titles.length - 1
 
   return (
     <>
@@ -82,7 +93,7 @@ export function QuoteModal({ label = deck.cta }: { label?: string }) {
         open={open}
         onClose={close}
         title={titles[step]}
-        sub={`Step ${step + 1} of 3`}
+        sub={`Step ${step + 1} of ${titles.length}`}
         dark
         foot={
           <>
@@ -93,7 +104,7 @@ export function QuoteModal({ label = deck.cta }: { label?: string }) {
                   ← BACK
                 </button>
               )}
-              {step < 2 ? (
+              {step < LAST ? (
                 <button type="button" className={s.pill} onClick={() => setStep(step + 1)}>
                   Next →
                 </button>
@@ -108,7 +119,7 @@ export function QuoteModal({ label = deck.cta }: { label?: string }) {
         }
       >
         <div className={s.steps} aria-hidden="true">
-          {[0, 1, 2].map((i) => (
+          {titles.map((_, i) => (
             <i key={i} data-on={i <= step ? '' : undefined} />
           ))}
         </div>
@@ -136,24 +147,8 @@ export function QuoteModal({ label = deck.cta }: { label?: string }) {
                 Whole home
               </button>
             </div>
-          </div>
-        )}
-
-        {step === 1 && (
-          <div className={`${s.stepBody} ${s.field}`} key="s1" style={{ gap: '1.25rem' }}>
-            <div className={s.field}>
-              <label htmlFor={`${id}-room`}>Which room?</label>
-              <select
-                id={`${id}-room`}
-                className={s.input}
-                value={room}
-                onChange={(e) => setRoom(e.target.value)}
-              >
-                {ROOMS.map((r) => (
-                  <option key={r}>{r}</option>
-                ))}
-              </select>
-            </div>
+            {/* the size rode on its own step behind the duplicate room
+                question. It belongs with the thing it measures. */}
             <div className={s.field}>
               <label htmlFor={`${id}-size`}>Rough size (optional)</label>
               <input
@@ -169,8 +164,8 @@ export function QuoteModal({ label = deck.cta }: { label?: string }) {
           </div>
         )}
 
-        {step === 2 && (
-          <div className={`${s.stepBody} ${s.field}`} key="s2" style={{ gap: '1.25rem' }}>
+        {step === 1 && (
+          <div className={`${s.stepBody} ${s.field}`} key="s1" style={{ gap: '1.25rem' }}>
             <div className={s.field}>
               <label htmlFor={`${id}-name`}>Your name</label>
               <input

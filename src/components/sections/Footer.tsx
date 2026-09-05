@@ -1,4 +1,4 @@
-import { brand, contact, footer, nav, siteNav, story } from '@/content/copy'
+import { brand, contact, footer, nav, night, siteNav } from '@/content/copy'
 import { Cta } from '@/components/ui/Cta'
 import { ContactForm } from '@/components/ui/ContactForm'
 import { FacebookLogo, InstagramLogo, YoutubeLogo } from '@/components/ui/Icons'
@@ -13,10 +13,19 @@ import s from './sections.module.css'
  * column blocks. The plot line that has been drawing itself down the left
  * gutter since Sheet 01 ties off here.
  *
- * The index of beats doubles as the no-JS route map: the Index overlay is
- * progressive enhancement, so the whole story has to exist as plain anchors
- * somewhere in the server HTML. It is useful with JS too, which is why it is
- * a real list rather than something hidden from sighted readers.
+ * The index of chapters doubles as the no-JS route map: the Index overlay
+ * is progressive enhancement, so the whole story has to exist as plain
+ * anchors somewhere in the server HTML. It is useful with JS too, which is
+ * why it is a real list rather than something hidden from sighted readers.
+ *
+ * IT READS `night.chapters`, and that is the whole point. It used to read
+ * `story` - the nine beats of the V5 design - and every one of its nine
+ * links was dead: they pointed at /#sheet-01 ... /#sheet-09, /#bespoke,
+ * /#collections and /#ar, and the landing page has carried seven entirely
+ * different ids since V6 (room, studio, floor, table, maker, home, ask).
+ * A visitor clicking any of them was dropped at the top of the home page,
+ * under labels for chapters that no longer exist. Reading the same array
+ * the page itself is built from is what makes that impossible to repeat.
  */
 export function Footer() {
   return (
@@ -42,14 +51,14 @@ export function Footer() {
       <nav className={s.footerIndex} aria-label={nav.footerHeading} data-col="1-6">
         <span className="specimen">{nav.footerHeading.toUpperCase()}</span>
         <ul className={s.footerIndexList}>
-          {story.map((beat) => (
-            <li key={beat.no}>
+          {night.chapters.map((chapter) => (
+            <li key={chapter.id}>
               {/* rooted (`/#...`), not bare (`#...`): this footer is shared
                   by every page of the site, and a bare fragment on /contact
                   pointed at nothing. Rooted, it goes home AND scrolls. */}
-              <a href={`/#${beat.target}`} className={s.footerIndexLink}>
-                <span className="index">{beat.no}</span>
-                {beat.beat}
+              <a href={`/#${chapter.id}`} className={s.footerIndexLink}>
+                <span className="index">{chapter.no}</span>
+                {chapter.name}
               </a>
             </li>
           ))}

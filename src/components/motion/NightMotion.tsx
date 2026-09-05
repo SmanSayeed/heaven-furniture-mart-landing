@@ -577,7 +577,18 @@ export function NightMotion() {
         const pin = ScrollTrigger.getAll().find(
           (t) => t.pin && (t.trigger === target || target.contains(t.trigger as Node)),
         )
-        const y = id === 'top' ? 0 : pin ? pin.start : target.getBoundingClientRect().top + window.scrollY
+        /* THE HEADER IS FIXED, so an un-pinned chapter's own top is not
+           where it can be READ from: landing there puts its tag and the
+           first line of its heading behind the header. A pinned chapter is
+           different - pin.start IS the section held at the top, and its own
+           padding is what clears the chrome. */
+        const chrome = pin ? 0 : (header?.offsetHeight ?? 0) + 16
+        const y =
+          id === 'top'
+            ? 0
+            : pin
+              ? pin.start
+              : Math.max(0, target.getBoundingClientRect().top + window.scrollY - chrome)
         const lenis = getLenis()
         if (instant) window.scrollTo(0, y)
         else if (lenis) lenis.scrollTo(y, { duration: 1.4, easing: (x) => 1 - Math.pow(1 - x, 3) })

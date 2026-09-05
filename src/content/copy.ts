@@ -619,7 +619,14 @@ export const deck = {
     line: 'Tell us the room and the piece. We draw it to your measurements and send the quote on WhatsApp.',
     measure: 'drawn to your room',
   },
-  quoteSteps: ['What are you looking for?', 'Your space', 'Where do we send it?'],
+  /* TWO steps, not three. Step 1 used to ask "What are you looking for?"
+     (Living Room / Bedroom / Dining / Office & Study / Bespoke / Whole home)
+     and step 2 asked "Which room?" off almost the same list - and because
+     the room defaulted to Living room and was never prefilled from the
+     first answer, someone who chose Bedroom and left step 2 alone sent the
+     studio "Looking for: Bedroom / Room: Living room". This message is the
+     page's only conversion output; it cannot contradict itself. */
+  quoteSteps: ['What are you looking for?', 'Where do we send it?'],
   quoteEnds: 'Ends on WhatsApp with the message already written',
   quoteSend: 'Send on WhatsApp',
   quoteNote: 'Nothing is stored here. The button opens WhatsApp with your answers written out.',
