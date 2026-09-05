@@ -248,15 +248,29 @@ export function NightMotion() {
 
         /* ============ CH.2b · SIGNATURE PIECES ============
 
-           THE SAME MECHANIC AS THE ROOMS WALL, and deliberately so (client:
-           "like category section onscroll moving from right to left 6 images
-           with GSAP"). The chapter pins, the track travels, and the six
-           pieces walk past from the right on a vertical scroll - nothing
-           here asks for a sideways gesture.
+           A DRIFT, NOT A SECOND PIN, AND IT RUNS THE OTHER WAY.
 
-           It is a snap carousel in the server HTML, which is what a no-JS
-           or reduced-motion visitor keeps: the motion layer only takes the
-           scrolling over, it never builds the row. */
+           This was a copy of the rooms wall: pin the section, freeze the
+           page, travel the track. Two pinned rails back to back meant the
+           page stopped twice in a row with a hard release between them, and
+           the join was the part you felt (client: "category to product
+           section is not smooth - fix it different way").
+
+           So this chapter never takes the scroll away. It stays in normal
+           flow and the strip PARALLAXES across as the section passes: the
+           travel is always shorter than the scroll that drives it, so the
+           six pieces drift rather than race, and the page never stalls
+           between the two chapters.
+
+           AND IT TRAVELS THE OPPOSITE WAY (client: "category is moving left
+           to right, make products look different and right to left on
+           scroll"). The wall carries its plates leftward; this one starts
+           held back at -dist and settles to 0, so its plates come in from
+           the left and move right. Two strips crossing in opposite
+           directions is the difference you can see without being told.
+
+           The server HTML is untouched: a snap carousel, at x = 0, which is
+           what a no-JS or reduced-motion visitor keeps. */
         const sigTrack = q('[data-sig-track]')
         const sigSection = q('#signature')
         if (sigTrack && sigSection) {
@@ -269,46 +283,55 @@ export function NightMotion() {
 
           sigSection.dataset.rail = ''
           const sigDist = () => Math.max(0, sigTrack.scrollWidth - sigTrack.clientWidth)
-          const sigTravel = gsap.to(sigTrack, {
-            x: () => -sigDist(),
-            ease: 'none',
-            scrollTrigger: {
-              trigger: sigSection,
-              start: 'top top',
-              end: () => '+=' + sigDist(),
-              pin: true,
-              scrub: 1,
-              invalidateOnRefresh: true,
-              anticipatePin: 1,
-              onUpdate: (st) => {
-                if (sigBar) gsap.set(sigBar, { scaleX: st.progress })
-              },
-            },
-          })
-          cleanups.push(() => {
-            delete sigSection.dataset.rail
-          })
-
-          /* each plate lifts and squares up as it arrives from the right,
-             which is what stops six identical cards reading as a filmstrip */
-          plates.forEach((card) => {
-            gsap.fromTo(
-              card,
-              { rotateY: 14, y: 24, opacity: 0.75, transformPerspective: 900 },
-              {
-                rotateY: 0,
-                y: 0,
-                opacity: 1,
-                ease: 'power2.out',
-                scrollTrigger: {
-                  trigger: card,
-                  containerAnimation: sigTravel,
-                  start: 'left 94%',
-                  end: 'left 58%',
-                  scrub: true,
+          gsap.fromTo(
+            sigTrack,
+            { x: () => -sigDist() },
+            {
+              x: 0,
+              ease: 'none',
+              scrollTrigger: {
+                trigger: sigSection,
+                /* The travel is spent while the chapter is ON SCREEN, not
+                   while it is still climbing into view: 'top bottom' put
+                   most of the drift below the fold, so by the time the
+                   strip was centred it had already arrived. From 90% to
+                   10% the ratio is sigDist over (section + 0.8 screens),
+                   which stays under 1:1 - and that ratio IS the parallax. */
+                start: 'top 90%',
+                end: 'bottom 10%',
+                scrub: 1,
+                invalidateOnRefresh: true,
+                onUpdate: (st) => {
+                  if (sigBar) gsap.set(sigBar, { scaleX: st.progress })
                 },
               },
-            )
+            },
+          )
+
+          /* THE ARRIVAL, ALSO MIRRORED. The wall turns each plate to face
+             you as it comes in from the right; these lift from the left, in
+             that order, so the entrance agrees with the direction of
+             travel. One trigger for the set rather than one per card: the
+             cards are moving horizontally under a scrub, and a per-card
+             trigger would be measuring a moving target. */
+          gsap.set(plates, { autoAlpha: 0, y: 30 })
+          ScrollTrigger.create({
+            trigger: sigSection,
+            start: 'top 82%',
+            once: true,
+            onEnter: () => {
+              gsap.to(plates, {
+                autoAlpha: 1,
+                y: 0,
+                duration: 0.8,
+                ease: 'power3.out',
+                stagger: { each: 0.07, from: 'end' },
+              })
+            },
+          })
+
+          cleanups.push(() => {
+            delete sigSection.dataset.rail
           })
         }
 
@@ -397,13 +420,28 @@ export function NightMotion() {
         did not fire.
 
         So: measure once more, after the last chapter is in.
+
+        AND SORT BEFORE MEASURING. A plain refresh() recalculates triggers
+        in the order they were CREATED, and the queue creates them out of
+        document order - the signature chapter is built in the first pass,
+        the floor's pin a frame later, and the floor is above it. So
+        signature was re-measured against a document that still did not
+        include the pin spacer sitting above it, and its whole drift landed
+        1388 px early: by the time the chapter reached the screen the
+        strip had already finished travelling. sort() puts them back in
+        start order, so every pin above is accounted for before the
+        chapters below it are measured.
       */
+      const remeasure = () => {
+        ScrollTrigger.sort()
+        ScrollTrigger.refresh()
+      }
       const drain = () => {
         const next = queue.shift()
         if (killed || !next) return
         next()
         if (queue.length) frame = requestAnimationFrame(drain)
-        else ScrollTrigger.refresh()
+        else remeasure()
       }
       const later = (fn: () => void) => {
         queue.push(fn)
@@ -417,7 +455,7 @@ export function NightMotion() {
         if (killed || !queue.length) return
         cancelAnimationFrame(frame)
         while (queue.length) queue.shift()!()
-        ScrollTrigger.refresh()
+        remeasure()
       }
       window.addEventListener('wheel', flush, { passive: true, once: true })
       window.addEventListener('touchstart', flush, { passive: true, once: true })

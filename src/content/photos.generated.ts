@@ -53,7 +53,7 @@ export const photos = {
     "srcSet": "/img/bespoke-chairs-01-480.webp 480w, /img/bespoke-chairs-01-768.webp 768w, /img/bespoke-chairs-01-1024.webp 1024w, /img/bespoke-chairs-01-1600.webp 1600w, /img/bespoke-chairs-01-2048.webp 2048w",
     "width": 2048,
     "height": 1152,
-    "blurDataURL": "data:image/webp;base64,UklGRmIAAABXRUJQVlA4IFYAAADwAQCdASoQAAkAA4BaJYwCdAYstSWnD3gAzZ7VJtMCo+zFmOWWjWZvUC+72PnS2l0/iwlSGHdvdqFKhvjZifcmfTfHfs3vMkviuOmoRsQl78ebpfEAAA==",
+    "blurDataURL": "data:image/webp;base64,UklGRmgAAABXRUJQVlA4IFwAAAAQAgCdASoQAAkAA4BaJYwCdAEfZTCzpTgAAPa5JqaSWoflGKnlzytKGeaZ/PFE7pTKFqF76UGs9B/XgeK0ZjODO0PerYEDvpCg+tiIzf8ped72/OcYoXUCaIAAAA==",
     "alpha": false
   },
   "bespoke-chairs-01-tall": {
@@ -61,7 +61,7 @@ export const photos = {
     "srcSet": "/img/bespoke-chairs-01-tall-480.webp 480w, /img/bespoke-chairs-01-tall-768.webp 768w, /img/bespoke-chairs-01-tall-1024.webp 1024w, /img/bespoke-chairs-01-tall-1536.webp 1536w",
     "width": 1536,
     "height": 2048,
-    "blurDataURL": "data:image/webp;base64,UklGRpgAAABXRUJQVlA4IIwAAAAwBACdASoQABUAPu1iqU2ppaQiMAgBMB2JZQCdAYr6tpUD0IIwJgMOIoAA/o03vYr2gEdL7nTo1tQhGTkXwwOj76RispkgrhJ7KnOs+PEw2haodcam2jPC34+d4qJrwQqWETPnG+sDdoHzMd9se4k87N1TABVAtMGXJbWrsZ/DnpbrroO1XkMo2FoAAA==",
+    "blurDataURL": "data:image/webp;base64,UklGRpoAAABXRUJQVlA4II4AAABQBACdASoQABUAPu1iqU2ppaQiMAgBMB2JZQCsAYr6tpUDz1qm1Y0Zgi0AAP6NN72K9oBHS+51Ud2ci139GV+vRYdN5MaAi9r0wNQG6kOVN4nIwbIvMdw122kzcz+obWaNbtnbxXU3SitK/+pRbejRyAsGxZZKivN4UqObtEBazkovd3VSWdoROjbcgAAA",
     "alpha": false
   },
   "detail-01-blue-sofa": {
@@ -85,7 +85,7 @@ export const photos = {
     "srcSet": "/img/dining-02-peach-480.webp 480w, /img/dining-02-peach-768.webp 768w, /img/dining-02-peach-1024.webp 1024w, /img/dining-02-peach-1600.webp 1600w, /img/dining-02-peach-2048.webp 2048w",
     "width": 2048,
     "height": 1152,
-    "blurDataURL": "data:image/webp;base64,UklGRmgAAABXRUJQVlA4IFwAAABwAgCdASoQAAkAA4BaJagCdG1/DyGtsBwot+AAAP7qVO/VC7mmknApfA+arEMY704kAnOIZ3XEGx/N/zvyNbiRGqZQ90NqygSF5uiw5SypQ1lBfpk0noEL0AAAAA==",
+    "blurDataURL": "data:image/webp;base64,UklGRmYAAABXRUJQVlA4IFoAAADQAQCdASoQAAkAA4BaJbACdACoM12r4AD+3fSOwaV0iReicwU+ixLNnrEjnNalGxupQjTNbdSikQH3Wx4BqVoPSABrxlf35EwI2HJzooTqEr6mmuoN3RCAAAA=",
     "alpha": false
   },
   "dining-02-peach-tall": {
@@ -93,7 +93,7 @@ export const photos = {
     "srcSet": "/img/dining-02-peach-tall-480.webp 480w, /img/dining-02-peach-tall-768.webp 768w, /img/dining-02-peach-tall-1024.webp 1024w, /img/dining-02-peach-tall-1536.webp 1536w",
     "width": 1536,
     "height": 2048,
-    "blurDataURL": "data:image/webp;base64,UklGRpIAAABXRUJQVlA4IIYAAADQAwCdASoQABUAPu1iqU2ppaOiMAgBMB2JbACdL1BlgAW7kuBqOJwA8DaSubPgQyQuB8HKJhl4nlknqfcTq/ROnkrCqDn5aQud8uCGNpt/pWxn6qdzUoSFNY1thZYBWSBWbdbyaZ8pK30eeUonoOW5UbA2GCuSTPYMGO2xAH3rwgLRbcAAAA==",
+    "blurDataURL": "data:image/webp;base64,UklGRpIAAABXRUJQVlA4IIYAAADwAwCdASoQABUAPu1iqU2ppaOiMAgBMB2JbACdL1BlgAW7kuXIm/JwAPA2krmz4EMkLgfByiYZeJ5ZJ6n3E6v0Tp5Kwqg5+WkLnfLghjabf6VsZ+qnc1KEhTWNbYWWAVkgVm3W8mmfKSt9HnlKJ6DluT3emAJFNSUd18tzRkhsmLUh27rgAA==",
     "alpha": false
   },
   "dining-03-glass-top": {
@@ -197,15 +197,15 @@ export const photos = {
     "srcSet": "/img/living-03-wood-set-480.webp 480w, /img/living-03-wood-set-768.webp 768w, /img/living-03-wood-set-1024.webp 1024w, /img/living-03-wood-set-1600.webp 1600w, /img/living-03-wood-set-2048.webp 2048w",
     "width": 2048,
     "height": 1152,
-    "blurDataURL": "data:image/webp;base64,UklGRloAAABXRUJQVlA4IE4AAADwAQCdASoQAAkAA4BaJZgCdAC4ZaT+mgAA/sBffNvRgferyRKsfhDX0SPw6N9BGu+oSRIj8cL0NBd9MVJhcdJQ6sdFhyaiZLZr5t2AAAA=",
+    "blurDataURL": "data:image/webp;base64,UklGRmIAAABXRUJQVlA4IFYAAADwAQCdASoQAAkAA4BaJZACdAYuuxK7gwAA/UwoaTnci8pZCLI96NXnEzCN3UXqiKdi9UbQ1tnH1pvHZNMB/m2/sJX9VK3Xrlrqkph4xYbt7qVorKxQAA==",
     "alpha": false
   },
   "living-03-wood-set-tall": {
     "src": "/img/living-03-wood-set-tall-1792.webp",
     "srcSet": "/img/living-03-wood-set-tall-480.webp 480w, /img/living-03-wood-set-tall-768.webp 768w, /img/living-03-wood-set-tall-1024.webp 1024w, /img/living-03-wood-set-tall-1600.webp 1600w, /img/living-03-wood-set-tall-1792.webp 1792w",
     "width": 1792,
-    "height": 2400,
-    "blurDataURL": "data:image/webp;base64,UklGRnYAAABXRUJQVlA4IGoAAADQAwCdASoQABUAPu1iqU2ppaOiMAgBMB2JQBYdhPiQEh2lPHOStdgAngEfU0bIkXeoKPwSZdn87SdyZXBEhxASYnGUDaAgJg69Pif4LKy4StsQ6QLUFj8s4327q0wFGduQr6fPikIcAAAA",
+    "height": 2389,
+    "blurDataURL": "data:image/webp;base64,UklGRngAAABXRUJQVlA4IGwAAACwAwCdASoQABUAPu1iqU2ppaOiMAgBMB2JQBYdhBfOb7o7A6a1qADJAU8BXawDUS4uQpMmjnoWig1KH/bn4EYeEYeTlKFXkLP+J5Jj22IH70THbwO2WDDLJdONlnGdKvhcTpHbcqEPaUoAAAA=",
     "alpha": false
   },
   "living-04-gold-armchairs": {

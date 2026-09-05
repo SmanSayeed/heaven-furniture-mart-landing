@@ -10,7 +10,8 @@
     "photos": "node scripts/optimize-photos.mjs",
     "placeholder": "node scripts/make-hero-placeholder.mjs",
     "crop": "node scripts/crop-overlays.mjs",
-    "ar-models": "node --experimental-strip-types --no-warnings scripts/export-ar-models.mjs"
+    "ar-models": "node --experimental-strip-types --no-warnings scripts/export-ar-models.mjs",
+    "hero": "node scripts/hero-windows.mjs"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",

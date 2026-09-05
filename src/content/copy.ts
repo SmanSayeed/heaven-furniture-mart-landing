@@ -711,12 +711,19 @@ export const night = {
       { no: '03', label: 'Delivered and fitted', note: 'Chattogram' },
     ],
     marks: ['EST. 2020', 'AGRABAD · CTG', 'FULLY BESPOKE'],
-    /* three views of Heaven's own rooms; `focal` is the point the zoom
-       portal pushes into (the fabric of the seat), per photograph */
+    /* Three views of Heaven's own rooms.
+
+       `focal` is `object-position`: on a screen wider than the photograph
+       it decides which band survives, and it is also the point the zoom
+       portal pushes into. It used to sit at 58-62%, which on a 2:1 desktop
+       window is the FLOOR - so view 1 opened on the coffee table with the
+       sofa set cropped away above it (client: "all the chairs are
+       hidden"). Every value here is now the vertical centre of the
+       FURNITURE in its own frame, measured off the file. */
     views: [
-      { photo: 'living-03-wood-set', tall: 'living-03-wood-set-tall', focal: '50% 62%', alt: 'A full wooden living room set by Heaven Furniture Mart.' },
-      { photo: 'dining-02-peach', tall: 'dining-02-peach-tall', focal: '50% 58%', alt: 'A marble dining table with upholstered chairs by Heaven Furniture Mart.' },
-      { photo: 'bespoke-chairs-01', tall: 'bespoke-chairs-01-tall', focal: '58% 62%', alt: 'Bespoke upholstered chairs, built to order in Chattogram.' },
+      { photo: 'living-03-wood-set', tall: 'living-03-wood-set-tall', focal: '50% 40%', alt: 'A full wooden living room set by Heaven Furniture Mart.' },
+      { photo: 'dining-02-peach', tall: 'dining-02-peach-tall', focal: '50% 48%', alt: 'A marble dining table with upholstered chairs by Heaven Furniture Mart.' },
+      { photo: 'bespoke-chairs-01', tall: 'bespoke-chairs-01-tall', focal: '52% 52%', alt: 'Bespoke upholstered chairs, built to order in Chattogram.' },
     ],
   },
   /* ---- CH.2b · SIGNATURE PIECES ----

@@ -108,6 +108,23 @@ const CROPS = {
   'dining-05-white-set': { top: 0.29, bottom: 0.1 },
 }
 
+/* THE HERO'S FRAMES BELONG TO scripts/hero-windows.mjs.
+   Those are cut out of the client's HD restorations in assets-raw/hd, and
+   they land in graded/ under the SAME name and the same .jpg extension as
+   the file this script would write - so the guard further down (which only
+   catches a cleaned file saved under a DIFFERENT extension) would not have
+   caught them, and a routine `npm run crop` would have silently replaced a
+   2048px restoration with a crop of the 1024px ad graphic. Named here so
+   the two scripts cannot fight over the same output. */
+const HERO_OWNED = new Set([
+  'living-03-wood-set',
+  'living-03-wood-set-tall',
+  'dining-02-peach',
+  'dining-02-peach-tall',
+  'bespoke-chairs-01',
+  'bespoke-chairs-01-tall',
+])
+
 const EXT = /\.(jpe?g|png|webp)$/i
 
 async function main() {
@@ -127,6 +144,10 @@ async function main() {
 
   for (const file of files) {
     const { name } = parse(file)
+    if (HERO_OWNED.has(name)) {
+      console.log(`  KEEP  ${name}: owned by scripts/hero-windows.mjs`)
+      continue
+    }
     /* A real (Gemini-cleaned) graded file beats this crop, whatever its
        extension. Without this guard a re-run would write <name>.jpg next to
        a cleaned <name>.jpeg, and optimize-photos keys on the extensionless

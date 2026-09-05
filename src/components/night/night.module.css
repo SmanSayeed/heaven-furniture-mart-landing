@@ -3110,6 +3110,11 @@
    layer arrives, and the motion layer must not have to build anything. */
 .sigRail {
   display: flex;
+  /* A HUNG WALL, NOT A FILMSTRIP. The rooms wall above is a flush row of
+     equal panels; if this were another one, "different section" would be
+     doing no work. Alternate plates hang lower (below), which needs the
+     row measured from its top rather than stretched to a common height. */
+  align-items: flex-start;
   gap: clamp(1.25rem, 2.6vw, 2rem);
   padding-inline: var(--pad-x);
   overflow-x: auto;
@@ -3129,9 +3134,18 @@
   scroll-snap-align: center;
 }
 
-/* pinned: the track is a flex item that would otherwise grow to its own
-   content, which makes scrollWidth - clientWidth zero and the travel
-   nothing. Same fix the wall needed. */
+/* the stagger. CSS, and margin rather than transform, because GSAP owns
+   these elements' transforms while the strip drifts. */
+.sigCard:nth-child(even) {
+  margin-block-start: clamp(1.25rem, 4vw, 3.25rem);
+}
+
+/* MOTION LAYER ON. The native overflow scroll has to go, or a thumb can
+   drag the strip out from under the transform GSAP is writing; and the
+   track has to be held to the viewport's width, or it grows to its own
+   content and scrollWidth - clientWidth (the travel) is zero. Same two
+   fixes the wall needed - but this chapter is NOT pinned, so it keeps its
+   own padding and its place in the flow. */
 .signature[data-rail] .sigRail {
   width: 100%;
   min-width: 0;
@@ -3163,13 +3177,7 @@
   transform-origin: left center;
 }
 
-@media (min-width: 900px) {
-  .signature[data-rail] {
-    height: 100svh;
-    padding: 0;
-    align-content: center;
-  }
-}
+
 
 .sigLink {
   display: grid;
