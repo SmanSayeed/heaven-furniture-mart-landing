@@ -384,6 +384,29 @@
   transition: background-color 0.4s ease;
 }
 
+/* THE SCRIM UNDER THE HEADER.
+
+   The wordmark is white and half the page is warm ivory, so over the studio
+   and the print chapters the logo simply vanished into the paper (client:
+   "make the header black bit transparent background to view the white logo
+   properly"). A solid bar would sit on the hero like a toolbar, so this is
+   a gradient instead: dark where the type is, gone by the time it clears
+   it. Legible on both grounds, and it never reads as chrome. */
+.hdr::after {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 190%;
+  z-index: -2;
+  background: linear-gradient(
+    180deg,
+    rgba(13, 9, 6, 0.78) 0%,
+    rgba(13, 9, 6, 0.45) 46%,
+    rgba(13, 9, 6, 0) 100%
+  );
+  pointer-events: none;
+}
+
 .hdr > * {
   pointer-events: auto;
 }
@@ -1553,10 +1576,14 @@
   inset: 0;
   z-index: 90;
   display: grid;
-  grid-template-rows: auto 1fr;
+  /* minmax(0, 1fr), not 1fr: a plain 1fr row is at least as tall as its
+     content, so the row grew past the fixed panel and the last rooms sat
+     under the bottom of the window with nothing to scroll (client: "menu
+     last lines are hidden under viewport"). Allowing the row to shrink is
+     what lets .megaInner's own overflow take over. */
+  grid-template-rows: auto minmax(0, 1fr);
   background: var(--ink);
   color: var(--ivory);
-  overflow-y: auto;
   overscroll-behavior: contain;
   /* IT ARRIVES BY TRANSFORM, NOT BY CLIP.
 
@@ -1642,12 +1669,22 @@
   width: 100%;
   max-width: 1320px;
   margin-inline: auto;
-  padding: clamp(1.25rem, 4vh, 3rem) var(--pad-x) clamp(1.75rem, 5vh, 3.5rem);
+  /* the bottom pad clears a phone's own browser chrome as well as the safe
+     area, so the last room is never the thing the toolbar covers */
+  padding: clamp(1.25rem, 4vh, 3rem) var(--pad-x)
+    calc(clamp(1.75rem, 5vh, 3.5rem) + env(safe-area-inset-bottom, 0px));
   display: grid;
   grid-template-columns: 1.15fr 1fr;
   gap: clamp(2rem, 4vw, 4rem);
   align-items: center;
   align-content: center;
+  /* THE SCROLLER. Tall content now scrolls inside the drawer rather than
+     running off the end of it. When it fits, align-content keeps it
+     centred exactly as before - this only does something when it must. */
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
 .megaList {

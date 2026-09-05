@@ -123,6 +123,8 @@ const HERO_OWNED = new Set([
   'dining-02-peach-tall',
   'bespoke-chairs-01',
   'bespoke-chairs-01-tall',
+  'hero-room-03-panelled',
+  'hero-room-03-panelled-tall',
 ])
 
 const EXT = /\.(jpe?g|png|webp)$/i

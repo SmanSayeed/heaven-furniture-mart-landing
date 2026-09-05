@@ -215,6 +215,78 @@
   visibility: hidden;
 }
 
+/* ---- THE REEL (room one only) ----
+
+   Two frames of the same room, cross-fading on their own clock, each
+   drifting a little closer while it holds. Two keyframes, both of them
+   compositor-only (opacity and transform), and NO JavaScript: the scroll
+   choreography around this - the iris into room 2, the slide into room 3,
+   the beam, the messages - never sees it and cannot be thrown off by it.
+
+   THE TIMING. One cycle is --reel-cycle; each frame owns half of it, with
+   a 10% cross-fade at each hand-over. Frame 0 carries a NEGATIVE delay of
+   exactly that fade, so it starts already at full opacity: the LCP is lit
+   on the first painted frame rather than after a fade-in.
+
+   The zoom resets at 60%, which is the instant the frame reaches opacity
+   0 - the snap back is never on screen. */
+.reelFrame {
+  position: absolute;
+  inset: 0;
+  display: block;
+  opacity: 0;
+  --reel-cycle: 16s;
+  --reel-fade: 1.6s;
+  animation: hfm-reel var(--reel-cycle) linear infinite;
+  animation-delay: calc(var(--f) * var(--reel-cycle) / 2 - var(--reel-fade));
+}
+
+.reelFrame .viewImg {
+  animation: hfm-reel-zoom var(--reel-cycle) linear infinite;
+  animation-delay: calc(var(--f) * var(--reel-cycle) / 2 - var(--reel-fade));
+}
+
+@keyframes hfm-reel {
+  0% {
+    opacity: 0;
+  }
+  10%,
+  50% {
+    opacity: 1;
+  }
+  60%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes hfm-reel-zoom {
+  0% {
+    transform: scale(1.02);
+  }
+  60% {
+    transform: scale(1.085);
+  }
+  60.01%,
+  100% {
+    transform: scale(1.02);
+  }
+}
+
+/* no motion, no reel: the first frame, standing still, in full colour */
+@media (prefers-reduced-motion: reduce) {
+  .reelFrame,
+  .reelFrame .viewImg {
+    animation: none;
+  }
+  .reelFrame {
+    opacity: 0;
+  }
+  .reelFrame:first-child {
+    opacity: 1;
+  }
+}
+
 .viewImg {
   width: 100%;
   height: 100%;
@@ -1315,6 +1387,9 @@
   .stage {
     aspect-ratio: 4 / 3;
     max-height: 46svh;
+    /* a floor. The piece IS this chapter, so a stage with no height is
+       not a layout quirk, it is the section not working. */
+    min-height: 200px;
   }
 
   /* ---- PINNED ON A PHONE: THE PIECE STAYS IN THE MIDDLE ----
@@ -1336,6 +1411,21 @@
     padding-block: 4.75rem 4.25rem;
     grid-template-rows: minmax(0, 1fr) auto;
     align-content: stretch;
+    /* ...AND align-ITEMS, which is the one that was missing.
+
+       The base .tableGrid centres its items (align-items: center), which is
+       right for two side-by-side columns on a desktop. Stacked and pinned
+       on a phone it meant the stage's column never filled its row: the row
+       was 414px and the column sized to its own content at 36px, so
+       `height: 100%` on the stage resolved to TWO PIXELS. The drei View
+       scissored the sofa into a 2px sliver and the drawing had already
+       unmounted, so the chapter was three words lighting up over nothing -
+       exactly the fault this chapter was rebuilt to remove (client: "in
+       mobile onscroll the texts are highlighting bold way - sofa not
+       changing ... like scroll not working"). align-content was set;
+       align-items was not, and only the second one governs an item's
+       height inside its row. */
+    align-items: stretch;
     gap: 1rem;
   }
   .table[data-pinned] .stageCol {
@@ -1347,7 +1437,10 @@
     aspect-ratio: auto;
     max-height: none;
     height: 100%;
-    min-height: 0;
+    /* the same floor as above, in the pinned state where it matters most:
+       whatever the words below need, the piece keeps a third of the
+       screen. A stage that can reach zero is a chapter that can vanish. */
+    min-height: 34svh;
   }
   .table[data-pinned] .tableCol {
     min-height: 0;

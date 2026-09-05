@@ -63,6 +63,22 @@ const WINDOWS = [
     ratio: 16 / 9,
     top: 0.215,
   },
+  {
+    /* CH.1 view 1, SECOND REEL FRAME. The same panelled room the hero
+       opens on, stepped back: the sconces, the full set and the marble.
+       The window starts at 26% so the wall lights survive - they are the
+       thing that makes it read as the same room rather than another one. */
+    src: 'Gemini_Generated_Image_e7yk2ne7yk2ne7yk.jpeg',
+    out: 'hero-room-03-panelled.jpg',
+    ratio: 16 / 9,
+    top: 0.26,
+  },
+  {
+    src: 'Gemini_Generated_Image_e7yk2ne7yk2ne7yk.jpeg',
+    out: 'hero-room-03-panelled-tall.jpg',
+    ratio: 3 / 4,
+    top: 0,
+  },
   /* ---- THE PHONE'S FRAMES ----
      View 1's was generated at 3:4 to order, so its "window" is the whole
      file. Views 2 and 3 are cut from the same squares as above: a 3:4

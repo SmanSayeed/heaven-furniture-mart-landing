@@ -152,6 +152,22 @@ export const photos = {
     "blurDataURL": "data:image/webp;base64,UklGRn4AAABXRUJQVlA4IHIAAAAQBACdASoQABUAPu1iqU2ppaQiMAgBMB2JZgCdMoADCu3jNr5D9xHbMAD+0DmKwm8DrV+UdoIp+jkKMo4Hn7umW6b+d223afs9MzazsLzN+UUCflVh/9BVz28Ua0LL71kWmY5jV/uXKyujCRIzqPogQAA=",
     "alpha": false
   },
+  "hero-room-03-panelled": {
+    "src": "/img/hero-room-03-panelled-1792.webp",
+    "srcSet": "/img/hero-room-03-panelled-480.webp 480w, /img/hero-room-03-panelled-768.webp 768w, /img/hero-room-03-panelled-1024.webp 1024w, /img/hero-room-03-panelled-1600.webp 1600w, /img/hero-room-03-panelled-1792.webp 1792w",
+    "width": 1792,
+    "height": 1008,
+    "blurDataURL": "data:image/webp;base64,UklGRl4AAABXRUJQVlA4IFIAAACwAQCdASoQAAkAA4BaJZACdAC5gL4AAPjisvV1Lhk9TQLEpOyYHOpfQCyhRWeMqMhQdFQtDx1Eqxe9klyTO2tVmVJ66KibjFhu28jlbS+zyAAA",
+    "alpha": false
+  },
+  "hero-room-03-panelled-tall": {
+    "src": "/img/hero-room-03-panelled-tall-1792.webp",
+    "srcSet": "/img/hero-room-03-panelled-tall-480.webp 480w, /img/hero-room-03-panelled-tall-768.webp 768w, /img/hero-room-03-panelled-tall-1024.webp 1024w, /img/hero-room-03-panelled-tall-1600.webp 1600w, /img/hero-room-03-panelled-tall-1792.webp 1792w",
+    "width": 1792,
+    "height": 2389,
+    "blurDataURL": "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAABwAwCdASoQABUAPu1iqU2ppaQiMAgBMB2JQBYdgY9O84MRbOwA95s2MIiw+2nnjemKrbWgpzs1/M6/94N1ucQAUBJQAFaklcHMuYIrXuWJUsGWqVWgrLMa29u0domyT0joAA==",
+    "alpha": false
+  },
   "hero-sofa-01-frontal": {
     "src": "/img/hero-sofa-01-frontal-1024.webp",
     "srcSet": "/img/hero-sofa-01-frontal-480.webp 480w, /img/hero-sofa-01-frontal-768.webp 768w, /img/hero-sofa-01-frontal-1024.webp 1024w",

@@ -52,25 +52,56 @@ export function Hero() {
             data-view={i}
             style={{ '--focal': v.focal } as React.CSSProperties}
           >
-            {/* ONE PHOTOGRAPH PER ROOM, AND THE SCROLL MOVES THEM.
+            {/* ROOM ONE IS A REEL; ROOMS TWO AND THREE ARE STILLS.
 
-                Room one used to hold a four-frame reel that cross-faded on
-                its own clock, on top of the light arriving and a sheet
-                sliding off. Three animations were competing for the first
-                three seconds (client: "avoid double animations - lighting
-                and slided option at very first not looking good"), so the
-                landing is still now: the room is simply lit, and NOTHING
-                moves until the visitor scrolls. */}
-            <Photo
-              name={v.photo}
-              tall={v.tall}
-              alt={i === 0 ? v.alt : ''}
-              sizes="100vw"
-              priority={i === 0}
-              eager={i > 0}
-              low={i > 0}
-              className={s.viewImg}
-            />
+                The reel is two frames of the same panelled room that
+                cross-fade on their own clock, each drifting a little
+                closer while it holds (client: "some animated image
+                changing with mildly zoom in auto"). It is TWO CSS
+                keyframes and nothing else - no JavaScript, no GSAP, no
+                scroll input - so the scroll choreography around it (the
+                iris into room 2, the slide into room 3, the beam, the
+                messages) is untouched and cannot be thrown off by it.
+
+                Frame 1 is the LCP and is lit from the first painted frame,
+                because its animation carries a negative delay: the hero is
+                never a black rectangle waiting for a fade-in. The frames
+                after it are `low`, so they queue behind the LCP rather
+                than beside it.
+
+                The landing animations this sits beside are still gone -
+                the light does not arrive, the sheet does not slide. One
+                thing moves in room one, slowly, and that is all. */}
+            {i === 0 ? (
+              h.reel.map((frame, f) => (
+                <span
+                  key={frame.photo}
+                  className={s.reelFrame}
+                  style={{ '--f': f, '--focal': frame.focal } as React.CSSProperties}
+                  aria-hidden={f > 0 ? true : undefined}
+                >
+                  <Photo
+                    name={frame.photo}
+                    tall={frame.tall}
+                    alt={f === 0 ? v.alt : ''}
+                    sizes="100vw"
+                    priority={f === 0}
+                    low={f > 0}
+                    className={s.viewImg}
+                  />
+                </span>
+              ))
+            ) : (
+              <Photo
+                name={v.photo}
+                tall={v.tall}
+                alt=""
+                sizes="100vw"
+                eager
+                low
+                className={s.viewImg}
+              />
+            )}
           </div>
         ))}
       </div>

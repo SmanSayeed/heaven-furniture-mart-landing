@@ -720,6 +720,27 @@ export const night = {
        sofa set cropped away above it (client: "all the chairs are
        hidden"). Every value here is now the vertical centre of the
        FURNITURE in its own frame, measured off the file. */
+    /* THE REEL, AND IT LIVES INSIDE VIEW 1 ONLY.
+
+       The first room used to be one still photograph, and a still hero on
+       a page about interiors reads as a stopped page (client: "put some
+       animated image changing with mildly zoom in auto"). So room one is
+       two frames of the SAME panelled room that cross-fade on their own
+       clock, each drifting a little closer while it holds.
+
+       IT IS PURE CSS - two keyframes on the compositor, no JavaScript, no
+       GSAP, no scroll input. That is deliberate: the scroll choreography
+       above (the iris into room 2, the slide into room 3, the beam, the
+       messages) is untouched by it and cannot be thrown off by it. It is
+       also why the landing animation this replaced is not coming back -
+       nothing here fights the first paint.
+
+       Frame 1 is the LCP and is lit from the first frame (a negative
+       animation-delay), so the hero is never blank waiting for a fade. */
+    reel: [
+      { photo: 'living-03-wood-set', tall: 'living-03-wood-set-tall', focal: '50% 40%' },
+      { photo: 'hero-room-03-panelled', tall: 'hero-room-03-panelled-tall', focal: '50% 52%' },
+    ],
     views: [
       { photo: 'living-03-wood-set', tall: 'living-03-wood-set-tall', focal: '50% 40%', alt: 'A full wooden living room set by Heaven Furniture Mart.' },
       { photo: 'dining-02-peach', tall: 'dining-02-peach-tall', focal: '50% 48%', alt: 'A marble dining table with upholstered chairs by Heaven Furniture Mart.' },
