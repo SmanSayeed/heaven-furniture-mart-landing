@@ -114,10 +114,6 @@ export function Room({ cat, next }: { cat: Category; next: Category }) {
                 <WhatsApp />
                 {catalogue.bespokeNote.cta}
               </a>
-              {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- a full navigation on purpose: the cross-document view transition (globals.css) needs one */}
-              <a className={`${d.pill} ${d.pillGhost}`} href="/#table">
-                {night.floor.bespokeCard.action}
-              </a>
             </div>
           </div>
           <div className={s.roomNext}>

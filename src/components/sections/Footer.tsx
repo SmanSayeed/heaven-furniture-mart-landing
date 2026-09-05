@@ -3,7 +3,7 @@ import { Cta } from '@/components/ui/Cta'
 import { ContactForm } from '@/components/ui/ContactForm'
 import { FacebookLogo, InstagramLogo, YoutubeLogo } from '@/components/ui/Icons'
 import { SheetBlock, BeatCaption } from '@/components/ui/SheetBlock'
-import s from './sections.module.css'
+import s from './footer.module.css'
 
 /**
  * SHEET 09 · "THE ORDER" — have yours drawn.

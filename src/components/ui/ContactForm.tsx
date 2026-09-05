@@ -3,7 +3,7 @@
 import { useId, useState } from 'react'
 import { brand, contact } from '@/content/copy'
 import { WhatsApp } from './Icons'
-import s from '@/components/sections/sections.module.css'
+import s from '@/components/sections/footer.module.css'
 
 /**
  * SHEET 09's brief form.

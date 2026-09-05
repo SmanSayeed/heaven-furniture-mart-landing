@@ -52,7 +52,7 @@ export function Home() {
                 {hasPhoto(deck.showroom.photo) && (
                   <Photo
                     name={deck.showroom.photo}
-                    alt="Sofas on display inside the Heaven Furniture Mart showroom on Agrabad Access Road, Chattogram."
+                    alt="Sofa sets by Heaven Furniture Mart."
                     sizes="(min-width: 861px) 60vw, 100vw"
                     low
                   />

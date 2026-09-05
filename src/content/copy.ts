@@ -164,9 +164,9 @@ export const bespoke = {
   ],
   /* fabrics Heaven demonstrably sells (their FB albums, 2026-09-01) */
   swatches: [
-    { id: 'ivory-boucle', name: 'Ivory Bouclé', hex: '#E8E0D0', accent: '#C8A96A' },
-    { id: 'royal-blue-velvet', name: 'Royal Blue Velvet', hex: '#2B3F8F', accent: '#5D74D6' },
-    { id: 'emerald-velvet', name: 'Emerald Velvet', hex: '#1F4A3A', accent: '#5E8C7A' },
+    { id: 'ivory-boucle', name: 'Ivory', hex: '#E8E0D0', accent: '#C8A96A' },
+    { id: 'royal-blue-velvet', name: 'Royal Blue', hex: '#2B3F8F', accent: '#5D74D6' },
+    { id: 'emerald-velvet', name: 'Emerald', hex: '#1F4A3A', accent: '#5E8C7A' },
   ],
   /* Specimens beside the drawn dimension line, and deliberately NOT numbers.
      The numbers on this sheet are measured off the model at load and printed
@@ -245,26 +245,26 @@ export const catalogue = {
       lead: 'Sofa sets, coffee tables, TV units and consoles, built to the wall they stand against.',
       cover: 'living-01-beige-set',
       pieces: [
-        { img: 'living-01-beige-set', title: 'Carved sofa set, beige upholstery', specs: ['SOLID WOOD FRAME', 'HAND-CARVED', 'FABRIC OF YOUR CHOICE'] },
+        { img: 'living-01-beige-set', title: 'Carved sofa set, beige upholstery', specs: ['PREMIUM WOOD', 'CARVED', 'FABRIC OF YOUR CHOICE'] },
         { img: 'living-02-blue-pair', title: 'Two-seat pair, deep blue', specs: ['MATCHED PAIR', 'BUTTON DETAIL', 'BUILT TO YOUR SPAN'] },
-        { img: 'living-03-wood-set', title: 'Full wooden living set', specs: ['SEASONED HARDWOOD', 'IN-HOUSE FINISH', 'ROOM-MATCHED'] },
-        { img: 'detail-01-blue-sofa', title: 'Upholstery detail, blue velvet', specs: ['PIPED EDGE', 'DENSITY TO ORDER'] },
+        { img: 'living-03-wood-set', title: 'Full wooden living set', specs: ['PREMIUM WOOD', 'IN-HOUSE FINISH', 'ROOM-MATCHED'] },
+        { img: 'detail-01-blue-sofa', title: 'Upholstery detail, blue velvet', specs: ['PIPED EDGE', 'YOUR FABRIC'] },
         { img: 'hero-sofa-01-frontal', title: 'Carved three-seat sofa', specs: ['CENTREPIECE FRAME', 'YOUR FABRIC', 'YOUR FINISH'] },
         /* second batch, 2026-09-04: the client's own Facebook photography.
            Every spec below is either visible in the photograph or one of the
            brief's own promises. Nothing about a mechanism, a timber species
            or a finish is claimed, because none of that was given. */
-        { img: 'living-10-blue-set', title: 'Sofa set, powder blue', specs: ['THREE PLUS TWO', 'WOODEN FRAME', 'FABRIC OF YOUR CHOICE'] },
-        { img: 'living-11-green-set', title: 'Carved room set, sage green', specs: ['FULL ROOM SET', 'HAND-CARVED FRAME', 'YOUR UPHOLSTERY'] },
+        { img: 'living-10-blue-set', title: 'Sofa set, powder blue', specs: ['FULL ROOM SET', 'CARVED FRAME', 'FABRIC OF YOUR CHOICE'] },
+        { img: 'living-11-green-set', title: 'Carved room set, sage green', specs: ['FULL ROOM SET', 'CARVED FRAME', 'YOUR UPHOLSTERY'] },
         { img: 'living-12-yellow-curve', title: 'Curved settee, ochre', specs: ['CURVED FRAME', 'ONE-OFF SHAPE', 'YOUR FABRIC'] },
         { img: 'living-14-cream-set', title: 'Sofa set, cream and gold', specs: ['SOFA, SEATS AND TABLE', 'CARVED FRAME', 'YOUR FABRIC'] },
         { img: 'living-04-gold-armchairs', title: 'Armchair pair, tufted', specs: ['MATCHED PAIR', 'BUTTON-TUFTED BACK', 'YOUR FABRIC'] },
-        { img: 'living-13-striped-armchair', title: 'Armchair, gilt carved frame', specs: ['HAND-CARVED FRAME', 'SINGLE OR PAIR', 'YOUR FABRIC'] },
-        { img: 'living-05-carved-armchair', title: 'Carved chair and glass table', specs: ['HAND-CARVED FRAME', 'GLASS TOP', 'SIZED TO YOUR CORNER'] },
+        { img: 'living-13-striped-armchair', title: 'Armchair, carved frame, gold finish', specs: ['CARVED FRAME', 'SINGLE OR PAIR', 'YOUR FABRIC'] },
+        { img: 'living-05-carved-armchair', title: 'Carved chair and glass table', specs: ['CARVED FRAME', 'GLASS TOP', 'SIZED TO YOUR CORNER'] },
         { img: 'living-15-carved-pair', title: 'Chair pair and glass table', specs: ['MATCHED PAIR', 'CARVED CRESTS', 'GLASS TOP'] },
-        { img: 'living-07-gold-display', title: 'Display cabinet, gilded', specs: ['GLAZED DOORS', 'GLASS SHELVES', 'TO YOUR CEILING HEIGHT'] },
-        { img: 'living-06-black-console', title: 'Console cabinet, black and brass', specs: ['BRASS HARDWARE', 'OPEN AND CLOSED STORAGE', 'BUILT TO THE WALL'] },
-        { img: 'living-08-black-sideboard', title: 'Sideboard, black with brass', specs: ['BRASS HARDWARE', 'OPEN SHELF END', 'BUILT TO THE WALL'] },
+        { img: 'living-07-gold-display', title: 'Display cabinet, gold finish', specs: ['GLAZED DOORS', 'GLASS SHELVES', 'TO YOUR CEILING HEIGHT'] },
+        { img: 'living-06-black-console', title: 'Console cabinet, black and gold', specs: ['METAL HARDWARE', 'OPEN AND CLOSED STORAGE', 'BUILT TO THE WALL'] },
+        { img: 'living-08-black-sideboard', title: 'Sideboard, black with gold', specs: ['METAL HARDWARE', 'OPEN SHELF END', 'BUILT TO THE WALL'] },
         { img: 'living-09-mirrored-console', title: 'Console table, mirrored front', specs: ['MIRRORED PANELS', 'DRAWER STORAGE', 'TO YOUR SPAN'] },
       ],
     },
@@ -275,9 +275,9 @@ export const catalogue = {
       lead: 'Beds, wardrobes, dressing tables and bedside pieces, sized to the room rather than to a catalogue.',
       cover: 'bedroom-01-royal-bed',
       pieces: [
-        { img: 'bedroom-01-royal-bed', title: 'Carved king bed, royal headboard', specs: ['KING OR CUSTOM SPAN', 'HAND-CARVED HEADBOARD', 'MATCHING SIDE PIECES'] },
-        { img: 'bedroom-02-green-velvet', title: 'Upholstered bed, emerald velvet', specs: ['PANELLED HEADBOARD', 'END BENCH', 'KING OR CUSTOM SPAN'] },
-        { img: 'bedroom-03-carved-teal', title: 'Carved bed, gilded relief', specs: ['HAND-CARVED POSTS', 'GILDED RELIEF', 'MATCHING SIDE PIECES'] },
+        { img: 'bedroom-01-royal-bed', title: 'Carved king bed, royal headboard', specs: ['BUILT TO YOUR SPAN', 'CARVED HEADBOARD', 'MATCHING SIDE PIECES'] },
+        { img: 'bedroom-02-green-velvet', title: 'Upholstered bed, emerald velvet', specs: ['PANELLED HEADBOARD', 'END BENCH', 'BUILT TO YOUR SPAN'] },
+        { img: 'bedroom-03-carved-teal', title: 'Carved bed, gilded relief', specs: ['CARVED POSTS', 'GOLD-FINISH RELIEF', 'MATCHING SIDE PIECES'] },
         { img: 'bedroom-04-dressing-table', title: 'Dressing table and round mirror', specs: ['ROUND MIRROR', 'DRAWER STORAGE', 'SIZED TO YOUR WALL'] },
       ],
     },
@@ -288,11 +288,11 @@ export const catalogue = {
       lead: 'Dining tables, chairs and cabinets, cut to the number of people who actually sit down.',
       cover: 'dining-01-cream',
       pieces: [
-        { img: 'dining-01-cream', title: 'Dining set, cream and gold', specs: ['SIX TO TWELVE SEATS', 'CARVED LEGS', 'YOUR TABLE LENGTH'] },
-        { img: 'dining-02-peach', title: 'Dining set, peach upholstery', specs: ['UPHOLSTERED SEATS', 'MATCHED CABINET AVAILABLE'] },
-        { img: 'dining-03-glass-top', title: 'Dining table, glass on carved base', specs: ['CARVED BASE', 'GLASS TOP', 'FOUR TO EIGHT SEATS'] },
-        { img: 'dining-04-gold-round', title: 'Round table, gilded base', specs: ['ROUND TOP', 'GILDED BASE', 'TO YOUR DIAMETER'] },
-        { img: 'dining-05-white-set', title: 'Dining set, ivory and silver', specs: ['SIX TO TWELVE SEATS', 'UPHOLSTERED BACKS', 'YOUR TABLE LENGTH'] },
+        { img: 'dining-01-cream', title: 'Dining set, cream and gold', specs: ['YOUR TABLE LENGTH', 'CARVED LEGS', 'YOUR TABLE LENGTH'] },
+        { img: 'dining-02-peach', title: 'Dining set, peach upholstery', specs: ['UPHOLSTERED SEATS', 'BUILT TO YOUR ROOM'] },
+        { img: 'dining-03-glass-top', title: 'Dining table, glass on carved base', specs: ['CARVED BASE', 'GLASS TOP', 'CUT TO YOUR SEATS'] },
+        { img: 'dining-04-gold-round', title: 'Round table, gilded base', specs: ['ROUND TOP', 'GOLD-FINISH BASE', 'TO YOUR DIAMETER'] },
+        { img: 'dining-05-white-set', title: 'Dining set, ivory and chrome finish', specs: ['YOUR TABLE LENGTH', 'UPHOLSTERED BACKS', 'YOUR TABLE LENGTH'] },
       ],
     },
     {
@@ -302,11 +302,11 @@ export const catalogue = {
       lead: 'Executive tables, bookshelves, storage and workstations, for the room you work in.',
       cover: 'office-storage-01-black-cabinet',
       pieces: [
-        { img: 'office-storage-01-black-cabinet', title: 'Storage cabinet, black and brass', specs: ['FLOOR TO CEILING OPTION', 'BRASS HARDWARE', 'BUILT TO THE ALCOVE'] },
+        { img: 'office-storage-01-black-cabinet', title: 'Storage cabinet, black and gold', specs: ['BUILT TO YOUR WALL', 'METAL HARDWARE', 'BUILT TO THE ALCOVE'] },
         { img: 'office-03-executive-desk', title: 'Executive desk and workstation', specs: ['DESK AND RETURN', 'DRAWER PEDESTAL', 'BUILT TO THE ROOM'] },
-        { img: 'office-04-director-desk', title: 'Director’s desk with storage wall', specs: ['DESK PLUS STORAGE', 'FLOOR TO CEILING OPTION', 'TO YOUR FLOOR PLAN'] },
-        { img: 'office-02-conference', title: 'Conference table and seating', specs: ['SEATS TO YOUR ROOM', 'ONE-PIECE TOP', 'MATCHING STORAGE'] },
-        { img: 'office-05-conference-hd', title: 'Boardroom table, seats eight', specs: ['SEATS TO YOUR ROOM', 'ONE-PIECE TOP', 'BUILT TO THE FLOOR PLAN'] },
+        { img: 'office-04-director-desk', title: 'Director’s desk with storage wall', specs: ['DESK PLUS STORAGE', 'BUILT TO YOUR WALL', 'TO YOUR FLOOR PLAN'] },
+        { img: 'office-02-conference', title: 'Conference table and seating', specs: ['SEATS TO YOUR ROOM', 'BUILT TO THE FLOOR PLAN', 'MATCHING STORAGE'] },
+        { img: 'office-05-conference-hd', title: 'Boardroom table and seating', specs: ['SEATS TO YOUR ROOM', 'BUILT TO THE FLOOR PLAN', 'BUILT TO THE FLOOR PLAN'] },
       ],
     },
     {
@@ -316,12 +316,12 @@ export const catalogue = {
       lead: 'The pieces that exist because somebody asked. Bring a room, a size, a photograph or a sketch.',
       cover: 'bespoke-chairs-01',
       pieces: [
-        { img: 'bespoke-chairs-01', title: 'Occasional chairs, carved frame', specs: ['ONE-OFF COMMISSION', 'YOUR TIMBER', 'YOUR FABRIC'] },
+        { img: 'bespoke-chairs-01', title: 'Occasional chairs, carved frame', specs: ['ONE-OFF COMMISSION', 'YOUR FINISH', 'YOUR FABRIC'] },
         /* the dolna is the category's own argument: a hanging swing is not a
            catalogue line anywhere, and it is the piece on this page that most
            obviously exists because a customer asked for it */
-        { img: 'bespoke-02-swing-black', title: 'Hanging dolna, dark frame', specs: ['INDOOR OR VERANDA', 'WOVEN SEAT', 'CUSHION IN YOUR FABRIC'] },
-        { img: 'bespoke-03-swing-cream', title: 'Hanging dolna, cream weave', specs: ['INDOOR OR VERANDA', 'WOVEN SEAT', 'CUSHION IN YOUR FABRIC'] },
+        { img: 'bespoke-02-swing-black', title: 'Hanging dolna, dark frame', specs: ['BUILT TO YOUR SPAN', 'WOVEN SEAT', 'CUSHION IN YOUR FABRIC'] },
+        { img: 'bespoke-03-swing-cream', title: 'Hanging dolna, cream weave', specs: ['BUILT TO YOUR SPAN', 'WOVEN SEAT', 'CUSHION IN YOUR FABRIC'] },
       ],
     },
   ],
@@ -363,7 +363,7 @@ export const showroom = {
   /* beside the film now, not under it: the tour panel gave up two columns so
      the visit details could stand next to it as a placard */
   line: 'Walk the floor before you decide. The tour is filmed in the Agrabad showroom.',
-  specimens: ['AGRABAD ACCESS ROAD', 'CHATTOGRAM', 'OPEN DAILY'],
+  specimens: ['AGRABAD ACCESS ROAD', 'CHATTOGRAM', 'CALL BEFORE YOU VISIT'],
   directions: 'Get directions',
   call: 'Call the showroom',
 } as const
@@ -396,11 +396,11 @@ export const proof = {
   quoteBy: 'Abul Kalam Bhuiyan',
   quoteRole: 'Managing Director',
   /* the caption under the piece standing beside him */
-  workCaption: 'HIS OWN WORK · AGRABAD',
+  workCaption: 'HIS OWN WORK',
   milestones: [
     { year: '2020', event: 'Founded by Abul Kalam Bhuiyan' },
     { year: '2021', event: 'Opened the Agrabad showroom' },
-    { year: '2024', event: 'International Furniture Fair, Chattogram' },
+    { year: '2024-25', event: 'International Furniture Fair, Chattogram' },
     { year: '2025', event: 'Member, Chamber of Commerce' },
     { year: '2026', event: 'Nationwide BFIOA recognition' },
   ],
@@ -518,7 +518,7 @@ export const processPage = {
       specs: ['DELIVERY INCLUDED', 'INSTALLATION INCLUDED', 'EASY PAYMENTS'],
     },
   ],
-  photoCaption: 'BUILT IN-HOUSE · AGRABAD, CHATTOGRAM',
+  photoCaption: 'BUILT IN-HOUSE · CHATTOGRAM',
   cta: 'Request a Quote',
 } as const
 
@@ -714,7 +714,7 @@ export const night = {
     /* three views of Heaven's own rooms; `focal` is the point the zoom
        portal pushes into (the fabric of the seat), per photograph */
     views: [
-      { photo: 'living-03-wood-set', tall: 'living-03-wood-set-tall', focal: '50% 62%', alt: 'A full wooden living room set, styled in the Agrabad showroom.' },
+      { photo: 'living-03-wood-set', tall: 'living-03-wood-set-tall', focal: '50% 62%', alt: 'A full wooden living room set by Heaven Furniture Mart.' },
       { photo: 'living-02-blue-pair', tall: 'living-02-blue-pair-tall', focal: '52% 60%', alt: 'A matched pair of deep blue two-seat sofas by Heaven Furniture Mart.' },
       { photo: 'bespoke-chairs-01', tall: 'bespoke-chairs-01-tall', focal: '58% 62%', alt: 'Bespoke upholstered chairs, built to order in Chattogram.' },
     ],
@@ -740,7 +740,7 @@ export const night = {
   signature: {
     tag: 'Signature pieces',
     title: ['Six we would', 'show you first.'],
-    line: 'Built in Agrabad, in our own workshop. Every one of them can be made to your room.',
+    line: 'Built in-house, in our own workshop. Every one of them can be made to your room.',
     ask: 'Ask about this piece',
     all: 'See the full range',
     pieces: [
@@ -748,19 +748,19 @@ export const night = {
         photo: 'living-03-wood-set',
         name: 'The full wooden set',
         room: 'Living Room',
-        specs: ['SEASONED HARDWOOD', 'IN-HOUSE FINISH', 'ROOM-MATCHED'],
+        specs: ['PREMIUM WOOD', 'IN-HOUSE FINISH', 'ROOM-MATCHED'],
       },
       {
         photo: 'bedroom-01-royal-bed',
         name: 'The carved bed',
         room: 'Bedroom',
-        specs: ['HAND-CARVED HEADBOARD', 'BUILT TO YOUR ROOM'],
+        specs: ['CARVED HEADBOARD', 'BUILT TO YOUR ROOM'],
       },
       {
         photo: 'bespoke-02-swing-black',
         name: 'The dolna',
         room: 'Bespoke',
-        specs: ['NOBODY SELLS THIS OFF A SHELF', 'YOUR SPAN', 'YOUR FINISH'],
+        specs: ['NOT A CATALOGUE PIECE', 'YOUR SPAN', 'YOUR FINISH'],
       },
       {
         photo: 'dining-04-gold-round',
@@ -770,7 +770,7 @@ export const night = {
       },
       {
         photo: 'living-04-gold-armchairs',
-        name: 'The gilt armchairs',
+        name: 'The carved armchair pair',
         room: 'Living Room',
         specs: ['MATCHED PAIR', 'FABRIC OF YOUR CHOICE'],
       },
@@ -869,7 +869,7 @@ export const night = {
     open: 'Menu',
     close: 'Close',
     line: 'Five rooms. Every piece built to your measurements.',
-    built: 'built in Agrabad',
+    built: 'built in-house',
     walk: 'Walk the floor',
   },
   /* the room pages (/collections/[slug]) in the night system */
@@ -879,11 +879,11 @@ export const night = {
     all: 'All rooms',
     pieces: 'pieces',
     piece: 'piece',
-    built: 'built in Agrabad',
+    built: 'built in-house',
     open: 'Open',
     enquire: 'Enquire about this piece',
     indexTitle: ['Five rooms.', 'Walk them all.'],
-    indexLine: 'Every photograph here is a piece Heaven built and delivered. Nothing is stock.',
+    indexLine: 'Every photograph here is Heaven’s own work. Nothing is stock.',
   },
   table: {
     title: ['Designed. Crafted.', 'Customized.'],

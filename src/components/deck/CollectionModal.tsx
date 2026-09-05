@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useState } from 'react'
-import { catalogue, deck } from '@/content/copy'
+import { catalogue, deck, night } from '@/content/copy'
 import { whatsappUrl } from '@/lib/whatsapp'
 import { Photo, hasPhoto } from '@/components/ui/Photo'
 import { WhatsApp } from '@/components/ui/Icons'
@@ -49,7 +49,7 @@ export function CollectionModal({
         open={open}
         onClose={close}
         title={cat.name}
-        sub={`${plural(cat.pieces.length, 'piece', 'pieces')} · built in Agrabad`}
+        sub={`${plural(cat.pieces.length, 'piece', 'pieces')} · ${night.menu.built}`}
         foot={
           <>
             <span className={s.modalSub}>{deck.freeLine}</span>

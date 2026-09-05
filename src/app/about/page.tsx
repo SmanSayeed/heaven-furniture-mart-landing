@@ -69,7 +69,7 @@ export default function AboutRoute() {
             <figure className={`panel panel-land ${s.processPlate}`}>
               <PrintPhoto
                 name="living-01-beige-set"
-                alt="A living room set built by Heaven Furniture Mart, in the Agrabad showroom."
+                alt="A living room set built by Heaven Furniture Mart."
                 sizes="(min-width: 900px) 46vw, 92vw"
                 kenBurns
               />
