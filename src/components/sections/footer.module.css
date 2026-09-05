@@ -1,0 +1,232 @@
+/**
+ * SHEET 09 · THE ORDER — the footer and the brief form that sits inside it.
+ *
+ * These live in their own module rather than with the landing page's sheets
+ * for a reason that is measurable, not tidy-minded: the footer is the one
+ * piece of the story that every page carries. /about, /process and /contact
+ * all end with it, and `experimental.inlineCss` means whatever stylesheet the
+ * footer imports is inlined, in full, into the <head> of each of those pages.
+ * Importing the whole sheet set to draw a phone number and three social
+ * circles cost those pages roughly 70-80 KB of HTML apiece for rules that
+ * described sections they do not render.
+ *
+ * So the boundary to hold when editing this file: everything here must be
+ * reachable from <Footer> or <ContactForm>. Anything that is only ever drawn
+ * on the landing page belongs beside its own sheet, not here.
+ *
+ * The grid itself is NOT here. Placement is declared in the markup with
+ * data-col and resolved by globals.css, along with every global class the
+ * footer emits (.section, .sheet-grid, .room, .dark, .rule, .specimen,
+ * .index, .placard-line, .beat, .sheet-block, .btn). This module only sets
+ * what those cannot know: the footer's own rhythm, and the look of a form
+ * that is trying not to look like one.
+ */
+
+/* ============ SHEET 09 - THE ORDER ============ */
+.footer {
+  row-gap: calc(var(--u) * 4);
+  padding-bottom: calc(var(--u) * 13); /* clearance for the sticky pill */
+}
+
+/* the last ask sits on the page's own axis, with nothing flanking it */
+.footerHead {
+  display: grid;
+  gap: calc(var(--u) * 2.5);
+  justify-items: start;
+}
+
+@media (min-width: 900px) {
+  .footerHead {
+    justify-items: center;
+    text-align: center;
+  }
+}
+
+/* ---- THE BRIEF FORM (Sheet 09) ----
+   A form on a page like this has one job: not to look like a form. So the
+   fields are drawn the way every other line on the page is drawn — a single
+   rule underneath, no box, no fill — and the only thing with a border and a
+   pool of light under it is the button, which is the same object as every
+   other button here. */
+.contactPanel {
+  display: grid;
+  gap: calc(var(--u) * 1.5);
+  margin-top: calc(var(--u) * 3);
+  padding-top: calc(var(--u) * 4);
+  border-top: 1px solid var(--graphite);
+}
+
+.contactTitle {
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-weight: 600;
+  font-size: clamp(1.5rem, 3.6vw, 2.1rem);
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  margin-bottom: calc(var(--u) * 1);
+}
+
+.contactForm {
+  display: grid;
+  gap: calc(var(--u) * 2.5);
+  justify-items: start;
+  width: 100%;
+  text-align: left;
+}
+
+.formRow {
+  display: grid;
+  gap: calc(var(--u) * 2.5);
+  width: 100%;
+}
+
+@media (min-width: 720px) {
+  .formRow {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--gutter);
+  }
+}
+
+.field {
+  display: grid;
+  gap: 0.5rem;
+  width: 100%;
+  min-width: 0;
+}
+
+/* the drawn field: a rule, and the light under it arrives on focus. Bottom
+   border only, because a full box would be the sixth rectangle in a column
+   of five and the sheet already has enough edges. */
+.input {
+  width: 100%;
+  padding: 0.85rem 0.1rem;
+  border: 0;
+  border-bottom: 1px solid var(--graphite);
+  border-radius: 0;
+  background: transparent;
+  color: var(--paper);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 1rem;
+  transition: border-color 0.3s ease, box-shadow 0.4s ease;
+}
+
+.input::placeholder {
+  /* 0.42 on ink is decorative-only text: the real label is above the field
+     and is what a screen reader and an audit both read */
+  color: color-mix(in srgb, var(--paper) 42%, transparent);
+}
+
+.input:focus {
+  outline: none;
+  border-bottom-color: var(--accent);
+  /* the same pool of light every control on this page casts downward */
+  box-shadow: 0 12px 26px -18px color-mix(in srgb, var(--accent) 85%, transparent);
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 5.5rem;
+  line-height: 1.5;
+}
+
+.formNote {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: var(--text-specimen);
+  letter-spacing: 0.06em;
+  opacity: 0.6;
+  margin: 0;
+  max-width: 46ch;
+}
+
+.contactBlock {
+  display: grid;
+  gap: 0.45rem;
+  align-content: start;
+}
+
+.contactBig {
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  font-size: 1.25rem;
+}
+
+.socials {
+  display: flex;
+  gap: 1.1rem;
+}
+
+.socials a {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid var(--line-on-ink);
+  transition: border-color 0.3s ease, color 0.3s ease;
+}
+
+.socials a:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.socials svg {
+  width: 17px;
+  height: 17px;
+}
+
+.footerBottom {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: calc(var(--u) * 1) calc(var(--u) * 3);
+  margin-top: calc(var(--u) * 2);
+}
+
+/* ============ FOOTER · the no-JS category index ============ */
+.footerIndex {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.footerIndexList {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.footerIndexLink {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.7rem;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  font-size: 1.15rem;
+  transition: color 0.3s ease;
+}
+
+.footerIndexLink:hover {
+  color: var(--accent);
+}
+
+@media (min-width: 900px) {
+  .footerIndexList {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: calc(var(--u) * 2) var(--gutter);
+  }
+}
+
+/* ============ FOOTER · the site's pages ============ */
+.footerPages {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.footerPagesList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem calc(var(--u) * 3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}

@@ -247,27 +247,76 @@ export function NightMotion() {
         }
 
         /* ============ CH.2b · SIGNATURE PIECES ============
-           Six plates, arriving in two-card beats rather than six at once:
-           a grid that lands all together reads as a page loading, and one
-           that lands in sequence reads as a wall being hung. */
+
+           THE WALL TRAVELS SIDEWAYS; THE PIECES TRAVEL THE OTHER WAY
+           (client: "like categories onscroll gsap effect for desktop and
+           mobile view but from different direction").
+
+           The floor's rail is one horizontal sweep of the whole chapter.
+           Repeating that here would read as the same trick twice and cost
+           a second pin, so this is its counterpart rather than its copy:
+
+             wide    the three columns DRIFT AGAINST EACH OTHER as the
+                     section passes - outer columns rising, the middle one
+                     falling - so the grid breathes vertically where the
+                     wall above moved horizontally. Scrubbed, so the
+                     visitor is driving it.
+             phone   one column, so there is nothing to drift against.
+                     Each card arrives FROM ALTERNATE SIDES instead -
+                     left, right, left - which is the same "different
+                     direction" idea at one card wide.
+
+           yPercent and xPercent only: compositor work, no layout, and
+           nothing here changes the height of anything. */
         const sig = q('[data-sig-grid]')
         if (sig) {
           const plates = gsap.utils.toArray<HTMLElement>('[data-sig-card]', sig)
+          /* off the CSS reveal system: a transition still bound to an
+             element GSAP writes every frame smears the tween */
           plates.forEach((el) => el.removeAttribute('data-wait'))
-          gsap.set(plates, { autoAlpha: 0, y: 40, transition: 'none' })
-          ScrollTrigger.create({
-            trigger: sig,
-            start: 'top 82%',
-            once: true,
-            onEnter: () =>
-              gsap.to(plates, {
-                autoAlpha: 1,
-                y: 0,
-                duration: 0.85,
-                ease: 'power3.out',
-                stagger: 0.09,
-              }),
-          })
+          gsap.set(plates, { transition: 'none' })
+
+          if (window.matchMedia('(min-width: 900px)').matches) {
+            const DRIFT = 7
+            plates.forEach((el, i) => {
+              /* the middle column of three goes the other way */
+              const dir = i % 3 === 1 ? -1 : 1
+              gsap.fromTo(
+                el,
+                { yPercent: dir * DRIFT },
+                {
+                  yPercent: -dir * DRIFT,
+                  ease: 'none',
+                  scrollTrigger: {
+                    trigger: sig,
+                    start: 'top bottom',
+                    end: 'bottom top',
+                    scrub: 1,
+                    invalidateOnRefresh: true,
+                  },
+                },
+              )
+            })
+          } else {
+            plates.forEach((el, i) => {
+              gsap.fromTo(
+                el,
+                { xPercent: i % 2 === 0 ? -14 : 14, autoAlpha: 0 },
+                {
+                  xPercent: 0,
+                  autoAlpha: 1,
+                  ease: 'power2.out',
+                  scrollTrigger: {
+                    trigger: el,
+                    start: 'top 92%',
+                    end: 'top 58%',
+                    scrub: 1,
+                    invalidateOnRefresh: true,
+                  },
+                },
+              )
+            })
+          }
         }
 
         /* ================= CH.2 · PRINT: the founding line ==============
