@@ -23,6 +23,22 @@ import type { NextConfig } from 'next'
   eval, no innerHTML), the exchange is the wrong way round. If that ever
   changes, this is the line to revisit first.
 */
+/*
+  'unsafe-eval', IN DEVELOPMENT ONLY.
+
+  React's dev build uses eval() to reconstruct call stacks across
+  environments, and Turbopack's HMR runtime evaluates modules the same way.
+  With the policy below applied in `next dev`, the browser refused all of
+  it and the entire client bundle died silently on localhost - no
+  hydration, no Lenis, no GSAP, no 3D. Nothing was wrong with the page; the
+  header was killing it.
+
+  React never uses eval in production, so the shipped policy stays strict.
+  This is the one place the two differ, and it is deliberate: a dev-only
+  relaxation that cannot reach a deployment.
+*/
+const dev = process.env.NODE_ENV !== 'production'
+
 const pixel = process.env.NEXT_PUBLIC_META_PIXEL_ID
 const fbScript = pixel ? ' https://connect.facebook.net' : ''
 const fbImg = pixel ? ' https://www.facebook.com' : ''
@@ -30,7 +46,7 @@ const fbConnect = pixel ? ' https://www.facebook.com https://connect.facebook.ne
 
 const csp = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${fbScript}`,
+  `script-src 'self' 'unsafe-inline'${dev ? " 'unsafe-eval'" : ''}${fbScript}`,
   "style-src 'self' 'unsafe-inline'",
   `img-src 'self' data: blob:${fbImg}`,
   "font-src 'self'",
