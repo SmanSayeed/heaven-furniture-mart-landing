@@ -48,9 +48,14 @@ const jsonLd = {
 export default function Page() {
   return (
     <main id="top">
+      {/* JSON.stringify does NOT escape '<', so a future field carrying
+          "</script>" would close this block and everything after it would
+          be parsed as markup. Nothing in copy.ts can do that today - every
+          value here is a static string we wrote - which is exactly when a
+          one-character defence is cheap. */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\u003c') }}
       />
       <Header nav={night.nav} counter={false} />
 

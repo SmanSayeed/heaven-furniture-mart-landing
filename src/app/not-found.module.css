@@ -1,0 +1,145 @@
+/* The 404, in the same room as everything else: the ink, the drafting
+   grid, one CTA. Nothing here is new - it is the night chapters' own
+   surface, so the wrong address does not look like a different site. */
+.page {
+  min-height: 100svh;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.body {
+  display: grid;
+  justify-items: start;
+  align-content: center;
+  gap: clamp(0.9rem, 2.2vh, 1.4rem);
+  width: 100%;
+  max-width: 1320px;
+  margin-inline: auto;
+  padding: clamp(7rem, 16vh, 10rem) var(--pad-x) clamp(4rem, 9vh, 6rem);
+  /* the drafting sheet, the same 56 px grid the table is drawn on */
+  background-image:
+    linear-gradient(rgba(255, 230, 200, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 230, 200, 0.05) 1px, transparent 1px);
+  background-size: 56px 56px;
+  background-position: center;
+}
+
+.code {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.32em;
+  color: var(--brass);
+}
+
+.title {
+  margin: 0;
+  max-width: 16ch;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-weight: 600;
+  font-size: clamp(2.25rem, 7vw, 4.5rem);
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+.line {
+  margin: 0;
+  max-width: 46ch;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: clamp(0.9rem, 1.6vw, 1.05rem);
+  opacity: 0.72;
+}
+
+.routes {
+  display: grid;
+  width: min(100%, 640px);
+  margin-block: clamp(0.75rem, 2vh, 1.5rem);
+  border-top: 1px solid var(--line-on-ink);
+}
+
+.route {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: baseline;
+  column-gap: clamp(0.75rem, 2vw, 1.25rem);
+  /* 44 px of hit area without 44 px of visible chrome */
+  padding-block: 0.85rem;
+  border-bottom: 1px solid var(--line-on-ink);
+  color: inherit;
+  text-decoration: none;
+  transition: background-color 0.3s ease, padding-inline 0.3s ease;
+}
+
+.route:hover,
+.route:focus-visible {
+  background: rgba(255, 230, 200, 0.05);
+  padding-inline: 0.6rem;
+}
+
+.routeKey {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.22em;
+  color: var(--brass);
+}
+
+.routeName {
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-weight: 600;
+  font-size: clamp(1.05rem, 2.4vw, 1.35rem);
+  letter-spacing: -0.02em;
+}
+
+.routeLead {
+  display: none;
+}
+
+.routeGo {
+  align-self: center;
+  display: inline-flex;
+  opacity: 0.5;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.route:hover .routeGo,
+.route:focus-visible .routeGo {
+  opacity: 1;
+  transform: translateX(4px);
+}
+
+.act {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: clamp(0.75rem, 2vw, 1.25rem);
+}
+
+.quiet {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+
+/* the lead line only has room to say something on a wide screen */
+@media (min-width: 861px) {
+  .route {
+    grid-template-columns: auto minmax(0, 12rem) 1fr auto;
+  }
+  .routeLead {
+    display: block;
+    font-family: var(--font-sans), system-ui, sans-serif;
+    font-size: 0.8rem;
+    opacity: 0.55;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .route,
+  .routeGo {
+    transition: none;
+  }
+}

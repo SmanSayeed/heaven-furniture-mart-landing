@@ -746,7 +746,14 @@
   line-height: 1.7;
 }
 
+/* TAP TARGETS (WCAG 2.5.8). These are 13 px links inside a 1.7 line-height,
+   which is a 22 px box: fine under a mouse, a coin toss under a thumb, and
+   the QA pass counted seventeen of them under 40 px on a 390 px phone. The
+   padding is transparent and the type does not move - the only visible
+   change is more air between the rows, which this footer wanted anyway. */
 .footer a {
+  display: inline-block;
+  padding-block: 0.5rem;
   color: inherit;
   text-decoration: none;
 }

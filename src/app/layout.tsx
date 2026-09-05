@@ -1,7 +1,8 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import Script from 'next/script'
 import { Inter_Tight } from 'next/font/google'
 import { SmoothScrollIdle } from '@/components/motion/SmoothScrollIdle'
+import { siteUrl } from '@/lib/site'
 import './globals.css'
 
 /* Type system, THE SLIDES (PLAN-V5): the Apple look, licensed. SF Pro
@@ -29,19 +30,30 @@ const display = Inter_Tight({
    whole advertisement. metadataBase makes every OG url absolute, which is
    what Facebook's scraper requires; it reads the deployment's own origin so
    preview builds advertise themselves rather than production. */
-const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL ??
-  (process.env.VERCEL_PROJECT_PRODUCTION_URL
-    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-    : 'https://heaven-furniture-mart.vercel.app')
-
 const description =
   'Bespoke furniture and interior styling in Chattogram. Custom sofas, beds, dining and office pieces, built around your space.'
+
+/*
+  THEME-COLOR IS A DESIGN DECISION, not an SEO box.
+
+  Without it Android Chrome paints its address bar white and the page under
+  it is near-black, so the first thing a visitor from a Facebook ad sees is
+  a white band above a dark page - the join reads as a rendering fault
+  before they have read a word. This is the ink the hero opens on.
+*/
+export const viewport: Viewport = {
+  themeColor: '#0B0C0C',
+  colorScheme: 'dark',
+}
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: 'Heaven Furniture Mart · Designed. Crafted. Customized.',
   description,
+  /* the landing page. Every other route sets its own; without one, a link
+     carrying a Facebook click id (/?fbclid=...) is a separate page to a
+     crawler, and this page's traffic arrives almost entirely that way. */
+  alternates: { canonical: '/' },
   openGraph: {
     title: 'Heaven Furniture Mart · Furnished to you.',
     description,
@@ -98,6 +110,14 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
       {/* the layout stays a Server Component; smooth scrolling is a null-
           rendering island that loads Lenis on idle, on desktops only */}
       <body suppressHydrationWarning>
+        {/* BYPASS BLOCKS. The page is 13,000 px tall on a phone and the
+            header and its menu hold thirteen focusable elements, which a
+            keyboard or screen-reader visitor had to walk past on arrival
+            and again after every menu close. Visually hidden until it takes
+            focus, then it is the first thing on the page. */}
+        <a href="#top" className="skip">
+          Skip to content
+        </a>
         {children}
         <SmoothScrollIdle />
         {metaPixelId && (

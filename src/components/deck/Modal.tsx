@@ -55,7 +55,10 @@ export function Modal({
       el.showModal()
       lenis?.stop()
       try {
-        history.pushState({ modal: id }, '', `#${id}`)
+        /* the entry, not a hash: this modal cannot be restored from a
+           URL (loading /#quote-builder opens nothing), so a fragment here
+           only ever produced a link that did not work. Back still closes. */
+        history.pushState({ modal: id }, '', location.href)
         pushed.current = true
       } catch {
         pushed.current = false

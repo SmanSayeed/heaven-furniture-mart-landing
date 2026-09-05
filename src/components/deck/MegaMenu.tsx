@@ -102,7 +102,13 @@ export function MegaMenu({
       el.showModal()
       lenis?.stop()
       try {
-        history.pushState({ modal: 'menu' }, '', '#menu')
+          /* NO HASH IN THE URL. The entry exists so the Android back button
+           closes this instead of leaving the page - that is the whole
+           reason for it. The hash was a side effect, and a bad one: the
+           page cannot restore itself from it (loading /#menu opened
+           nothing), so anyone who copied the link while it was open shared
+           a dangling fragment. Same URL, new entry, back still works. */
+        history.pushState({ modal: 'menu' }, '', location.href)
         pushed.current = true
       } catch {
         pushed.current = false

@@ -1125,3 +1125,30 @@ img {
     animation: none !important;
   }
 }
+
+/* ---- SKIP TO CONTENT ----
+   Off-screen rather than display:none or visibility:hidden, both of which
+   take an element out of the focus order entirely - which would make this
+   a decoration rather than a bypass. */
+.skip {
+  position: fixed;
+  left: -9999px;
+  top: 0;
+  z-index: 100;
+  padding: 0.75rem 1.25rem;
+  background: var(--ivory);
+  color: var(--ink);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+.skip:focus,
+.skip:focus-visible {
+  left: 1rem;
+  top: 1rem;
+  outline: 2px solid var(--brass);
+  outline-offset: 2px;
+}
