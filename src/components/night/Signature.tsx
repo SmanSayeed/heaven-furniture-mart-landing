@@ -44,7 +44,15 @@ export function Signature() {
         <p className={s.sigLine}>{sig.line}</p>
       </div>
 
-      <div className={`${s.inner} ${s.sigGrid}`} data-sig-grid data-stagger>
+      {/* THE SAME MECHANIC AS THE ROOMS WALL (client: "like category
+          section onscroll moving from right to left 6 images with GSAP"):
+          a track the motion layer pins and travels sideways, so the six
+          pieces walk past on a vertical scroll.
+
+          It is a native scroll-snap carousel in the server HTML, exactly
+          as the wall is - that is what a no-JS or reduced-motion visitor
+          keeps, and it is a working control rather than a dead row. */}
+      <div className={s.sigRail} data-sig-track data-stagger>
         {sig.pieces.map((piece, i) => (
           <article
             key={piece.photo}
@@ -94,6 +102,10 @@ export function Signature() {
             </a>
           </article>
         ))}
+      </div>
+
+      <div className={s.sigBar} data-sig-bar aria-hidden="true">
+        <i />
       </div>
 
       <div className={`${s.inner} ${s.sigFoot}`}>

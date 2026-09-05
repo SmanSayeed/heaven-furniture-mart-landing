@@ -715,7 +715,7 @@ export const night = {
        portal pushes into (the fabric of the seat), per photograph */
     views: [
       { photo: 'living-03-wood-set', tall: 'living-03-wood-set-tall', focal: '50% 62%', alt: 'A full wooden living room set by Heaven Furniture Mart.' },
-      { photo: 'living-02-blue-pair', tall: 'living-02-blue-pair-tall', focal: '52% 60%', alt: 'A matched pair of deep blue two-seat sofas by Heaven Furniture Mart.' },
+      { photo: 'dining-02-peach', tall: 'dining-02-peach-tall', focal: '50% 58%', alt: 'A marble dining table with upholstered chairs by Heaven Furniture Mart.' },
       { photo: 'bespoke-chairs-01', tall: 'bespoke-chairs-01-tall', focal: '58% 62%', alt: 'Bespoke upholstered chairs, built to order in Chattogram.' },
     ],
   },

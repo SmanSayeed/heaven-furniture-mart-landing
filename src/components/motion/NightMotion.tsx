@@ -248,75 +248,68 @@ export function NightMotion() {
 
         /* ============ CH.2b · SIGNATURE PIECES ============
 
-           THE WALL TRAVELS SIDEWAYS; THE PIECES TRAVEL THE OTHER WAY
-           (client: "like categories onscroll gsap effect for desktop and
-           mobile view but from different direction").
+           THE SAME MECHANIC AS THE ROOMS WALL, and deliberately so (client:
+           "like category section onscroll moving from right to left 6 images
+           with GSAP"). The chapter pins, the track travels, and the six
+           pieces walk past from the right on a vertical scroll - nothing
+           here asks for a sideways gesture.
 
-           The floor's rail is one horizontal sweep of the whole chapter.
-           Repeating that here would read as the same trick twice and cost
-           a second pin, so this is its counterpart rather than its copy:
-
-             wide    the three columns DRIFT AGAINST EACH OTHER as the
-                     section passes - outer columns rising, the middle one
-                     falling - so the grid breathes vertically where the
-                     wall above moved horizontally. Scrubbed, so the
-                     visitor is driving it.
-             phone   one column, so there is nothing to drift against.
-                     Each card arrives FROM ALTERNATE SIDES instead -
-                     left, right, left - which is the same "different
-                     direction" idea at one card wide.
-
-           yPercent and xPercent only: compositor work, no layout, and
-           nothing here changes the height of anything. */
-        const sig = q('[data-sig-grid]')
-        if (sig) {
-          const plates = gsap.utils.toArray<HTMLElement>('[data-sig-card]', sig)
+           It is a snap carousel in the server HTML, which is what a no-JS
+           or reduced-motion visitor keeps: the motion layer only takes the
+           scrolling over, it never builds the row. */
+        const sigTrack = q('[data-sig-track]')
+        const sigSection = q('#signature')
+        if (sigTrack && sigSection) {
+          const plates = gsap.utils.toArray<HTMLElement>('[data-sig-card]', sigTrack)
+          const sigBar = q('[data-sig-bar] i')
           /* off the CSS reveal system: a transition still bound to an
              element GSAP writes every frame smears the tween */
           plates.forEach((el) => el.removeAttribute('data-wait'))
           gsap.set(plates, { transition: 'none' })
 
-          if (window.matchMedia('(min-width: 900px)').matches) {
-            const DRIFT = 7
-            plates.forEach((el, i) => {
-              /* the middle column of three goes the other way */
-              const dir = i % 3 === 1 ? -1 : 1
-              gsap.fromTo(
-                el,
-                { yPercent: dir * DRIFT },
-                {
-                  yPercent: -dir * DRIFT,
-                  ease: 'none',
-                  scrollTrigger: {
-                    trigger: sig,
-                    start: 'top bottom',
-                    end: 'bottom top',
-                    scrub: 1,
-                    invalidateOnRefresh: true,
-                  },
+          sigSection.dataset.rail = ''
+          const sigDist = () => Math.max(0, sigTrack.scrollWidth - sigTrack.clientWidth)
+          const sigTravel = gsap.to(sigTrack, {
+            x: () => -sigDist(),
+            ease: 'none',
+            scrollTrigger: {
+              trigger: sigSection,
+              start: 'top top',
+              end: () => '+=' + sigDist(),
+              pin: true,
+              scrub: 1,
+              invalidateOnRefresh: true,
+              anticipatePin: 1,
+              onUpdate: (st) => {
+                if (sigBar) gsap.set(sigBar, { scaleX: st.progress })
+              },
+            },
+          })
+          cleanups.push(() => {
+            delete sigSection.dataset.rail
+          })
+
+          /* each plate lifts and squares up as it arrives from the right,
+             which is what stops six identical cards reading as a filmstrip */
+          plates.forEach((card) => {
+            gsap.fromTo(
+              card,
+              { rotateY: 14, y: 24, opacity: 0.75, transformPerspective: 900 },
+              {
+                rotateY: 0,
+                y: 0,
+                opacity: 1,
+                ease: 'power2.out',
+                scrollTrigger: {
+                  trigger: card,
+                  containerAnimation: sigTravel,
+                  start: 'left 94%',
+                  end: 'left 58%',
+                  scrub: true,
                 },
-              )
-            })
-          } else {
-            plates.forEach((el, i) => {
-              gsap.fromTo(
-                el,
-                { xPercent: i % 2 === 0 ? -14 : 14, autoAlpha: 0 },
-                {
-                  xPercent: 0,
-                  autoAlpha: 1,
-                  ease: 'power2.out',
-                  scrollTrigger: {
-                    trigger: el,
-                    start: 'top 92%',
-                    end: 'top 58%',
-                    scrub: 1,
-                    invalidateOnRefresh: true,
-                  },
-                },
-              )
-            })
-          }
+              },
+            )
+          })
         }
 
         /* ================= CH.2 · PRINT: the founding line ==============

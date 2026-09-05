@@ -49,19 +49,19 @@ export const photos = {
     "alpha": false
   },
   "bespoke-chairs-01": {
-    "src": "/img/bespoke-chairs-01-1024.webp",
-    "srcSet": "/img/bespoke-chairs-01-480.webp 480w, /img/bespoke-chairs-01-768.webp 768w, /img/bespoke-chairs-01-1024.webp 1024w",
-    "width": 1024,
-    "height": 584,
-    "blurDataURL": "data:image/webp;base64,UklGRmQAAABXRUJQVlA4IFgAAAAwAgCdASoQAAkAA4BaJYwCdAYtzSRmBssccAD+QNa5PFrQwglXgGRpdL3Zq1uiQ3mZGpy0eayNz41u65q3rHgd373cAJqszlqWWLzO4cP6xevu91UmAAAA",
+    "src": "/img/bespoke-chairs-01-2048.webp",
+    "srcSet": "/img/bespoke-chairs-01-480.webp 480w, /img/bespoke-chairs-01-768.webp 768w, /img/bespoke-chairs-01-1024.webp 1024w, /img/bespoke-chairs-01-1600.webp 1600w, /img/bespoke-chairs-01-2048.webp 2048w",
+    "width": 2048,
+    "height": 1152,
+    "blurDataURL": "data:image/webp;base64,UklGRmIAAABXRUJQVlA4IFYAAADwAQCdASoQAAkAA4BaJYwCdAYstSWnD3gAzZ7VJtMCo+zFmOWWjWZvUC+72PnS2l0/iwlSGHdvdqFKhvjZifcmfTfHfs3vMkviuOmoRsQl78ebpfEAAA==",
     "alpha": false
   },
   "bespoke-chairs-01-tall": {
-    "src": "/img/bespoke-chairs-01-tall-438.webp",
-    "srcSet": "/img/bespoke-chairs-01-tall-438.webp 438w",
-    "width": 438,
-    "height": 584,
-    "blurDataURL": "data:image/webp;base64,UklGRqIAAABXRUJQVlA4IJYAAABwBACdASoQABYAPu1kqU2ppaOiMAgBMB2JZwCo9YtyyAlFOjIUwOsrpoqxGAD+VHJbhX3mZW11+81VtYlA0sOqNxH/bCLISnEAD40rfoQBhtyn7giJfTKPNkOEw90qILMbfRhdRHmx/Q334bgbmqH+szx2vX1+ja6EHbIwdvVu9LFWGGn4cBnfzYxuJ0Ht3BM1BGDwAAA=",
+    "src": "/img/bespoke-chairs-01-tall-1536.webp",
+    "srcSet": "/img/bespoke-chairs-01-tall-480.webp 480w, /img/bespoke-chairs-01-tall-768.webp 768w, /img/bespoke-chairs-01-tall-1024.webp 1024w, /img/bespoke-chairs-01-tall-1536.webp 1536w",
+    "width": 1536,
+    "height": 2048,
+    "blurDataURL": "data:image/webp;base64,UklGRpgAAABXRUJQVlA4IIwAAAAwBACdASoQABUAPu1iqU2ppaQiMAgBMB2JZQCdAYr6tpUD0IIwJgMOIoAA/o03vYr2gEdL7nTo1tQhGTkXwwOj76RispkgrhJ7KnOs+PEw2haodcam2jPC34+d4qJrwQqWETPnG+sDdoHzMd9se4k87N1TABVAtMGXJbWrsZ/DnpbrroO1XkMo2FoAAA==",
     "alpha": false
   },
   "detail-01-blue-sofa": {
@@ -81,11 +81,19 @@ export const photos = {
     "alpha": false
   },
   "dining-02-peach": {
-    "src": "/img/dining-02-peach-1024.webp",
-    "srcSet": "/img/dining-02-peach-480.webp 480w, /img/dining-02-peach-768.webp 768w, /img/dining-02-peach-1024.webp 1024w",
-    "width": 1024,
-    "height": 625,
-    "blurDataURL": "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAABQAgCdASoQAAoAA4BaJbACdAYrJdW1jB35GPAA/t30en1BaXWbJ4XFAFMJ9HMUJ7sE8oSmRu7XuczfzoGI7oZyaw5qNEU9knGv2BpfSDovF7+rXvS7R9mJZXUlyMZWI8RAAA==",
+    "src": "/img/dining-02-peach-2048.webp",
+    "srcSet": "/img/dining-02-peach-480.webp 480w, /img/dining-02-peach-768.webp 768w, /img/dining-02-peach-1024.webp 1024w, /img/dining-02-peach-1600.webp 1600w, /img/dining-02-peach-2048.webp 2048w",
+    "width": 2048,
+    "height": 1152,
+    "blurDataURL": "data:image/webp;base64,UklGRmgAAABXRUJQVlA4IFwAAABwAgCdASoQAAkAA4BaJagCdG1/DyGtsBwot+AAAP7qVO/VC7mmknApfA+arEMY704kAnOIZ3XEGx/N/zvyNbiRGqZQ90NqygSF5uiw5SypQ1lBfpk0noEL0AAAAA==",
+    "alpha": false
+  },
+  "dining-02-peach-tall": {
+    "src": "/img/dining-02-peach-tall-1536.webp",
+    "srcSet": "/img/dining-02-peach-tall-480.webp 480w, /img/dining-02-peach-tall-768.webp 768w, /img/dining-02-peach-tall-1024.webp 1024w, /img/dining-02-peach-tall-1536.webp 1536w",
+    "width": 1536,
+    "height": 2048,
+    "blurDataURL": "data:image/webp;base64,UklGRpIAAABXRUJQVlA4IIYAAADQAwCdASoQABUAPu1iqU2ppaOiMAgBMB2JbACdL1BlgAW7kuBqOJwA8DaSubPgQyQuB8HKJhl4nlknqfcTq/ROnkrCqDn5aQud8uCGNpt/pWxn6qdzUoSFNY1thZYBWSBWbdbyaZ8pK30eeUonoOW5UbA2GCuSTPYMGO2xAH3rwgLRbcAAAA==",
     "alpha": false
   },
   "dining-03-glass-top": {
@@ -185,19 +193,19 @@ export const photos = {
     "alpha": false
   },
   "living-03-wood-set": {
-    "src": "/img/living-03-wood-set-1024.webp",
-    "srcSet": "/img/living-03-wood-set-480.webp 480w, /img/living-03-wood-set-768.webp 768w, /img/living-03-wood-set-1024.webp 1024w",
-    "width": 1024,
-    "height": 625,
-    "blurDataURL": "data:image/webp;base64,UklGRmYAAABXRUJQVlA4IFoAAACwAQCdASoQAAoAA4BaJaACdACDOB8AAPvc3Fn76su7Gb9+Rqf8Wfl1su2q2gEun8t3fRxaAyyg4Ej/t9mrxo10S1dEOv+vs/lDpYpap6bDk1E7cnK0VlYoAAA=",
+    "src": "/img/living-03-wood-set-2048.webp",
+    "srcSet": "/img/living-03-wood-set-480.webp 480w, /img/living-03-wood-set-768.webp 768w, /img/living-03-wood-set-1024.webp 1024w, /img/living-03-wood-set-1600.webp 1600w, /img/living-03-wood-set-2048.webp 2048w",
+    "width": 2048,
+    "height": 1152,
+    "blurDataURL": "data:image/webp;base64,UklGRloAAABXRUJQVlA4IE4AAADwAQCdASoQAAkAA4BaJZgCdAC4ZaT+mgAA/sBffNvRgferyRKsfhDX0SPw6N9BGu+oSRIj8cL0NBd9MVJhcdJQ6sdFhyaiZLZr5t2AAAA=",
     "alpha": false
   },
   "living-03-wood-set-tall": {
-    "src": "/img/living-03-wood-set-tall-469.webp",
-    "srcSet": "/img/living-03-wood-set-tall-469.webp 469w",
-    "width": 469,
-    "height": 625,
-    "blurDataURL": "data:image/webp;base64,UklGRp4AAABXRUJQVlA4IJIAAABwBACdASoQABYAPu1iqU2ppaOiMAgBMB2JQBOmUGMACI8+afO1hnefG1O7AAD3w/WW364oJYgcI46YZu2LPyNcQ2pCVJqUmb4tVh7tkPbwrj3qmxDxu6ia0zrNv+VyuBMerxlfAwVEVSFN9TXlDHP7yzUwJFlolY1h10J+BcDnyj1UYbtz/1C0BOZSMpvhtCAAAA==",
+    "src": "/img/living-03-wood-set-tall-1792.webp",
+    "srcSet": "/img/living-03-wood-set-tall-480.webp 480w, /img/living-03-wood-set-tall-768.webp 768w, /img/living-03-wood-set-tall-1024.webp 1024w, /img/living-03-wood-set-tall-1600.webp 1600w, /img/living-03-wood-set-tall-1792.webp 1792w",
+    "width": 1792,
+    "height": 2400,
+    "blurDataURL": "data:image/webp;base64,UklGRnYAAABXRUJQVlA4IGoAAADQAwCdASoQABUAPu1iqU2ppaOiMAgBMB2JQBYdhPiQEh2lPHOStdgAngEfU0bIkXeoKPwSZdn87SdyZXBEhxASYnGUDaAgJg69Pif4LKy4StsQ6QLUFj8s4327q0wFGduQr6fPikIcAAAA",
     "alpha": false
   },
   "living-04-gold-armchairs": {

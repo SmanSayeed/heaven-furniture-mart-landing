@@ -31,14 +31,16 @@ export function Studio() {
           <Narrator id="studio" />
         </div>
 
-        {/* the offer, in three sentences. Each arrives on its own. */}
-        <div className={s.bigLines} data-stagger>
-          {st.lines.map((line) => (
-            <div key={line} data-reveal="words">
-              <Words lines={[line]} as="p" className={s.bigLine} />
-            </div>
-          ))}
-        </div>
+        {/* THE THREE BIG LINES ARE GONE (client: "keep only icon based
+            texts, remove we draw it in your room.. these texts").
+
+            "We draw it to your room. / We build it in our own workshop. /
+            We deliver it and fit it." sat directly above three points that
+            say the same three things - Drawn to you, Built in-house,
+            Delivered and fitted - with a mark drawn for each and the
+            detail behind a button. Saying it twice made the chapter twice
+            as long and no clearer, and the marks are the version a visitor
+            actually reads. */}
 
         <Points />
 

@@ -3102,14 +3102,73 @@
   opacity: 0.72;
 }
 
-.sigGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+/* ---- THE TRACK ----
+   A native snap carousel by default - the server HTML, and what a no-JS or
+   reduced-motion visitor keeps - and a rail the motion layer translates
+   once it takes over. Same two-state arrangement as the rooms wall above,
+   for the same reason: the finished page must work before the motion
+   layer arrives, and the motion layer must not have to build anything. */
+.sigRail {
+  display: flex;
   gap: clamp(1.25rem, 2.6vw, 2rem);
+  padding-inline: var(--pad-x);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.sigRail::-webkit-scrollbar {
+  display: none;
 }
 
 .sigCard {
+  flex: 0 0 auto;
+  width: clamp(240px, 78vw, 340px);
   min-width: 0;
+  scroll-snap-align: center;
+}
+
+/* pinned: the track is a flex item that would otherwise grow to its own
+   content, which makes scrollWidth - clientWidth zero and the travel
+   nothing. Same fix the wall needed. */
+.signature[data-rail] .sigRail {
+  width: 100%;
+  min-width: 0;
+  max-width: 100vw;
+  overflow: visible;
+  will-change: transform;
+}
+
+.signature[data-rail] .sigCard {
+  width: clamp(260px, 26vw, 360px);
+}
+
+/* the travel, drawn: a hairline that fills as the six go past. It is a
+   progress bar, not a control - there is nothing here to operate. */
+.sigBar {
+  width: min(200px, 42vw);
+  height: 1px;
+  margin-inline: var(--pad-x);
+  background: rgba(244, 240, 232, 0.16);
+  overflow: hidden;
+}
+
+.sigBar i {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--brass);
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+
+@media (min-width: 900px) {
+  .signature[data-rail] {
+    height: 100svh;
+    padding: 0;
+    align-content: center;
+  }
 }
 
 .sigLink {
