@@ -187,16 +187,85 @@ export function NightMotion() {
             const len = 'getTotalLength' in el ? el.getTotalLength() : 0
             if (len) gsap.set(el, { strokeDasharray: len, strokeDashoffset: len })
           })
+          /*
+            THE THREE POINTS ARRIVE ONE AT A TIME (client: "animate the
+            icons sections on scroll with gsap").
+
+            They used to lean entirely on the CSS reveal - a 0.13s
+            transition-delay per card - with the marks drawing themselves
+            underneath it, and the two were on different clocks, so the
+            sequence read as three cards appearing at once with some line
+            work happening somewhere. It is one timeline now, and each
+            point is a beat: the card lifts, its mark draws, then its words
+            settle. Three beats, 0.16s apart, which is slow enough to read
+            as drawn, then built, then delivered.
+
+            data-wait comes off first: the reveal system's CSS is the no-JS
+            truth, and GSAP cannot animate an element the CSS is holding.
+          */
+          const cards = gsap.utils.toArray<HTMLElement>('[data-reveal]', points)
+          const beats = cards.map((card) => ({
+            card,
+            body: gsap.utils.toArray<HTMLElement>('h3, p, button', card),
+            mark: card.querySelector<HTMLElement>('[data-mark]'),
+          }))
+          cards.forEach((card) => card.removeAttribute('data-wait'))
+          /* the reveal system's CSS transition would fire on every frame
+             GSAP writes, smearing a 0.7s tween into a laggy one. Whoever
+             owns the element owns its transition too. */
+          gsap.set(cards, { autoAlpha: 0, y: 34, transition: 'none' })
+          beats.forEach((b) => {
+            if (b.mark) gsap.set(b.mark, { scale: 0.86, transformOrigin: '50% 60%' })
+            gsap.set(b.body, { autoAlpha: 0, y: 12 })
+          })
+
           ScrollTrigger.create({
             trigger: points,
-            start: 'top 80%',
+            start: 'top 78%',
+            once: true,
+            onEnter: () => {
+              const tl = gsap.timeline()
+              beats.forEach((b, i) => {
+                const at = i * 0.16
+                tl.to(b.card, { autoAlpha: 1, y: 0, duration: 0.7, ease: 'power3.out' }, at)
+                if (b.mark) {
+                  tl.to(b.mark, { scale: 1, duration: 0.9, ease: 'power2.out' }, at)
+                  tl.to(
+                    gsap.utils.toArray('path, circle', b.mark),
+                    { strokeDashoffset: 0, duration: 0.85, ease: 'power2.out', stagger: 0.03 },
+                    at + 0.1,
+                  )
+                }
+                tl.to(
+                  b.body,
+                  { autoAlpha: 1, y: 0, duration: 0.6, ease: 'power2.out', stagger: 0.06 },
+                  at + 0.28,
+                )
+              })
+            },
+          })
+        }
+
+        /* ============ CH.2b · SIGNATURE PIECES ============
+           Six plates, arriving in two-card beats rather than six at once:
+           a grid that lands all together reads as a page loading, and one
+           that lands in sequence reads as a wall being hung. */
+        const sig = q('[data-sig-grid]')
+        if (sig) {
+          const plates = gsap.utils.toArray<HTMLElement>('[data-sig-card]', sig)
+          plates.forEach((el) => el.removeAttribute('data-wait'))
+          gsap.set(plates, { autoAlpha: 0, y: 40, transition: 'none' })
+          ScrollTrigger.create({
+            trigger: sig,
+            start: 'top 82%',
             once: true,
             onEnter: () =>
-              gsap.to(strokes, {
-                strokeDashoffset: 0,
-                duration: 0.9,
-                ease: 'power2.out',
-                stagger: 0.035,
+              gsap.to(plates, {
+                autoAlpha: 1,
+                y: 0,
+                duration: 0.85,
+                ease: 'power3.out',
+                stagger: 0.09,
               }),
           })
         }

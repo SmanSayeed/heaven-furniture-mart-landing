@@ -4,6 +4,7 @@ import { DeckFooter } from '@/components/deck/DeckFooter'
 import { Hero } from '@/components/night/Hero'
 import { Studio } from '@/components/night/Studio'
 import { Floor } from '@/components/night/Floor'
+import { Signature } from '@/components/night/Signature'
 import { Table } from '@/components/night/Table'
 import { Maker } from '@/components/night/Maker'
 import { Home } from '@/components/night/Home'
@@ -60,8 +61,15 @@ export default function Page() {
       <Header nav={night.nav} counter={false} />
 
       <Hero />
-      <Studio />
+      {/* THE GOODS BEFORE THE SERVICE (client: "take categories section
+          above that icon and detail sections"). A first-time visitor's
+          question after "who is this" is "what do you make" - the rooms,
+          then six actual pieces - and only then "how do you work", which is
+          what the studio chapter answers. night.chapters carries the same
+          order, so the map, the chapter tags and the footer index follow. */}
       <Floor />
+      <Signature />
+      <Studio />
       <Table />
       <Maker />
       <Home />

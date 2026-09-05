@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { catalogue, night } from '@/content/copy'
 import { ArrowRight } from '@/components/ui/Icons'
 import { Words } from './Words'
@@ -21,7 +22,16 @@ export function Floor() {
       <div className={`${s.inner} ${s.floorHead}`} data-reveal="words" data-stagger>
         <ChapterTag id="floor" />
         <Words lines={f.title} className={s.title} />
-        <Narrator id="floor" />
+        {/* the narrator and the way out share a row. The chapter is pinned
+            to one viewport, so a line of its own here would come straight
+            out of the height of the photographs. */}
+        <div className={s.floorHeadRow}>
+          <Narrator id="floor" />
+          <Link className={s.floorAll} href="/collections">
+            {f.viewAll}
+            <ArrowRight />
+          </Link>
+        </div>
       </div>
 
       <Wall mode="rail" />

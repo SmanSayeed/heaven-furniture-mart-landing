@@ -551,6 +551,12 @@ export const whatsappMessages = {
     "Hi Heaven, I'd like a free design consultation for a bespoke piece. My space is ",
   withSwatch: (swatch: string) =>
     `Hi Heaven, I'd like a free design consultation for a bespoke sofa in ${swatch}. My space is `,
+  /* THE SAME ONE ACTION, said about a specific object. A visitor looking at
+     a piece should not have to describe it back to the studio - the message
+     already names it, so the conversation starts at "what size" instead of
+     "which one". Not a second CTA: same button, same thread, more context. */
+  aboutPiece: (piece: string, room: string) =>
+    `Hi Heaven, I saw the ${piece} (${room}) on your site and I'd like a free design consultation. My space is `,
 } as const
 
 /* ---------------------------------------------------------------------------
@@ -645,10 +651,16 @@ export const night = {
      client's call (2026-09-03): the drafting table already hands the visitor
      a piece to turn, and a second 3D stage two chapters earlier made the
      page read as a technology demo rather than as a showroom. */
+  /* THE ROOMS COME SECOND NOW, and the studio third (client: "take
+     categories section above that icon and detail sections"). A first-time
+     visitor's question after "who is this" is "what do you make", not "how
+     do you work": the goods earn the right to explain the service. The ids
+     did not change, so every anchor, the map and the footer index follow
+     this array without being told. */
   chapters: [
     { id: 'room', no: '01', name: 'The floodlit room', narrator: 'The power is out. You have a light.' },
-    { id: 'studio', no: '02', name: 'The studio', narrator: 'Through the fabric.' },
-    { id: 'floor', no: '03', name: 'The floor', narrator: 'Walk the floor.' },
+    { id: 'floor', no: '02', name: 'The floor', narrator: 'Walk the floor.' },
+    { id: 'studio', no: '03', name: 'The studio', narrator: 'Through the fabric.' },
     { id: 'table', no: '04', name: 'The drafting table', narrator: 'Yours is drawn.' },
     { id: 'maker', no: '05', name: 'The maker', narrator: 'The man who builds it.' },
     { id: 'home', no: '06', name: 'Take it home', narrator: 'Take it home.' },
@@ -705,6 +717,69 @@ export const night = {
       { photo: 'living-03-wood-set', tall: 'living-03-wood-set-tall', focal: '50% 62%', alt: 'A full wooden living room set, styled in the Agrabad showroom.' },
       { photo: 'living-02-blue-pair', tall: 'living-02-blue-pair-tall', focal: '52% 60%', alt: 'A matched pair of deep blue two-seat sofas by Heaven Furniture Mart.' },
       { photo: 'bespoke-chairs-01', tall: 'bespoke-chairs-01-tall', focal: '58% 62%', alt: 'Bespoke upholstered chairs, built to order in Chattogram.' },
+    ],
+  },
+  /* ---- CH.2b · SIGNATURE PIECES ----
+
+     The wall above shows five ROOMS; a visitor who is ready now still had
+     nowhere to point at one THING (client: "load some best products ...
+     think what is easy for customers to order immediately"). So: six real
+     pieces from Heaven's own photography, large, and each one carrying the
+     page's single action with its own name already written into the
+     message - see whatsappMessages.aboutPiece. The fastest path from
+     "I want that" to a conversation is one tap, with nothing to describe.
+
+     NO PRICES, and no second verb. This is a studio: every piece is built
+     to a room, so a number on a card would be a lie about how the work is
+     quoted, and "Add to cart" would be the wrong shop entirely.
+
+     Every spec below is visible in its photograph or is one of the brief's
+     own promises. Nothing is claimed about timber species, mechanisms or
+     finishes, because none of that was given.
+  */
+  signature: {
+    tag: 'Signature pieces',
+    title: ['Six we would', 'show you first.'],
+    line: 'Built in Agrabad, in our own workshop. Every one of them can be made to your room.',
+    ask: 'Ask about this piece',
+    all: 'See the full range',
+    pieces: [
+      {
+        photo: 'living-03-wood-set',
+        name: 'The full wooden set',
+        room: 'Living Room',
+        specs: ['SEASONED HARDWOOD', 'IN-HOUSE FINISH', 'ROOM-MATCHED'],
+      },
+      {
+        photo: 'bedroom-01-royal-bed',
+        name: 'The carved bed',
+        room: 'Bedroom',
+        specs: ['HAND-CARVED HEADBOARD', 'BUILT TO YOUR ROOM'],
+      },
+      {
+        photo: 'bespoke-02-swing-black',
+        name: 'The dolna',
+        room: 'Bespoke',
+        specs: ['NOBODY SELLS THIS OFF A SHELF', 'YOUR SPAN', 'YOUR FINISH'],
+      },
+      {
+        photo: 'dining-04-gold-round',
+        name: 'The round dining table',
+        room: 'Dining',
+        specs: ['CUT TO THE NUMBER WHO SIT', 'CHAIRS TO MATCH'],
+      },
+      {
+        photo: 'living-04-gold-armchairs',
+        name: 'The gilt armchairs',
+        room: 'Living Room',
+        specs: ['MATCHED PAIR', 'FABRIC OF YOUR CHOICE'],
+      },
+      {
+        photo: 'office-03-executive-desk',
+        name: 'The executive desk',
+        room: 'Office & Study',
+        specs: ['BUILT TO THE ALCOVE', 'STORAGE TO ORDER'],
+      },
     ],
   },
   /* CH.2 · THE STUDIO. NOBODY READS A PARAGRAPH (client, verbatim: "avoid
@@ -764,6 +839,11 @@ export const night = {
   /* CH.3 · THE FLOOR: a gallery wall of five framed rooms */
   floor: {
     title: ['Five rooms.', 'Every piece to your measurements.'],
+    /* the wall shows five rooms; this is the way to all of them at once.
+       It sits on the head's own line rather than on a line of its own,
+       because the chapter is pinned to one viewport and every row of
+       chrome comes out of the height of the photographs. */
+    viewAll: 'View all categories',
     view: 'Quick look',
     open: 'Open the room',
     bespokeCard: { num: '05', name: 'Bespoke', detail: 'ANYTHING · YOUR SIZE · YOUR TASTE', action: 'See it drawn' },
