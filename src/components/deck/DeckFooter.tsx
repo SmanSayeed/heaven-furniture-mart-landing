@@ -1,4 +1,5 @@
 import { brand, footer, siteNav } from '@/content/copy'
+import { Wordmark } from '@/components/ui/Wordmark'
 import s from './deck.module.css'
 
 /** The foot of the deck: every contact fact from the brief, and nothing
@@ -7,10 +8,7 @@ export function DeckFooter() {
   return (
     <footer className={s.footer} id="contact">
       <div>
-        <span className={s.brand} aria-hidden="true">
-          HE<span className="tri" />VEN
-          <span className={s.brandSub}>FURNITURE MART</span>
-        </span>
+        <Wordmark className={s.brandFoot} />
         <p className={s.quiet} style={{ marginTop: '0.9rem' }}>
           {brand.tagline}
         </p>

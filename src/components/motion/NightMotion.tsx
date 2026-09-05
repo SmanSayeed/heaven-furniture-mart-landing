@@ -40,7 +40,12 @@ export function NightMotion() {
       /* the CSS hand-off rules (night.module.css) exist only while this
          layer drives the page */
       root.dataset.night = ''
-      const tier = detectTier()
+      /* PIN THE TIER NOW, at idle, rather than leaving it to whichever
+         caller asks first. detectTier() memoizes (device.ts), so this is
+         also the answer StageLoader gets four chapters down - and it is
+         taken at the page's calmest moment rather than off a connection
+         estimate that has drifted while the visitor read the hero. */
+      detectTier()
       /* the rail runs on every screen now, so there is no `wide` branch left
          to take; only the pointer still decides anything (the wall's cursor) */
       const fine = window.matchMedia('(pointer: fine)').matches
@@ -408,11 +413,41 @@ export function NightMotion() {
 
       /* ================= CH.4 · THE DRAFTING TABLE ================= */
       const table = q('#table')
-      if (table && tier !== 'low') {
+      /*
+        NO TIER GATE HERE ANY MORE.
+
+        This whole block used to sit behind `tier !== 'low'`, on the belief
+        that the chapter was the 3D. It is not: the chapter is a piece being
+        DESIGNED, CRAFTED and CUSTOMIZED, and since Skeleton.tsx the drawing
+        tells all three by itself. Gating the story on WebGL left a low-tier
+        visitor with three headings lighting up over a stage where nothing
+        ever happened (client: "on scroll texts are highlighting only").
+
+        Everything below is DOM opacity and two CSS custom properties. The
+        3D reads the same numbers when it exists and ignores them when it
+        does not.
+      */
+      if (table) {
         const stage = q('[data-stage-bespoke]')
         const steps = gsap.utils.toArray<HTMLElement>('[data-step]', table)
         const dock = q('[data-swatch-dock]')
         const pinned = window.innerHeight >= 560
+
+        /* the drawing's own build, on the same clock as the mesh's.
+           `--sweep` is the CRAFTED phase alone, mapped out of the whole
+           progress, so the material rises off the floor over the middle
+           third and nowhere else. */
+        const setBuild = (p: number) => {
+          if (!stage) return
+          stage.style.setProperty('--build', p.toFixed(3))
+          const sweep = Math.min(Math.max((p - 0.28) / 0.38, 0), 1)
+          stage.style.setProperty('--sweep', sweep.toFixed(3))
+        }
+        setBuild(0)
+        cleanups.push(() => {
+          stage?.style.removeProperty('--build')
+          stage?.style.removeProperty('--sweep')
+        })
 
         /* THE ARRIVAL, before the pin: the drawing draws itself in and the
            piece settles onto the table as the chapter comes into view */
@@ -447,7 +482,15 @@ export function NightMotion() {
               anticipatePin: 1,
             },
           })
-          tl.to(stageState, { bespokeProgress: 1, duration: 3 }, 0)
+          tl.to(
+            stageState,
+            {
+              bespokeProgress: 1,
+              duration: 3,
+              onUpdate: () => setBuild(stageState.bespokeProgress),
+            },
+            0,
+          )
           if (steps.length === 3) {
             tl.to(steps[0], { opacity: STEP_FLOOR, duration: 0.25 }, 0.9)
               .to(steps[1], { opacity: 1, duration: 0.25 }, 0.9)
@@ -462,6 +505,7 @@ export function NightMotion() {
             {
               bespokeProgress: 1,
               ease: 'none',
+              onUpdate: () => setBuild(stageState.bespokeProgress),
               scrollTrigger: { trigger: table, start: 'top 75%', end: 'center 45%', scrub: 1, invalidateOnRefresh: true },
             },
           )

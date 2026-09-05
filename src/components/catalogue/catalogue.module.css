@@ -40,34 +40,9 @@
   color: inherit;
 }
 
-/* the logo exception (BLUEPRINT SS2.8): the wordmark's triangle is the one
-   non-photo element allowed to carry the brand's hue */
-.chromeBrand :global(.tri) {
-  border-bottom-color: var(--marigold);
-  margin: 0 0.1em;
-}
-
-/* the wordmark's own span is the column, not the link: the link wraps an
-   sr-only name AND the stylised letters, so making the LINK the flex column
-   put the accessible name in the layout and pushed the sub-line inline */
-.chromeBrand > span[aria-hidden] {
-  display: flex;
-  flex-direction: column;
-  line-height: 1;
-}
-
-.chromeBrandRow {
-  display: inline-flex;
-  align-items: center;
-}
-
-.chromeBrandSub {
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 0.5rem;
-  letter-spacing: 0.3em;
-  opacity: 0.6;
-  margin-top: 0.28rem;
-}
+/* the wordmark is Heaven's own file now (Wordmark.tsx), so the type that
+   used to be set here - the triangle exception, the column, the sub-line -
+   has nothing left to style. */
 
 .chromeRight {
   display: flex;

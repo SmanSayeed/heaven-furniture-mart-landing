@@ -809,10 +809,6 @@ export const night = {
        first and built second, so the wait is part of the story rather than
        an apology for it. */
     drawing: 'Building the piece',
-    /* ...and what it says on a device that will never get a 3D piece at
-       all. The drawing is then the finished state, not a placeholder, so it
-       must not advertise a wait. */
-    drawn: 'Drawn to measure',
   },
   home: {
     title: ['Take it', 'home.'],

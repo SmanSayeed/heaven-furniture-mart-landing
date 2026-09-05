@@ -6,10 +6,12 @@ import {
   getPieceSize,
   getStageProgress,
   getStageReady,
+  getSwatch,
   onInspectArmed,
   onPieceSize,
   onStageProgress,
   onStageReady,
+  onSwatch,
   type StageKey,
 } from '@/lib/stage-state'
 import { bespoke, night } from '@/content/copy'
@@ -40,24 +42,27 @@ import s from './night.module.css'
 export function StagePoster() {
   const ready = useSyncExternalStore(onStageReady, getStageReady, () => false)
   const progress = useSyncExternalStore(onStageProgress, getStageProgress, () => -1)
+  /* the fabric the visitor picked. The drawing is dyed by the same store the
+     mesh is, so the swatch dock is a working control on a device that will
+     never render a mesh - which is most of this page's traffic. */
+  const swatch = useSyncExternalStore(onSwatch, getSwatch, () => bespoke.swatches[0])
   if (ready) return null
+  /* -1 means no load was ever armed (low tier, or nobody came near this
+     chapter). The line below then says nothing at all: the drawing builds
+     itself on the scroll either way, so there is no wait to announce. */
   const loading = progress >= 0
   return (
-    <div className={s.blueprint}>
+    <div className={s.blueprint} style={{ '--fabric': swatch.hex } as React.CSSProperties}>
       <Skeleton />
-      <p className={s.blueprintNote}>
-        <span className={s.blueprintWord}>
-          {loading ? night.table.drawing : night.table.drawn}
-        </span>
-        {loading ? (
-          <>
-            <span className={s.blueprintBar}>
-              <i style={{ transform: `scaleX(${progress})` }} />
-            </span>
-            <span className={s.blueprintPct}>{Math.round(progress * 100)}%</span>
-          </>
-        ) : null}
-      </p>
+      {loading ? (
+        <p className={s.blueprintNote}>
+          <span className={s.blueprintWord}>{night.table.drawing}</span>
+          <span className={s.blueprintBar}>
+            <i style={{ transform: `scaleX(${progress})` }} />
+          </span>
+          <span className={s.blueprintPct}>{Math.round(progress * 100)}%</span>
+        </p>
+      ) : null}
     </div>
   )
 }

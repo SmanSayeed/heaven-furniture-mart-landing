@@ -1052,12 +1052,77 @@
   color: var(--filament);
 }
 
-.skeleton {
+/* the two drawings sit on top of each other in one box */
+.skeletonWrap {
+  position: relative;
+  display: block;
   width: 100%;
   height: 100%;
   min-height: 0;
-  object-fit: contain;
+}
+
+.skeletonLines,
+.skeletonFill {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.skeletonLines {
   opacity: 0.9;
+}
+
+/*
+  THE SWEEP.
+
+  `--sweep` runs 0 -> 1 across the CRAFTED phase and NightMotion writes it
+  from the same scrubbed progress the 3D reads, so the drawing and the mesh
+  tell the story on one clock. inset() from the TOP is what makes the
+  material rise off the floor rather than drop onto it.
+
+  It defaults to 1, not 0. With no JavaScript, no motion layer, or reduced
+  motion, nothing ever writes this - and the honest resting state of a
+  bespoke furniture page is the finished piece, in colour, not a wireframe
+  waiting for a scroll that will never be scrubbed.
+*/
+.skeletonFill {
+  --wood: #7d5a38;
+  --wood-dark: #4d3520;
+}
+
+/* 192 = the floor line, 30 = above the back rail. Default 1 (built): with
+   no motion layer nothing writes --sweep, and the resting state of a
+   furniture page is the finished piece. */
+.sweepPlane {
+  y: calc(192px - var(--sweep, 1) * 162px);
+}
+
+.fillWood {
+  fill: var(--wood);
+}
+
+.fillWoodDark {
+  fill: var(--wood-dark);
+}
+
+/* the cushions carry the swatch the visitor chose (Stage.tsx subscribes),
+   so the fabric dock works on every device, not only the ones that got a
+   mesh to re-dye */
+.fillFabric {
+  fill: var(--fabric, #c8b9a4);
+}
+
+.fillSeat {
+  fill: var(--fabric, #c8b9a4);
+  /* the seat sits in the back's shadow: same cloth, less light */
+  filter: brightness(0.86);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sweepPlane {
+    y: 30px;
+  }
 }
 
 /* the status line: the chapter's verb, a rule that fills, and the number.

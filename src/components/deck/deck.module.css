@@ -429,29 +429,18 @@
   color: var(--paper);
 }
 
+/* the wordmark's slot. The type that used to be set here (HE/tri/VEN over
+   FURNITURE MART) is gone: Wordmark.tsx ships the client's own file, so
+   this is now only the box it sits in. */
 .brand {
   display: inline-block;
-  font-family: var(--font-display), system-ui, sans-serif;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  font-size: 0.8125rem;
-  line-height: 1;
-  color: var(--ivory);
+  line-height: 0;
   text-decoration: none;
 }
 
-.brand :global(.tri) {
-  border-bottom-color: var(--marigold);
-}
-
-.brandSub {
-  display: block;
-  font-family: var(--font-sans), system-ui, sans-serif;
-  font-weight: 500;
-  font-size: 0.4375rem;
-  letter-spacing: 0.32em;
-  opacity: 0.7;
-  margin-top: 4px;
+/* the foot signs a little larger than the chrome does */
+.brandFoot {
+  width: clamp(118px, 30vw, 146px);
 }
 
 .nav {

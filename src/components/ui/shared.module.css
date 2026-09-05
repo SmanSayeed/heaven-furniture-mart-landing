@@ -691,3 +691,14 @@
     opacity: 0;
   }
 }
+
+/* ---- THE LOGOTYPE ----
+   Heaven's own file (Wordmark.tsx). Capped at 124 px so a 2x screen asks
+   for 248 device px of a 267 px asset - the largest it can be drawn and
+   still be drawn, not stretched. */
+.wordmark {
+  display: block;
+  width: clamp(100px, 26vw, 124px);
+  height: auto;
+  user-select: none;
+}

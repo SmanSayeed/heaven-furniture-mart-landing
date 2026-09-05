@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { brand, catalogue, siteNav } from '@/content/copy'
 import { ArrowRight } from '@/components/ui/Icons'
+import { Wordmark } from '@/components/ui/Wordmark'
 import s from './catalogue.module.css'
 
 /**
@@ -38,16 +39,7 @@ export function CatalogueChrome({
     <header className={s.chrome}>
       <Link href="/" className={s.chromeBrand}>
         <span className="sr-only">{catalogue.backToHome}</span>
-        {/* the letters get their OWN row span: the outer span is a flex
-            COLUMN, and bare text nodes in a flex container become anonymous
-            items - which stacked HE, the triangle and VEN vertically and
-            printed the wordmark as a ransom note */}
-        <span aria-hidden="true">
-          <span className={s.chromeBrandRow}>
-            HE<span className="tri" />VEN
-          </span>
-          <span className={s.chromeBrandSub}>FURNITURE MART</span>
-        </span>
+        <Wordmark decorative />
       </Link>
 
       <nav className={s.chromeNav} aria-label="Site">

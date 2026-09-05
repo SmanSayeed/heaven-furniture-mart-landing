@@ -6,6 +6,7 @@ import { whatsappUrl } from '@/lib/whatsapp'
 import { getLenis } from '@/lib/lenis-store'
 import { Photo, hasPhoto } from '@/components/ui/Photo'
 import { ArrowRight, WhatsApp } from '@/components/ui/Icons'
+import { Wordmark } from '@/components/ui/Wordmark'
 import s from './deck.module.css'
 import { plural } from '@/lib/plural'
 
@@ -190,10 +191,7 @@ export function MegaMenu({
             rather than as a layer on top of it - and the way out is here,
             sticky, where a full-screen takeover has to put it */}
         <div className={s.megaHead}>
-          <span className={s.brand} aria-hidden="true">
-            HE<span className="tri" />VEN
-            <span className={s.brandSub}>FURNITURE MART</span>
-          </span>
+          <Wordmark decorative />
           <button
             type="button"
             className={s.megaClose}
@@ -275,10 +273,7 @@ export function MegaMenu({
         {sheet && (
           <>
             <div className={s.sheetHead}>
-              <span className={s.brand} aria-hidden="true">
-                HE<span className="tri" />VEN
-                <span className={s.brandSub}>FURNITURE MART</span>
-              </span>
+              <Wordmark decorative />
               <button type="button" className={s.modalClose} onClick={closeSheet}>
                 {m.close.toUpperCase()} ×
               </button>

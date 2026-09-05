@@ -45,9 +45,34 @@ export function prefersLightweight(): boolean {
   return false
 }
 
+/*
+  ONE ANSWER PER PAGE LOAD.
+
+  detectTier() has two callers at two different moments: NightMotion at the
+  browser's first idle (~1.5 s in), and StageLoader when the visitor comes
+  within a screen and a half of the drafting table (which can be a minute
+  later). `navigator.connection.effectiveType` is a ROLLING ESTIMATE - it
+  drifts as the page pulls bytes - so the two callers were getting two
+  different tiers off the same device: the motion layer armed the chapter's
+  scroll story at 'mid', and by the time the visitor arrived the loader read
+  '3g' and refused to mount the piece at all. The steps lit up over an empty
+  stage, which is exactly what the client reported ("on scroll texts are
+  highlighting only").
+
+  So the tier is decided ONCE, on first ask, and every later caller is told
+  the same thing. A page cannot change what kind of page it is halfway down.
+*/
+let decided: Tier | null = null
+
 export function detectTier(): Tier {
   /* server render or a non-window context: treat as low, mount nothing */
   if (typeof window === 'undefined') return 'low'
+  if (decided) return decided
+  decided = decide()
+  return decided
+}
+
+function decide(): Tier {
 
   const nav = navigator as NavigatorCapabilities
   const conn = nav.connection
@@ -93,11 +118,30 @@ export function detectTier(): Tier {
   const handheld =
     typeof window.matchMedia === 'function' && window.matchMedia('(pointer: coarse)').matches
 
+  /*
+    A SLOW LINK IS A REASON TO WAIT, NOT A REASON TO DELETE THE SUBJECT.
+
+    '3g' on a phone used to return 'low', which meant the drafting table -
+    the chapter whose entire subject is a piece being built - rendered a
+    drawing and then nothing ever happened to it. That is the worst of both:
+    the visitor pays for the section's height and gets none of its story.
+
+    Two things changed that make waiting acceptable now: the stand-in is the
+    same piece, drawn (Skeleton.tsx), and it BUILDS ITSELF on the scroll
+    whether or not the 3D ever lands - so nobody is looking at a promise.
+    And the loader prints a real percentage, so the wait is legible.
+
+    'low' is now reserved for a device or a person that genuinely should not
+    be asked: Data Saver on, no WebGL2, 2 GB of memory, two cores, or a link
+    the browser calls 2g.
+  */
   if (slowLink) return 'low'
-  if (modestLink && handheld) return 'low'
   if (modestLink) return 'mid'
 
-  if (cores >= 6 && (memory ?? 8) >= 6) return 'high'
+  /* a phone with plenty of cores is still a phone: 'high' turns on the
+     costlier framing and pixel ratio, and that budget belongs to a machine
+     with a fan */
+  if (!handheld && cores >= 6 && (memory ?? 8) >= 6) return 'high'
   return 'mid'
 }
 

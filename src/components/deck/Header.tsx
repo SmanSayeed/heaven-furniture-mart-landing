@@ -1,6 +1,7 @@
-import { brand, deck } from '@/content/copy'
+import { deck } from '@/content/copy'
 import { whatsappUrl } from '@/lib/whatsapp'
 import { WhatsApp } from '@/components/ui/Icons'
+import { Wordmark } from '@/components/ui/Wordmark'
 import { MegaMenu } from './MegaMenu'
 import s from './deck.module.css'
 
@@ -31,11 +32,7 @@ export function Header({
     <>
       <header className={`${s.hdr} ${solid ? s.hdrSolid : ''}`} data-header>
         <a href={home || '#top'} className={s.brand}>
-          <span className="sr-only">{brand.name}</span>
-          <span aria-hidden="true">
-            HE<span className="tri" />VEN
-            <span className={s.brandSub}>FURNITURE MART</span>
-          </span>
+          <Wordmark />
         </a>
         <MegaMenu nav={nav} home={home} />
         {/* NOT the hero's pill. The hero's CTA is the page's loud one -
