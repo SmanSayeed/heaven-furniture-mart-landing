@@ -389,20 +389,54 @@ export function NightMotion() {
       let killed = false
       let frame = 0
       const queue: Array<() => void> = []
+
+      /*
+        ...AND ONE REFRESH WHEN THE QUEUE IS EMPTY.
+
+        This is not optional and it is why the split needs care. Every pin
+        inserts a spacer, which changes the height of the document, which
+        moves the start and end of every trigger measured before it. In one
+        synchronous pass ScrollTrigger settled that itself at the end of the
+        tick. Spread over frames, the hero was measured against a document
+        that did not yet contain the floor's pin or the table's, so its
+        numbers were stale by the time the visitor scrolled - pins starting
+        early, scrubs finishing before their section, chapters that simply
+        did not fire.
+
+        So: measure once more, after the last chapter is in.
+      */
       const drain = () => {
         const next = queue.shift()
         if (killed || !next) return
         next()
         if (queue.length) frame = requestAnimationFrame(drain)
+        else ScrollTrigger.refresh()
       }
       const later = (fn: () => void) => {
         queue.push(fn)
         if (queue.length === 1) frame = requestAnimationFrame(drain)
       }
+
+      /* and if the visitor scrolls before the queue has drained, they are
+         ahead of us: build the rest now rather than one frame at a time
+         underneath a moving page */
+      const flush = () => {
+        if (killed || !queue.length) return
+        cancelAnimationFrame(frame)
+        while (queue.length) queue.shift()!()
+        ScrollTrigger.refresh()
+      }
+      window.addEventListener('wheel', flush, { passive: true, once: true })
+      window.addEventListener('touchstart', flush, { passive: true, once: true })
+      window.addEventListener('keydown', flush, { once: true })
+
       cleanups.push(() => {
         killed = true
         cancelAnimationFrame(frame)
         queue.length = 0
+        window.removeEventListener('wheel', flush)
+        window.removeEventListener('touchstart', flush)
+        window.removeEventListener('keydown', flush)
       })
 
       /* the elements the cleanup below still needs by name, read now rather

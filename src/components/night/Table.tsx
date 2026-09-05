@@ -27,6 +27,7 @@ export function Table() {
   const t = night.table
   return (
     <section id="table" className={s.table} data-chapter="table" aria-label="Bespoke">
+      <h2 className="sr-only">{t.title.join(' ')}</h2>
       <div className={`${s.inner} ${s.tableGrid}`}>
         <div className={s.tableCol}>
           <div data-reveal="words" data-stagger style={{ display: 'grid', gap: '0.9rem' }}>

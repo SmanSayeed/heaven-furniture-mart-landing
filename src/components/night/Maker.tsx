@@ -23,6 +23,10 @@ export function Maker() {
   const m = deck.maker
   return (
     <section id="maker" className={s.maker} data-chapter="maker" aria-label={`${m.name}, ${m.role}`}>
+      {/* the chapter contributed no heading at all, so it was invisible to
+          heading navigation and its quotation hung off whatever h2 came
+          last. The name is already the section's accessible label. */}
+      <h2 className="sr-only">{`${m.name}, ${m.role}`}</h2>
       {hasPhoto(m.photo) && (
         <div className={s.makerPlate} data-reveal="rise">
           <Photo

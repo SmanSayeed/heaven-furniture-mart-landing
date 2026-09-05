@@ -743,18 +743,29 @@ export const night = {
     line: 'Built in-house, in our own workshop. Every one of them can be made to your room.',
     ask: 'Ask about this piece',
     all: 'See the full range',
+    /* EVERY PLATE IS 4:5, SO EVERY PHOTOGRAPH HERE IS UPRIGHT.
+
+       The first six included three landscape frames (1.64, 1.79 and 1.00),
+       and `object-fit: cover` in a 4:5 plate showed a centre slice of each:
+       the bed lost 55% of its width, so "the full wooden set" rendered as
+       a detail of itself. The fix is not a bigger plate, it is the right
+       photographs - these are all 0.73 to 1.00, so each piece is very
+       nearly whole at any width.
+
+       Bedroom is not here, and that is deliberate rather than an oversight:
+       every bedroom frame Heaven has published is 1.67 or wider. The rooms
+       wall directly above this carries all five rooms; this chapter is
+       about PIECES, and it says nothing it cannot show properly.
+
+       Every spec is one of the brief's own promises or something the
+       photograph plainly shows. Nothing about timber species, mechanisms
+       or finishes is claimed. */
     pieces: [
       {
-        photo: 'living-03-wood-set',
-        name: 'The full wooden set',
+        photo: 'living-10-blue-set',
+        name: 'The blue sofa set',
         room: 'Living Room',
-        specs: ['PREMIUM WOOD', 'IN-HOUSE FINISH', 'ROOM-MATCHED'],
-      },
-      {
-        photo: 'bedroom-01-royal-bed',
-        name: 'The carved bed',
-        room: 'Bedroom',
-        specs: ['CARVED HEADBOARD', 'BUILT TO YOUR ROOM'],
+        specs: ['BUILT TO YOUR WALL', 'FABRIC OF YOUR CHOICE'],
       },
       {
         photo: 'bespoke-02-swing-black',
@@ -766,7 +777,7 @@ export const night = {
         photo: 'dining-04-gold-round',
         name: 'The round dining table',
         room: 'Dining',
-        specs: ['CUT TO THE NUMBER WHO SIT', 'CHAIRS TO MATCH'],
+        specs: ['CUT TO THE NUMBER WHO SIT', 'PREMIUM WOOD'],
       },
       {
         photo: 'living-04-gold-armchairs',
@@ -778,7 +789,13 @@ export const night = {
         photo: 'office-03-executive-desk',
         name: 'The executive desk',
         room: 'Office & Study',
-        specs: ['BUILT TO THE ALCOVE', 'STORAGE TO ORDER'],
+        specs: ['BUILT TO THE ALCOVE', 'PREMIUM WOOD'],
+      },
+      {
+        photo: 'dining-03-glass-top',
+        name: 'The glass-top dining table',
+        room: 'Dining',
+        specs: ['GLASS TOP', 'CARVED BASE'],
       },
     ],
   },

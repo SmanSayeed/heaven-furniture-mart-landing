@@ -64,7 +64,10 @@ export function Signature() {
               <span className={s.sigPlate}>
                 <Photo
                   name={piece.photo}
-                  alt={`${piece.name} — ${piece.room.toLowerCase()} furniture by Heaven Furniture Mart.`}
+                  /* empty on purpose: the link's own text already names the
+                     piece and its room, and repeating it in the alt makes a
+                     screen reader say both twice inside one link */
+                  alt=""
                   sizes="(min-width: 1100px) 33vw, (min-width: 700px) 48vw, 88vw"
                   low={i > 1}
                 />
@@ -72,9 +75,12 @@ export function Signature() {
                 <span className={s.sigShade} aria-hidden="true" />
               </span>
 
-              <span className={s.sigBody}>
+              <div className={s.sigBody}>
                 <span className={s.sigRoom}>{piece.room}</span>
-                <span className={s.sigName}>{piece.name}</span>
+                {/* a real heading: six unnamed <article>s left nothing
+                    between this section's h2 and the studio's for heading
+                    navigation to land on */}
+                <h3 className={s.sigName}>{piece.name}</h3>
                 <span className={s.sigSpecs}>
                   {piece.specs.map((spec) => (
                     <span key={spec}>{spec}</span>
@@ -84,7 +90,7 @@ export function Signature() {
                   <WhatsApp />
                   {sig.ask}
                 </span>
-              </span>
+              </div>
             </a>
           </article>
         ))}

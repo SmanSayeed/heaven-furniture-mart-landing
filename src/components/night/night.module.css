@@ -784,8 +784,10 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  /* 40 px of hit area out of transparent padding */
-  padding-block: 0.55rem;
+  /* 44 px of hit area out of transparent padding. 0.55rem gave 31.6 px
+     including the 13 px glyph and the 1 px rule - under a thumb, not a
+     pointer, that is a miss waiting to happen. */
+  padding-block: 0.85rem;
   font-family: var(--font-sans), system-ui, sans-serif;
   font-size: 0.65rem;
   font-weight: 600;
@@ -1340,8 +1342,11 @@
   }
   /* the dimension line directly under the stage already prints the
      millimetres; the specs list says them again, and a pinned phone does
-     not have the height for both */
-  .table[data-pinned] .specs {
+     not have the height for both. The drag hint goes with it: at the
+     shortest pinned height (560 svh, the threshold) these two rows were
+     costing the piece about a fifth of the room it had to be drawn in. */
+  .table[data-pinned] .specs,
+  .table[data-pinned] .inspect {
     display: none;
   }
   .table[data-pinned] .stepLine {
@@ -2565,8 +2570,23 @@
 }
 
 @media (max-width: 899px) {
+  /*
+    THE WALL IS HEIGHT-AWARE ON A PHONE TOO.
+
+    This was `clamp(320px, 52svh, 460px)` - a hard 320 px floor that knew
+    nothing about the viewport - and both of the short-window relief steps
+    above are gated at min-width 861px, so a phone got none of them. The
+    chapter is pinned to exactly 100svh and clips its overflow, so at
+    390x640 the column came out about 54 px over and at 560 svh about
+    120 px over: the dots, the swipe hint and the foot of every plate were
+    cut for the whole pinned run.
+
+    372 px is the chapter's own chrome on a phone, measured off this file:
+    112 padding + ~132 head + 12 head margin + 22 card gap + ~40 foot +
+    ~43 dots and swipe, plus a little air. What is left is the picture.
+  */
   .floor {
-    --wall-h: clamp(320px, 52svh, 460px);
+    --wall-h: clamp(196px, calc(100svh - 372px), 460px);
   }
 
   .wcard {
@@ -3156,6 +3176,7 @@
 }
 
 .sigName {
+  margin: 0;
   font-family: var(--font-display), system-ui, sans-serif;
   font-weight: 600;
   font-size: clamp(1.25rem, 2.2vw, 1.6rem);
@@ -3168,10 +3189,10 @@
   flex-wrap: wrap;
   gap: 0.35rem 0.75rem;
   font-family: var(--font-sans), system-ui, sans-serif;
-  font-size: 0.58rem;
+  font-size: 0.68rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  opacity: 0.6;
+  opacity: 0.66;
 }
 
 /* the action, on every card, reading as one line rather than a button:
@@ -3182,8 +3203,9 @@
   align-items: center;
   gap: 0.45rem;
   margin-top: 0.35rem;
-  /* a 40 px row without 40 px of chrome */
-  padding-block: 0.5rem;
+  /* the whole card is the link, so this is a label rather than a target -
+     but it is sized to survive being promoted to one */
+  padding-block: 0.8rem;
   font-family: var(--font-sans), system-ui, sans-serif;
   font-size: 0.625rem;
   font-weight: 600;
@@ -3211,7 +3233,8 @@
 @media (prefers-reduced-motion: reduce) {
   .sigPlate,
   .sigPlate img,
-  .sigAsk {
+  .sigAsk,
+  .floorAll {
     transition: none;
   }
 }
