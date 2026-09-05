@@ -311,405 +311,462 @@ export function NightMotion() {
         }
       }
 
-      /* ================= CH.3 · THE FLOOR (the glass wall) ============= */
+
+      /*
+        ONE CHAPTER PER FRAME.
+
+        Everything below used to be built in a single synchronous pass, and
+        the QA trace found exactly that: a 1,018 ms task at 2.34 s on a 4x
+        throttled phone - the moment the GSAP chunk lands and every pin,
+        scrub and trigger on a 13,000 px page is created at once. The page
+        stops answering input right when the visitor starts to scroll.
+
+        Splitting it in two would barely help (a task is only charged for
+        what it costs OVER 50 ms, so one 1,000 ms task and two 500 ms ones
+        are nearly the same bill). What helps is many SMALL tasks, so each
+        chapter's setup gets its own frame and the browser can answer a tap
+        between any two of them.
+
+        Order is deliberate: the hero and the studio are built immediately,
+        because they are what the visitor is looking at. The floor is one
+        frame later, the drafting table the next, the rest after that -
+        all of them long before a scroll could reach them, and any one of
+        them is a fraction of the task it used to be part of.
+
+        `killed` is the contract with the cleanup below: React can unmount
+        this layer before the queue drains, and a chapter set up after
+        teardown would register triggers nobody would ever remove.
+      */
+      let killed = false
+      let frame = 0
+      const queue: Array<() => void> = []
+      const drain = () => {
+        const next = queue.shift()
+        if (killed || !next) return
+        next()
+        if (queue.length) frame = requestAnimationFrame(drain)
+      }
+      const later = (fn: () => void) => {
+        queue.push(fn)
+        if (queue.length === 1) frame = requestAnimationFrame(drain)
+      }
+      cleanups.push(() => {
+        killed = true
+        cancelAnimationFrame(frame)
+        queue.length = 0
+      })
+
+      /* the elements the cleanup below still needs by name, read now rather
+         than inside the deferred blocks that used to declare them */
       const floor = q('#floor')
       const track = q('[data-track]')
-      if (floor && track) {
-        const cards = gsap.utils.toArray<HTMLElement>('[data-rcard]', track)
-        const bar = q('[data-rail-bar] i')
-        /* THE RAIL IS THE CHAPTER, ON EVERY SCREEN.
+      const table = q('#table')
 
-           The phone used to get a native scroll-snap carousel instead: the
-           reasoning was that a pinned rail under a thumb fights vertical
-           momentum. In practice it meant the one chapter that moves did not
-           move on the device most visitors are holding - the visitor had to
-           find the strip and swipe it sideways, and most never did (client:
-           "in mobile view categories section on scroll not gsap way not auto
-           scrolling ... every sections should have some effects on scroll").
+      /* ================= CH.3 · THE FLOOR (the glass wall) ============= */
+      later(() => {
+        if (floor && track) {
+          const cards = gsap.utils.toArray<HTMLElement>('[data-rcard]', track)
+          const bar = q('[data-rail-bar] i')
+          /* THE RAIL IS THE CHAPTER, ON EVERY SCREEN.
 
-           So the pin runs everywhere and the phone simply travels less: the
-           plates are smaller there, so `dist()` is smaller, and the chapter
-           holds for about a screen and a half rather than three. Vertical
-           scrolling still drives it - nothing here asks for a sideways
-           gesture. The server HTML is still the snap carousel, which is what
-           a no-JS or reduced-motion visitor keeps. */
-        {
-          floor.dataset.rail = ''
-          const dots = gsap.utils.toArray<HTMLElement>('[data-dots] i')
-          const swipe = q('[data-swipe]')
-          const dist = () => Math.max(0, track.scrollWidth - track.clientWidth)
-          const travel = gsap.to(track, {
-            x: () => -dist(),
-            ease: 'none',
-            scrollTrigger: {
-              trigger: floor,
-              start: 'top top',
-              end: () => '+=' + dist(),
-              pin: true,
-              scrub: 1,
-              invalidateOnRefresh: true,
-              anticipatePin: 1,
-              onUpdate: (st) => {
-                if (bar) gsap.set(bar, { scaleX: st.progress })
-                /* the dots read the rail's progress rather than the track's
-                   scrollLeft, which no longer moves now that GSAP owns the
-                   transform */
-                const i = Math.min(
-                  cards.length - 1,
-                  Math.round(st.progress * (cards.length - 1)),
-                )
-                dots.forEach((dot, j) => {
-                  if (j === i) dot.dataset.on = ''
-                  else delete dot.dataset.on
-                })
-                if (swipe) swipe.style.opacity = st.progress > 0.02 ? '0' : ''
-              },
-            },
-          })
-          /* each frame turns to face the visitor as it enters from the right */
-          cards.forEach((card) => {
-            gsap.fromTo(
-              card,
-              /* .7, not .4: the brass plaque on a waiting frame must still
-                 read 4.5:1 (the audit measures the page at rest) */
-              { rotateY: 16, opacity: 0.7, transformPerspective: 900 },
-              {
-                rotateY: 0,
-                opacity: 1,
-                ease: 'power2.out',
-                scrollTrigger: {
-                  trigger: card,
-                  containerAnimation: travel,
-                  start: 'left 92%',
-                  end: 'left 55%',
-                  scrub: true,
+             The phone used to get a native scroll-snap carousel instead: the
+             reasoning was that a pinned rail under a thumb fights vertical
+             momentum. In practice it meant the one chapter that moves did not
+             move on the device most visitors are holding - the visitor had to
+             find the strip and swipe it sideways, and most never did (client:
+             "in mobile view categories section on scroll not gsap way not auto
+             scrolling ... every sections should have some effects on scroll").
+
+             So the pin runs everywhere and the phone simply travels less: the
+             plates are smaller there, so `dist()` is smaller, and the chapter
+             holds for about a screen and a half rather than three. Vertical
+             scrolling still drives it - nothing here asks for a sideways
+             gesture. The server HTML is still the snap carousel, which is what
+             a no-JS or reduced-motion visitor keeps. */
+          {
+            floor.dataset.rail = ''
+            const dots = gsap.utils.toArray<HTMLElement>('[data-dots] i')
+            const swipe = q('[data-swipe]')
+            const dist = () => Math.max(0, track.scrollWidth - track.clientWidth)
+            const travel = gsap.to(track, {
+              x: () => -dist(),
+              ease: 'none',
+              scrollTrigger: {
+                trigger: floor,
+                start: 'top top',
+                end: () => '+=' + dist(),
+                pin: true,
+                scrub: 1,
+                invalidateOnRefresh: true,
+                anticipatePin: 1,
+                onUpdate: (st) => {
+                  if (bar) gsap.set(bar, { scaleX: st.progress })
+                  /* the dots read the rail's progress rather than the track's
+                     scrollLeft, which no longer moves now that GSAP owns the
+                     transform */
+                  const i = Math.min(
+                    cards.length - 1,
+                    Math.round(st.progress * (cards.length - 1)),
+                  )
+                  dots.forEach((dot, j) => {
+                    if (j === i) dot.dataset.on = ''
+                    else delete dot.dataset.on
+                  })
+                  if (swipe) swipe.style.opacity = st.progress > 0.02 ? '0' : ''
                 },
               },
-            )
-          })
-        }
-
-        /* ---- THE LIVE PLATE ----
-           One room is in colour at a time: the one nearest the middle of
-           the screen. On the rail that is a function of the travel, on a
-           phone of the snap position, so it is one rule rather than two
-           behaviours. Runs on the ticker (a rect read per frame per card,
-           five of them) rather than on scroll, because the rail moves the
-           cards with a transform the scroll never sees. */
-        const marks = () => {
-          const mid = window.innerWidth / 2
-          let best: HTMLElement | null = null
-          let bestD = Infinity
-          cards.forEach((card) => {
-            const b = card.getBoundingClientRect()
-            const d = Math.abs(b.left + b.width / 2 - mid)
-            if (d < bestD) {
-              bestD = d
-              best = card
-            }
-          })
-          cards.forEach((card) => {
-            if (card === best) card.dataset.focus = ''
-            else delete card.dataset.focus
-          })
-        }
-        marks()
-        gsap.ticker.add(marks)
-        cleanups.push(() => {
-          gsap.ticker.remove(marks)
-          cards.forEach((card) => delete card.dataset.focus)
-        })
-
-        /* THE PLATES UNDER A POINTER: each tilts a few degrees toward the
-           cursor and a pool of light follows it across the glass. One
-           pointermove per plate, custom properties and transforms only; a
-           finger gets none of it. */
-        if (fine) {
-          const cursor = q('[data-floor-cursor]')
-          if (cursor) {
-            const setX = gsap.quickTo(cursor, 'x', { duration: 0.35, ease: 'power3' })
-            const setY = gsap.quickTo(cursor, 'y', { duration: 0.35, ease: 'power3' })
-            const onFloorMove = (e: PointerEvent) => {
-              if (e.pointerType !== 'mouse') return
-              setX(e.clientX)
-              setY(e.clientY)
-              cursor.dataset.on = ''
-              if ((e.target as Element).closest('[data-frame]')) cursor.dataset.over = ''
-              else delete cursor.dataset.over
-            }
-            const onFloorLeave = () => {
-              delete cursor.dataset.on
-              delete cursor.dataset.over
-            }
-            floor.addEventListener('pointermove', onFloorMove)
-            floor.addEventListener('pointerleave', onFloorLeave)
-            cleanups.push(() => {
-              floor.removeEventListener('pointermove', onFloorMove)
-              floor.removeEventListener('pointerleave', onFloorLeave)
-              onFloorLeave()
+            })
+            /* each frame turns to face the visitor as it enters from the right */
+            cards.forEach((card) => {
+              gsap.fromTo(
+                card,
+                /* .7, not .4: the brass plaque on a waiting frame must still
+                   read 4.5:1 (the audit measures the page at rest) */
+                { rotateY: 16, opacity: 0.7, transformPerspective: 900 },
+                {
+                  rotateY: 0,
+                  opacity: 1,
+                  ease: 'power2.out',
+                  scrollTrigger: {
+                    trigger: card,
+                    containerAnimation: travel,
+                    start: 'left 92%',
+                    end: 'left 55%',
+                    scrub: true,
+                  },
+                },
+              )
             })
           }
 
-          gsap.utils.toArray<HTMLElement>('[data-frame]', track).forEach((frame) => {
-            let raf = 0
-            const move = (e: PointerEvent) => {
-              if (raf) return
-              raf = requestAnimationFrame(() => {
-                raf = 0
-                const r = frame.getBoundingClientRect()
-                const px = (e.clientX - r.left) / r.width
-                const py = (e.clientY - r.top) / r.height
-                frame.style.setProperty('--ry', `${(px - 0.5) * 9}deg`)
-                frame.style.setProperty('--rx', `${(0.5 - py) * 9}deg`)
-                frame.style.setProperty('--mx', `${px * 100}%`)
-                frame.style.setProperty('--my', `${py * 100}%`)
+          /* ---- THE LIVE PLATE ----
+             One room is in colour at a time: the one nearest the middle of
+             the screen. On the rail that is a function of the travel, on a
+             phone of the snap position, so it is one rule rather than two
+             behaviours. Runs on the ticker (a rect read per frame per card,
+             five of them) rather than on scroll, because the rail moves the
+             cards with a transform the scroll never sees. */
+          const marks = () => {
+            const mid = window.innerWidth / 2
+            let best: HTMLElement | null = null
+            let bestD = Infinity
+            cards.forEach((card) => {
+              const b = card.getBoundingClientRect()
+              const d = Math.abs(b.left + b.width / 2 - mid)
+              if (d < bestD) {
+                bestD = d
+                best = card
+              }
+            })
+            cards.forEach((card) => {
+              if (card === best) card.dataset.focus = ''
+              else delete card.dataset.focus
+            })
+          }
+          marks()
+          gsap.ticker.add(marks)
+          cleanups.push(() => {
+            gsap.ticker.remove(marks)
+            cards.forEach((card) => delete card.dataset.focus)
+          })
+
+          /* THE PLATES UNDER A POINTER: each tilts a few degrees toward the
+             cursor and a pool of light follows it across the glass. One
+             pointermove per plate, custom properties and transforms only; a
+             finger gets none of it. */
+          if (fine) {
+            const cursor = q('[data-floor-cursor]')
+            if (cursor) {
+              const setX = gsap.quickTo(cursor, 'x', { duration: 0.35, ease: 'power3' })
+              const setY = gsap.quickTo(cursor, 'y', { duration: 0.35, ease: 'power3' })
+              const onFloorMove = (e: PointerEvent) => {
+                if (e.pointerType !== 'mouse') return
+                setX(e.clientX)
+                setY(e.clientY)
+                cursor.dataset.on = ''
+                if ((e.target as Element).closest('[data-frame]')) cursor.dataset.over = ''
+                else delete cursor.dataset.over
+              }
+              const onFloorLeave = () => {
+                delete cursor.dataset.on
+                delete cursor.dataset.over
+              }
+              floor.addEventListener('pointermove', onFloorMove)
+              floor.addEventListener('pointerleave', onFloorLeave)
+              cleanups.push(() => {
+                floor.removeEventListener('pointermove', onFloorMove)
+                floor.removeEventListener('pointerleave', onFloorLeave)
+                onFloorLeave()
               })
             }
-            const leave = () => {
-              frame.style.setProperty('--ry', '0deg')
-              frame.style.setProperty('--rx', '0deg')
+
+            gsap.utils.toArray<HTMLElement>('[data-frame]', track).forEach((frame) => {
+              let raf = 0
+              const move = (e: PointerEvent) => {
+                if (raf) return
+                raf = requestAnimationFrame(() => {
+                  raf = 0
+                  const r = frame.getBoundingClientRect()
+                  const px = (e.clientX - r.left) / r.width
+                  const py = (e.clientY - r.top) / r.height
+                  frame.style.setProperty('--ry', `${(px - 0.5) * 9}deg`)
+                  frame.style.setProperty('--rx', `${(0.5 - py) * 9}deg`)
+                  frame.style.setProperty('--mx', `${px * 100}%`)
+                  frame.style.setProperty('--my', `${py * 100}%`)
+                })
+              }
+              const leave = () => {
+                frame.style.setProperty('--ry', '0deg')
+                frame.style.setProperty('--rx', '0deg')
+              }
+              frame.addEventListener('pointermove', move)
+              frame.addEventListener('pointerleave', leave)
+              cleanups.push(() => {
+                frame.removeEventListener('pointermove', move)
+                frame.removeEventListener('pointerleave', leave)
+                leave()
+              })
+            })
+          }
+        }
+
+      })
+
+      /* ================= CH.4 · THE DRAFTING TABLE ================= */
+      later(() => {
+        /*
+          NO TIER GATE HERE ANY MORE.
+
+          This whole block used to sit behind `tier !== 'low'`, on the belief
+          that the chapter was the 3D. It is not: the chapter is a piece being
+          DESIGNED, CRAFTED and CUSTOMIZED, and since Skeleton.tsx the drawing
+          tells all three by itself. Gating the story on WebGL left a low-tier
+          visitor with three headings lighting up over a stage where nothing
+          ever happened (client: "on scroll texts are highlighting only").
+
+          Everything below is DOM opacity and two CSS custom properties. The
+          3D reads the same numbers when it exists and ignores them when it
+          does not.
+        */
+        if (table) {
+          const stage = q('[data-stage-bespoke]')
+          const steps = gsap.utils.toArray<HTMLElement>('[data-step]', table)
+          const dock = q('[data-swatch-dock]')
+          const pinned = window.innerHeight >= 560
+
+          /* the drawing's own build, on the same clock as the mesh's.
+             `--sweep` is the CRAFTED phase alone, mapped out of the whole
+             progress, so the material rises off the floor over the middle
+             third and nowhere else. */
+          const setBuild = (p: number) => {
+            if (!stage) return
+            stage.style.setProperty('--build', p.toFixed(3))
+            const sweep = Math.min(Math.max((p - 0.28) / 0.38, 0), 1)
+            stage.style.setProperty('--sweep', sweep.toFixed(3))
+          }
+          setBuild(0)
+          cleanups.push(() => {
+            stage?.style.removeProperty('--build')
+            stage?.style.removeProperty('--sweep')
+          })
+
+          /* THE ARRIVAL, before the pin: the drawing draws itself in and the
+             piece settles onto the table as the chapter comes into view */
+          stageState.bespokeArrival = 0
+          if (stage) stage.dataset.drafting = ''
+          ScrollTrigger.create({
+            trigger: table,
+            start: 'top 85%',
+            once: true,
+            onEnter: () => {
+              gsap.to(stageState, { bespokeArrival: 1, duration: 0.9, ease: 'power2.out' })
+              if (stage) delete stage.dataset.drafting
+            },
+          })
+
+          if (pinned) {
+            table.dataset.pinned = ''
+            if (steps.length) {
+              gsap.set(steps[0], { opacity: 1 })
+              gsap.set(steps.slice(1), { opacity: STEP_FLOOR })
             }
-            frame.addEventListener('pointermove', move)
-            frame.addEventListener('pointerleave', leave)
-            cleanups.push(() => {
-              frame.removeEventListener('pointermove', move)
-              frame.removeEventListener('pointerleave', leave)
-              leave()
+            if (dock) gsap.set(dock, { autoAlpha: 0, y: 18 })
+            const tl = gsap.timeline({
+              defaults: { ease: 'none' },
+              scrollTrigger: {
+                trigger: table,
+                start: 'top top',
+                end: '+=300%',
+                pin: true,
+                scrub: 1,
+                invalidateOnRefresh: true,
+                anticipatePin: 1,
+              },
+            })
+            tl.to(
+              stageState,
+              {
+                bespokeProgress: 1,
+                duration: 3,
+                onUpdate: () => setBuild(stageState.bespokeProgress),
+              },
+              0,
+            )
+            if (steps.length === 3) {
+              tl.to(steps[0], { opacity: STEP_FLOOR, duration: 0.25 }, 0.9)
+                .to(steps[1], { opacity: 1, duration: 0.25 }, 0.9)
+                .to(steps[1], { opacity: STEP_FLOOR, duration: 0.25 }, 1.9)
+                .to(steps[2], { opacity: 1, duration: 0.25 }, 1.9)
+            }
+            if (dock) tl.to(dock, { autoAlpha: 1, y: 0, duration: 0.35, ease: 'power2.out' }, 2.1)
+          } else {
+            gsap.fromTo(
+              stageState,
+              { bespokeProgress: 0 },
+              {
+                bespokeProgress: 1,
+                ease: 'none',
+                onUpdate: () => setBuild(stageState.bespokeProgress),
+                scrollTrigger: { trigger: table, start: 'top 75%', end: 'center 45%', scrub: 1, invalidateOnRefresh: true },
+              },
+            )
+          }
+        }
+
+      })
+
+      later(() => {
+        /* ================= CH.5 · DIM ================= */
+        const dim = q('[data-dim]')
+        const maker = q('#maker')
+        if (dim && maker) {
+          ScrollTrigger.create({
+            trigger: maker,
+            start: 'top 45%',
+            once: true,
+            onEnter: () =>
+              gsap
+                .timeline()
+                .to(dim, { opacity: 0.88, duration: 0.08, ease: 'none' })
+                .to(dim, { opacity: 0.2, duration: 0.07, ease: 'none' })
+                .to(dim, { opacity: 0.85, duration: 0.06, ease: 'none' })
+                .to(dim, { opacity: 0, duration: 1.1, ease: 'power2.out' }),
+          })
+        }
+
+        /* ================= THE MAP ================= */
+        const map = q('[data-map]')
+        const you = map?.querySelector<SVGCircleElement>('[data-map-you]')
+        const mapNo = map?.querySelector<HTMLElement>('[data-map-no]')
+        const mapName = map?.querySelector<HTMLElement>('[data-map-name]')
+        if (map && you) {
+          gsap.set(you, { attr: { transform: '' } })
+          const goTo = (id: string) => {
+            const room = map.querySelector<SVGGElement>(`[data-map-room="${id}"]`)
+            if (!room) return
+            map.querySelectorAll('[data-here]').forEach((r) => r.removeAttribute('data-here'))
+            room.dataset.here = ''
+            room.dataset.lit = ''
+            gsap.to(you, { x: Number(room.dataset.x), y: Number(room.dataset.y), duration: 0.9, ease: 'power2.inOut' })
+            const ch = night.chapters.find((c) => c.id === id)
+            if (ch && mapNo && mapName) {
+              mapNo.textContent = ch.no
+              mapName.textContent = ch.name
+            }
+          }
+          goTo('room')
+          gsap.utils.toArray<HTMLElement>('[data-chapter]').forEach((sec) => {
+            const id = sec.dataset.chapter ?? ''
+            ScrollTrigger.create({
+              trigger: sec,
+              start: 'top 50%',
+              end: 'bottom 50%',
+              onEnter: () => goTo(id),
+              onEnterBack: () => goTo(id),
             })
           })
         }
-      }
 
-      /* ================= CH.4 · THE DRAFTING TABLE ================= */
-      const table = q('#table')
-      /*
-        NO TIER GATE HERE ANY MORE.
-
-        This whole block used to sit behind `tier !== 'low'`, on the belief
-        that the chapter was the 3D. It is not: the chapter is a piece being
-        DESIGNED, CRAFTED and CUSTOMIZED, and since Skeleton.tsx the drawing
-        tells all three by itself. Gating the story on WebGL left a low-tier
-        visitor with three headings lighting up over a stage where nothing
-        ever happened (client: "on scroll texts are highlighting only").
-
-        Everything below is DOM opacity and two CSS custom properties. The
-        3D reads the same numbers when it exists and ignores them when it
-        does not.
-      */
-      if (table) {
-        const stage = q('[data-stage-bespoke]')
-        const steps = gsap.utils.toArray<HTMLElement>('[data-step]', table)
-        const dock = q('[data-swatch-dock]')
-        const pinned = window.innerHeight >= 560
-
-        /* the drawing's own build, on the same clock as the mesh's.
-           `--sweep` is the CRAFTED phase alone, mapped out of the whole
-           progress, so the material rises off the floor over the middle
-           third and nowhere else. */
-        const setBuild = (p: number) => {
-          if (!stage) return
-          stage.style.setProperty('--build', p.toFixed(3))
-          const sweep = Math.min(Math.max((p - 0.28) / 0.38, 0), 1)
-          stage.style.setProperty('--sweep', sweep.toFixed(3))
-        }
-        setBuild(0)
-        cleanups.push(() => {
-          stage?.style.removeProperty('--build')
-          stage?.style.removeProperty('--sweep')
-        })
-
-        /* THE ARRIVAL, before the pin: the drawing draws itself in and the
-           piece settles onto the table as the chapter comes into view */
-        stageState.bespokeArrival = 0
-        if (stage) stage.dataset.drafting = ''
-        ScrollTrigger.create({
-          trigger: table,
-          start: 'top 85%',
-          once: true,
-          onEnter: () => {
-            gsap.to(stageState, { bespokeArrival: 1, duration: 0.9, ease: 'power2.out' })
-            if (stage) delete stage.dataset.drafting
-          },
-        })
-
-        if (pinned) {
-          table.dataset.pinned = ''
-          if (steps.length) {
-            gsap.set(steps[0], { opacity: 1 })
-            gsap.set(steps.slice(1), { opacity: STEP_FLOOR })
-          }
-          if (dock) gsap.set(dock, { autoAlpha: 0, y: 18 })
-          const tl = gsap.timeline({
-            defaults: { ease: 'none' },
-            scrollTrigger: {
-              trigger: table,
-              start: 'top top',
-              end: '+=300%',
-              pin: true,
-              scrub: 1,
-              invalidateOnRefresh: true,
-              anticipatePin: 1,
-            },
-          })
-          tl.to(
-            stageState,
-            {
-              bespokeProgress: 1,
-              duration: 3,
-              onUpdate: () => setBuild(stageState.bespokeProgress),
-            },
-            0,
+        /* ================= THE NAV SCROLLER =================
+           Every in-page anchor (header, footer, the frames' "see it drawn")
+           goes through the scroller instead of a native hash jump. A jump
+           lands inside a pin's spacer, where Lenis and ScrollTrigger disagree
+           about where the section is (the "Showroom -> white screen" bug); the
+           target here is the section's own pin start when it is pinned, and
+           its top otherwise, and the page travels there through the scroll
+           the motion layer is watching. */
+        const scrollTo = (id: string, instant = false) => {
+          const target = id === 'top' ? document.body : document.getElementById(id)
+          if (!target) return false
+          const pin = ScrollTrigger.getAll().find(
+            (t) => t.pin && (t.trigger === target || target.contains(t.trigger as Node)),
           )
-          if (steps.length === 3) {
-            tl.to(steps[0], { opacity: STEP_FLOOR, duration: 0.25 }, 0.9)
-              .to(steps[1], { opacity: 1, duration: 0.25 }, 0.9)
-              .to(steps[1], { opacity: STEP_FLOOR, duration: 0.25 }, 1.9)
-              .to(steps[2], { opacity: 1, duration: 0.25 }, 1.9)
-          }
-          if (dock) tl.to(dock, { autoAlpha: 1, y: 0, duration: 0.35, ease: 'power2.out' }, 2.1)
-        } else {
-          gsap.fromTo(
-            stageState,
-            { bespokeProgress: 0 },
-            {
-              bespokeProgress: 1,
-              ease: 'none',
-              onUpdate: () => setBuild(stageState.bespokeProgress),
-              scrollTrigger: { trigger: table, start: 'top 75%', end: 'center 45%', scrub: 1, invalidateOnRefresh: true },
-            },
-          )
+          /* THE HEADER IS FIXED, so an un-pinned chapter's own top is not
+             where it can be READ from: landing there puts its tag and the
+             first line of its heading behind the header. A pinned chapter is
+             different - pin.start IS the section held at the top, and its own
+             padding is what clears the chrome. */
+          const chrome = pin ? 0 : (header?.offsetHeight ?? 0) + 16
+          const y =
+            id === 'top'
+              ? 0
+              : pin
+                ? pin.start
+                : Math.max(0, target.getBoundingClientRect().top + window.scrollY - chrome)
+          const lenis = getLenis()
+          if (instant) window.scrollTo(0, y)
+          else if (lenis) lenis.scrollTo(y, { duration: 1.4, easing: (x) => 1 - Math.pow(1 - x, 3) })
+          else window.scrollTo({ top: y, behavior: 'smooth' })
+          return true
         }
-      }
-
-      /* ================= CH.5 · DIM ================= */
-      const dim = q('[data-dim]')
-      const maker = q('#maker')
-      if (dim && maker) {
-        ScrollTrigger.create({
-          trigger: maker,
-          start: 'top 45%',
-          once: true,
-          onEnter: () =>
-            gsap
-              .timeline()
-              .to(dim, { opacity: 0.88, duration: 0.08, ease: 'none' })
-              .to(dim, { opacity: 0.2, duration: 0.07, ease: 'none' })
-              .to(dim, { opacity: 0.85, duration: 0.06, ease: 'none' })
-              .to(dim, { opacity: 0, duration: 1.1, ease: 'power2.out' }),
-        })
-      }
-
-      /* ================= THE MAP ================= */
-      const map = q('[data-map]')
-      const you = map?.querySelector<SVGCircleElement>('[data-map-you]')
-      const mapNo = map?.querySelector<HTMLElement>('[data-map-no]')
-      const mapName = map?.querySelector<HTMLElement>('[data-map-name]')
-      if (map && you) {
-        gsap.set(you, { attr: { transform: '' } })
-        const goTo = (id: string) => {
-          const room = map.querySelector<SVGGElement>(`[data-map-room="${id}"]`)
-          if (!room) return
-          map.querySelectorAll('[data-here]').forEach((r) => r.removeAttribute('data-here'))
-          room.dataset.here = ''
-          room.dataset.lit = ''
-          gsap.to(you, { x: Number(room.dataset.x), y: Number(room.dataset.y), duration: 0.9, ease: 'power2.inOut' })
-          const ch = night.chapters.find((c) => c.id === id)
-          if (ch && mapNo && mapName) {
-            mapNo.textContent = ch.no
-            mapName.textContent = ch.name
+        const onClick = (e: MouseEvent) => {
+          if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey) return
+          const a = (e.target as HTMLElement).closest<HTMLAnchorElement>('a[href^="#"]')
+          if (!a) return
+          const id = a.getAttribute('href')?.slice(1)
+          if (!id) return
+          if (scrollTo(id)) {
+            e.preventDefault()
+            history.replaceState(null, '', '#' + id)
           }
         }
-        goTo('room')
-        gsap.utils.toArray<HTMLElement>('[data-chapter]').forEach((sec) => {
-          const id = sec.dataset.chapter ?? ''
-          ScrollTrigger.create({
-            trigger: sec,
-            start: 'top 50%',
-            end: 'bottom 50%',
-            onEnter: () => goTo(id),
-            onEnterBack: () => goTo(id),
-          })
-        })
-      }
+        document.addEventListener('click', onClick)
+        cleanups.push(() => document.removeEventListener('click', onClick))
 
-      /* ================= THE NAV SCROLLER =================
-         Every in-page anchor (header, footer, the frames' "see it drawn")
-         goes through the scroller instead of a native hash jump. A jump
-         lands inside a pin's spacer, where Lenis and ScrollTrigger disagree
-         about where the section is (the "Showroom -> white screen" bug); the
-         target here is the section's own pin start when it is pinned, and
-         its top otherwise, and the page travels there through the scroll
-         the motion layer is watching. */
-      const scrollTo = (id: string, instant = false) => {
-        const target = id === 'top' ? document.body : document.getElementById(id)
-        if (!target) return false
-        const pin = ScrollTrigger.getAll().find(
-          (t) => t.pin && (t.trigger === target || target.contains(t.trigger as Node)),
-        )
-        /* THE HEADER IS FIXED, so an un-pinned chapter's own top is not
-           where it can be READ from: landing there puts its tag and the
-           first line of its heading behind the header. A pinned chapter is
-           different - pin.start IS the section held at the top, and its own
-           padding is what clears the chrome. */
-        const chrome = pin ? 0 : (header?.offsetHeight ?? 0) + 16
-        const y =
-          id === 'top'
-            ? 0
-            : pin
-              ? pin.start
-              : Math.max(0, target.getBoundingClientRect().top + window.scrollY - chrome)
-        const lenis = getLenis()
-        if (instant) window.scrollTo(0, y)
-        else if (lenis) lenis.scrollTo(y, { duration: 1.4, easing: (x) => 1 - Math.pow(1 - x, 3) })
-        else window.scrollTo({ top: y, behavior: 'smooth' })
-        return true
-      }
-      const onClick = (e: MouseEvent) => {
-        if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey) return
-        const a = (e.target as HTMLElement).closest<HTMLAnchorElement>('a[href^="#"]')
-        if (!a) return
-        const id = a.getAttribute('href')?.slice(1)
-        if (!id) return
-        if (scrollTo(id)) {
-          e.preventDefault()
-          history.replaceState(null, '', '#' + id)
+        /* THE MAP IS ALSO THE MENU. Every room on the plan takes the visitor
+           to its chapter through the same scroller. Mouse only (the CSS gives
+           the rooms pointer-events on a fine pointer): at 104px wide on a
+           phone the rooms are far under any honest tap target, and the burger
+           menu is right there. */
+        const onMapClick = (e: MouseEvent) => {
+          const room = (e.target as Element).closest<HTMLElement>('[data-map-room]')
+          const id = room?.dataset.mapRoom
+          if (!id) return
+          if (scrollTo(id)) history.replaceState(null, '', '#' + id)
         }
-      }
-      document.addEventListener('click', onClick)
-      cleanups.push(() => document.removeEventListener('click', onClick))
-
-      /* THE MAP IS ALSO THE MENU. Every room on the plan takes the visitor
-         to its chapter through the same scroller. Mouse only (the CSS gives
-         the rooms pointer-events on a fine pointer): at 104px wide on a
-         phone the rooms are far under any honest tap target, and the burger
-         menu is right there. */
-      const onMapClick = (e: MouseEvent) => {
-        const room = (e.target as Element).closest<HTMLElement>('[data-map-room]')
-        const id = room?.dataset.mapRoom
-        if (!id) return
-        if (scrollTo(id)) history.replaceState(null, '', '#' + id)
-      }
-      map?.addEventListener('click', onMapClick)
-      cleanups.push(() => map?.removeEventListener('click', onMapClick))
-      /* the phone menu asks the scroller to travel once its sheet is shut */
-      const onGoto = (e: Event) => {
-        const id = (e as CustomEvent<string>).detail
-        if (scrollTo(id)) {
-          e.preventDefault()
-          history.replaceState(null, '', '#' + id)
+        map?.addEventListener('click', onMapClick)
+        cleanups.push(() => map?.removeEventListener('click', onMapClick))
+        /* the phone menu asks the scroller to travel once its sheet is shut */
+        const onGoto = (e: Event) => {
+          const id = (e as CustomEvent<string>).detail
+          if (scrollTo(id)) {
+            e.preventDefault()
+            history.replaceState(null, '', '#' + id)
+          }
         }
-      }
-      window.addEventListener('night:goto', onGoto)
-      cleanups.push(() => window.removeEventListener('night:goto', onGoto))
+        window.addEventListener('night:goto', onGoto)
+        cleanups.push(() => window.removeEventListener('night:goto', onGoto))
 
-      /* a visitor arriving with a hash (a room page's "Back to the floor")
-         was placed by the browser before the pins existed; place them again
-         now that the layout is real */
-      const hash = location.hash.slice(1)
-      if (hash && document.getElementById(hash)) {
-        ScrollTrigger.refresh()
-        scrollTo(hash, true)
-      }
+        /* a visitor arriving with a hash (a room page's "Back to the floor")
+           was placed by the browser before the pins existed; place them again
+           now that the layout is real */
+        const hash = location.hash.slice(1)
+        if (hash && document.getElementById(hash)) {
+          ScrollTrigger.refresh()
+          scrollTo(hash, true)
+        }
+
+      })
 
       return () => {
         cleanups.forEach((fn) => fn())

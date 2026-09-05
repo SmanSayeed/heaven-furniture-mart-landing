@@ -871,13 +871,48 @@ export function StageCanvas({ tier, onReady }: { tier: Tier; onReady: () => void
   const heroTrack = useTrack('[data-stage-hero]')
   const bespokeTrack = useTrack('[data-stage-bespoke]')
 
-  /* frames only while the tab is visible */
-  const [frameloop, setFrameloop] = useState<'always' | 'never'>('always')
+  /*
+    FRAMES ONLY WHERE THERE IS SOMETHING TO SEE.
+
+    This used to stop only when the TAB was hidden, which left a rAF loop
+    and a getBoundingClientRect per stage running for the whole length of a
+    13,000 px page while the only stage was four chapters away. drei's
+    <View> already skips the draw when its rect is off screen - measured:
+    zero draw calls - so this was never a GPU cost, but it is a wake-up
+    every 16 ms on a phone for nothing.
+
+    Two conditions, one state: the tab is visible AND at least one stage is
+    within a screen of the viewport. The margin is deliberately generous -
+    the loop must already be running when the chapter arrives, or the piece
+    would land on its first frame mid-scroll.
+  */
+  const [visible, setVisible] = useState(true)
+  const [near, setNear] = useState(true)
   useEffect(() => {
-    const onVis = () => setFrameloop(document.hidden ? 'never' : 'always')
+    const onVis = () => setVisible(!document.hidden)
     document.addEventListener('visibilitychange', onVis)
     return () => document.removeEventListener('visibilitychange', onVis)
   }, [])
+
+  useEffect(() => {
+    const stages = document.querySelectorAll('[data-stage-hero], [data-stage-bespoke]')
+    if (!stages.length || !('IntersectionObserver' in window)) return
+    const live = new Set<Element>()
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) live.add(e.target)
+          else live.delete(e.target)
+        }
+        setNear(live.size > 0)
+      },
+      { rootMargin: '100% 0px 100% 0px' },
+    )
+    stages.forEach((el) => io.observe(el))
+    return () => io.disconnect()
+  }, [])
+
+  const frameloop: 'always' | 'never' = visible && near ? 'always' : 'never'
 
   return (
     /* localClippingEnabled: the S3 craft-plane sweep is per-material clip
