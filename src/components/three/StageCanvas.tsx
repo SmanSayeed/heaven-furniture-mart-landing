@@ -914,6 +914,25 @@ export function StageCanvas({ tier, onReady }: { tier: Tier; onReady: () => void
 
   const frameloop: 'always' | 'never' = visible && near ? 'always' : 'never'
 
+  /*
+    ...AND THE CANVAS GOES WITH IT.
+
+    Stopping the frameloop does not clear what is already on the canvas: the
+    last frame stays painted. The canvas is fixed, full-viewport and above
+    the page (z-index 4), so once the drafting table was a screen behind,
+    the sofa FROZE where it was and rode the rest of the page - over the
+    showroom video, over the footer (client: "why 3d image is over youtube
+    video", "2 times showing skeleton sofa on scroll, one is going another
+    is sticky"). One of the two sofas he was seeing was this ghost.
+
+    So the canvas is only visible while a stage is near enough to be drawn
+    into. Same condition, so the two can never disagree.
+  */
+  const canvasStyle = {
+    opacity: near ? 1 : 0,
+    transition: 'opacity 0.35s ease',
+  } as const
+
   return (
     /* localClippingEnabled: the S3 craft-plane sweep is per-material clip
        planes; without this flag three ignores them silently (PLAN 4.4) */
@@ -927,6 +946,7 @@ export function StageCanvas({ tier, onReady }: { tier: Tier; onReady: () => void
       }}
       shadows={tier === 'high' ? 'percentage' : false}
       frameloop={frameloop}
+      style={canvasStyle}
     >
       {heroTrack && (
         <View track={heroTrack}>

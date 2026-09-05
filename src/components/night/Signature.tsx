@@ -26,8 +26,19 @@ import d from '@/components/deck/deck.module.css'
  * No prices and no cart. Every piece here is built to a room, so a number
  * on a card would misrepresent how the work is actually quoted.
  *
- * Server Component. The layout is the no-JS truth; the motion layer only
- * staggers the arrival.
+ * A GRID, AND NOTHING MOVES. This was a horizontal rail - pinned, then
+ * drifting, then pinned and slowed down - and each version failed the same
+ * test: at any moment some pieces were off one edge and some had not
+ * arrived (client: "first product image is hidden and customer can never
+ * see that - make it normal without any onscroll effect"). A moving strip
+ * presents a set; it does not let anybody choose from one.
+ *
+ * So: every piece on the page at once, two rows of three on a desktop,
+ * three rows of two on a phone, and the way out to the full range under
+ * them. Nothing to wait for and nothing to chase.
+ *
+ * Server Component, and now the server HTML is the whole chapter: there is
+ * no motion layer behind this at all.
  */
 export function Signature() {
   const sig = night.signature
@@ -44,20 +55,12 @@ export function Signature() {
         <p className={s.sigLine}>{sig.line}</p>
       </div>
 
-      {/* THE SAME MECHANIC AS THE ROOMS WALL (client: "like category
-          section onscroll moving from right to left 6 images with GSAP"):
-          a track the motion layer pins and travels sideways, so the six
-          pieces walk past on a vertical scroll.
-
-          It is a native scroll-snap carousel in the server HTML, exactly
-          as the wall is - that is what a no-JS or reduced-motion visitor
-          keeps, and it is a working control rather than a dead row. */}
-      <div className={s.sigRail} data-sig-track data-stagger>
+      {/* THE GRID. Six pieces, all of them visible, none of them moving. */}
+      <div className={`${s.inner} ${s.sigGrid}`} data-stagger>
         {sig.pieces.map((piece, i) => (
           <article
             key={piece.photo}
             className={s.sigCard}
-            data-sig-card
             data-reveal="rise"
             style={{ '--i': i } as React.CSSProperties}
           >
@@ -102,12 +105,12 @@ export function Signature() {
             </a>
           </article>
         ))}
+
       </div>
 
-      <div className={s.sigBar} data-sig-bar aria-hidden="true">
-        <i />
-      </div>
-
+      {/* the way out to everything else. A route, not a second CTA: the
+          page's one action is still the WhatsApp thread on every card
+          above it. */}
       <div className={`${s.inner} ${s.sigFoot}`}>
         <Link className={`${d.pill} ${d.pillGhost}`} href="/collections">
           {sig.all}

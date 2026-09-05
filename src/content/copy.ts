@@ -749,7 +749,12 @@ export const night = {
     title: ['Six we would', 'show you first.'],
     line: 'Built in-house, in our own workshop. Every one of them can be made to your room.',
     ask: 'Ask about this piece',
-    all: 'See the full range',
+    /* the LAST card on the rail rather than a pill underneath it (client:
+       "last card item is view all product button"): the visitor who has
+       just been walked past all six arrives at the way to see the rest,
+       in the same place they have been looking. */
+    all: 'View all products',
+    allNote: 'Living, bedroom, dining, office and bespoke.',
     /* EVERY PLATE IS 4:5, SO EVERY PHOTOGRAPH HERE IS UPRIGHT.
 
        The first six included three landscape frames (1.64, 1.79 and 1.00),

@@ -248,92 +248,30 @@ export function NightMotion() {
 
         /* ============ CH.2b · SIGNATURE PIECES ============
 
-           A DRIFT, NOT A SECOND PIN, AND IT RUNS THE OTHER WAY.
+           NOTHING HAPPENS HERE ON SCROLL, AND THAT IS THE FEATURE.
 
-           This was a copy of the rooms wall: pin the section, freeze the
-           page, travel the track. Two pinned rails back to back meant the
-           page stopped twice in a row with a hard release between them, and
-           the join was the part you felt (client: "category to product
-           section is not smooth - fix it different way").
+           This chapter was a horizontal rail twice: pinned, then drifting,
+           then pinned again with the travel slowed down. Every version had
+           the same fault underneath it, and the client found it each time:
+           "how can a customer check that product - annoying for customer",
+           "first product image is hidden and customer can never see that -
+           make it normal without any onscroll effect".
 
-           So this chapter never takes the scroll away. It stays in normal
-           flow and the strip PARALLAXES across as the section passes: the
-           travel is always shorter than the scroll that drives it, so the
-           six pieces drift rather than race, and the page never stalls
-           between the two chapters.
+           A moving strip is a way to PRESENT a set. It is not a way to
+           SHOP one. Whatever the travel is doing, at any given moment some
+           pieces are off the left edge and some have not arrived, so the
+           one question this chapter exists to answer - "which of these do
+           I want?" - can never be answered from a standing start.
 
-           AND IT TRAVELS THE OPPOSITE WAY (client: "category is moving left
-           to right, make products look different and right to left on
-           scroll"). The wall carries its plates leftward; this one starts
-           held back at -dist and settles to 0, so its plates come in from
-           the left and move right. Two strips crossing in opposite
-           directions is the difference you can see without being told.
+           So the six pieces are a plain grid now: all of them on the page,
+           none of them moving, each one a tap away from a WhatsApp thread
+           that already names it. The only motion is the page's ordinary
+           reveal, which the CSS in lib/reveal.ts already owns - there is
+           no code here because there is nothing left to drive.
 
-           The server HTML is untouched: a snap carousel, at x = 0, which is
-           what a no-JS or reduced-motion visitor keeps. */
-        const sigTrack = q('[data-sig-track]')
-        const sigSection = q('#signature')
-        if (sigTrack && sigSection) {
-          const plates = gsap.utils.toArray<HTMLElement>('[data-sig-card]', sigTrack)
-          const sigBar = q('[data-sig-bar] i')
-          /* off the CSS reveal system: a transition still bound to an
-             element GSAP writes every frame smears the tween */
-          plates.forEach((el) => el.removeAttribute('data-wait'))
-          gsap.set(plates, { transition: 'none' })
-
-          sigSection.dataset.rail = ''
-          const sigDist = () => Math.max(0, sigTrack.scrollWidth - sigTrack.clientWidth)
-          gsap.fromTo(
-            sigTrack,
-            { x: () => -sigDist() },
-            {
-              x: 0,
-              ease: 'none',
-              scrollTrigger: {
-                trigger: sigSection,
-                /* The travel is spent while the chapter is ON SCREEN, not
-                   while it is still climbing into view: 'top bottom' put
-                   most of the drift below the fold, so by the time the
-                   strip was centred it had already arrived. From 90% to
-                   10% the ratio is sigDist over (section + 0.8 screens),
-                   which stays under 1:1 - and that ratio IS the parallax. */
-                start: 'top 90%',
-                end: 'bottom 10%',
-                scrub: 1,
-                invalidateOnRefresh: true,
-                onUpdate: (st) => {
-                  if (sigBar) gsap.set(sigBar, { scaleX: st.progress })
-                },
-              },
-            },
-          )
-
-          /* THE ARRIVAL, ALSO MIRRORED. The wall turns each plate to face
-             you as it comes in from the right; these lift from the left, in
-             that order, so the entrance agrees with the direction of
-             travel. One trigger for the set rather than one per card: the
-             cards are moving horizontally under a scrub, and a per-card
-             trigger would be measuring a moving target. */
-          gsap.set(plates, { autoAlpha: 0, y: 30 })
-          ScrollTrigger.create({
-            trigger: sigSection,
-            start: 'top 82%',
-            once: true,
-            onEnter: () => {
-              gsap.to(plates, {
-                autoAlpha: 1,
-                y: 0,
-                duration: 0.8,
-                ease: 'power3.out',
-                stagger: { each: 0.07, from: 'end' },
-              })
-            },
-          })
-
-          cleanups.push(() => {
-            delete sigSection.dataset.rail
-          })
-        }
+           The rooms wall above KEEPS its rail, and the contrast is now
+           doing real work: the wall is the showroom you are walked
+           through, this is the shelf you pick from. */
 
         /* ================= CH.2 · PRINT: the founding line ==============
            One scrubbed timeline: the line draws itself with a brass dot
@@ -501,7 +439,50 @@ export function NightMotion() {
             floor.dataset.rail = ''
             const dots = gsap.utils.toArray<HTMLElement>('[data-dots] i')
             const swipe = q('[data-swipe]')
-            const dist = () => Math.max(0, track.scrollWidth - track.clientWidth)
+            /* HOW FAR THE WALL HAS TO TRAVEL, measured off the LAST PLATE
+               rather than off scrollWidth.
+
+               `scrollWidth - clientWidth` looks like the overflow and is
+               not: on a flex row with `overflow: visible` the browser
+               leaves the container's own end padding out of scrollWidth,
+               so the rail stopped one --pad-x short and the fifth room
+               (Bespoke) was still half off the right edge when the pin
+               released (client: "category onscroll not showing end
+               category card"). The last plate's right edge plus that
+               padding IS the answer, and reading it from the two rects
+               makes the transform cancel, so it stays correct when
+               ScrollTrigger re-measures mid-chapter. */
+            const dist = () => {
+              const last = cards[cards.length - 1]
+              if (!last) return 0
+              const pad = parseFloat(getComputedStyle(track).paddingInlineEnd) || 0
+              const end = last.getBoundingClientRect().right - track.getBoundingClientRect().left
+              return Math.max(0, Math.round(end + pad - track.clientWidth))
+            }
+            /* THE PIN AND THE TRAVEL ARE TWO TRIGGERS, and the pin is the
+               longer one.
+
+               With one trigger they ended together, and `scrub` lags on
+               purpose - it takes about a second to catch up - so at the
+               moment the chapter released, the rail was still ~35px short.
+               The fifth room finished arriving while the section was
+               already scrolling away, which from a chair looks exactly
+               like a rail that never reaches its last plate (client:
+               "category onscroll not showing end category card").
+
+               So the chapter now holds for the travel PLUS half a screen.
+               The scrub finishes inside that tail, and the last room then
+               stands still long enough to be read - which is the beat the
+               other four each got from the one after them. */
+            const tail = () => Math.round(window.innerHeight * 0.5)
+            ScrollTrigger.create({
+              trigger: floor,
+              start: 'top top',
+              end: () => '+=' + (dist() + tail()),
+              pin: true,
+              anticipatePin: 1,
+              invalidateOnRefresh: true,
+            })
             const travel = gsap.to(track, {
               x: () => -dist(),
               ease: 'none',
@@ -509,10 +490,8 @@ export function NightMotion() {
                 trigger: floor,
                 start: 'top top',
                 end: () => '+=' + dist(),
-                pin: true,
-                scrub: 1,
+                scrub: 0.6,
                 invalidateOnRefresh: true,
-                anticipatePin: 1,
                 onUpdate: (st) => {
                   if (bar) gsap.set(bar, { scaleX: st.progress })
                   /* the dots read the rail's progress rather than the track's

@@ -57,11 +57,16 @@
 }
 
 /* a word-mask title: each line is a clip, each word carries --i */
+/* The mask each word rises out of. The padding is descender room: at
+   line-height 0.98 a "y" or a "g" hangs below the line box, and 0.06em
+   was not enough - "show you first." and "Every piece to your
+   measurements" were both being cut off flat along the baseline. The
+   negative margin gives the space back to the layout, so nothing moves. */
 .line {
   display: block;
   overflow: hidden;
-  padding-bottom: 0.06em;
-  margin-bottom: -0.06em;
+  padding-bottom: 0.16em;
+  margin-bottom: -0.16em;
 }
 
 .w {
@@ -826,6 +831,16 @@
   display: none;
 }
 
+/* PINNED, THE CHAPTER OWNS THE SCREEN. The plate is shorter now that it
+   is 5:4 rather than 3:4, and the section is content-sized - so on a phone
+   it pinned at 706px inside an 844px window and left a band of empty ink
+   under it (client: "onscroll category section is broken"). The chapter
+   holds the viewport and centres what it has. */
+.floor[data-rail] {
+  min-height: 100svh;
+  align-content: center;
+}
+
 .floor[data-rail] .track {
   /* a grid item with overflow: visible grows to its content (measured:
      2080px on a 1440px screen), which made the travel distance zero. Pin it
@@ -839,15 +854,13 @@
 
 .rcard {
   position: relative;
-  flex: 0 0 min(82vw, 340px);
+  /* the plate inside sets the width (see .frame): one source of truth, so
+     the card and the picture can never disagree about how wide a room is */
+  flex: 0 0 auto;
   scroll-snap-align: start;
   display: grid;
   gap: 0.6rem;
   transform-style: preserve-3d;
-}
-
-.floor[data-rail] .rcard {
-  flex-basis: clamp(280px, 26vw, 380px);
 }
 
 .rcardMedia {
@@ -2061,7 +2074,33 @@
    monitor does not turn a gallery wall into a billboard. */
 .floor {
   --wall-chrome: 318px;
-  --wall-h: clamp(260px, calc(100svh - var(--wall-chrome)), 720px);
+
+  /* ---- THE PLATE'S SHAPE, CUT TO THE PHOTOGRAPHY ----
+     The plate was 3:4 UPRIGHT and every room photograph Heaven has
+     published is 1.64 to 1.82 WIDE. `object-fit: cover` therefore scaled
+     each one up 2.4x and showed about 41% of its width - a sofa arm, the
+     corner of a bed, one table leg - and because the sources are only
+     1024px across, that slice was then upscaled again to fill the plate.
+     Both complaints were the same bug: "zoom way not clear image looking
+     ugly - show images properly fit, not zoomed way". It was never a
+     resolution problem, it was a crop.
+
+     5:4 keeps about three quarters of every frame, so the room in the
+     picture reads as a room, and the same pixels now cover a third less
+     area, so it is sharper as well as wider.
+
+     AND THE HEIGHT NOW YIELDS TO THE WIDTH. A wider plate at the old
+     height would be 727px across, which does not fit on a phone at all.
+     --wall-h is the smaller of "what the viewport leaves under the
+     heading" and "what this shape can be without running off the screen",
+     so the plate is as big as it can be on any window and never wider
+     than one. */
+  --wall-ar: 5 / 4;
+  --wall-w: min(94vw, 560px);
+  --wall-h: min(
+    clamp(260px, calc(100svh - var(--wall-chrome)), 720px),
+    calc(var(--wall-w) * 4 / 5)
+  );
 }
 
 /* PINNED, THE HEAD IS FURNITURE, NOT A POSTER. It shares one viewport with
@@ -2124,7 +2163,8 @@
 }
 
 .wallGrid {
-  --wall-h: clamp(280px, 42vh, 460px);
+  --wall-w: min(94vw, 480px);
+  --wall-h: min(clamp(280px, 42vh, 460px), calc(var(--wall-w) * 4 / 5));
   flex-wrap: wrap;
   justify-content: center;
   overflow: visible;
@@ -2150,7 +2190,7 @@
   position: relative;
   display: block;
   height: var(--wall-h);
-  aspect-ratio: 3 / 4;
+  aspect-ratio: var(--wall-ar);
   color: inherit;
   text-decoration: none;
   perspective: 1000px;
@@ -2586,7 +2626,10 @@
     ~43 dots and swipe, plus a little air. What is left is the picture.
   */
   .floor {
-    --wall-h: clamp(196px, calc(100svh - 372px), 460px);
+    /* the same two-way clamp as the desktop rule above: whichever is
+       smaller, the height the chapter can spare or the height this shape
+       may be without the plate running off a 390px screen */
+    --wall-h: min(clamp(196px, calc(100svh - 372px), 460px), calc(var(--wall-w) * 4 / 5));
   }
 
   .wcard {
@@ -2604,7 +2647,7 @@
   }
 
   .wallGrid {
-    --wall-h: clamp(260px, 42vh, 380px);
+    --wall-h: min(clamp(260px, 42vh, 380px), calc(var(--wall-w) * 4 / 5));
   }
 }
 
@@ -3065,8 +3108,7 @@
   color: var(--paper);
   padding: clamp(4.5rem, 11vh, 7.5rem) 0 clamp(3.5rem, 8vh, 5.5rem);
   display: grid;
-  gap: clamp(2rem, 5vh, 3.25rem);
-  overflow: hidden;
+  gap: clamp(1.6rem, 4vh, 2.75rem);
 }
 
 /* the cut from the chapter above */
@@ -3102,82 +3144,33 @@
   opacity: 0.72;
 }
 
-/* ---- THE TRACK ----
-   A native snap carousel by default - the server HTML, and what a no-JS or
-   reduced-motion visitor keeps - and a rail the motion layer translates
-   once it takes over. Same two-state arrangement as the rooms wall above,
-   for the same reason: the finished page must work before the motion
-   layer arrives, and the motion layer must not have to build anything. */
-.sigRail {
-  display: flex;
-  /* A HUNG WALL, NOT A FILMSTRIP. The rooms wall above is a flush row of
-     equal panels; if this were another one, "different section" would be
-     doing no work. Alternate plates hang lower (below), which needs the
-     row measured from its top rather than stretched to a common height. */
-  align-items: flex-start;
-  gap: clamp(1.25rem, 2.6vw, 2rem);
-  padding-inline: var(--pad-x);
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
+/* ---- THE GRID ----
+   Six pieces, all of them on the page. This was a scroll-snap rail that
+   the motion layer pinned and travelled sideways, and three versions of
+   that failed the same way (client: "first product image is hidden and
+   customer can never see that - make it normal without any onscroll
+   effect"): a strip in motion always has some of its contents off an
+   edge, so the one question this chapter exists to answer - which of
+   these do I want - can never be answered from a standing start.
+
+   Two rows of three on a desktop, three rows of two on a phone. Nothing
+   to wait for, nothing to chase, and every piece one tap from a WhatsApp
+   thread that already names it. */
+.sigGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(1.5rem, 3.5vh, 2.75rem) clamp(0.9rem, 2.2vw, 1.75rem);
 }
 
-.sigRail::-webkit-scrollbar {
-  display: none;
+@media (min-width: 860px) {
+  .sigGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 
 .sigCard {
-  flex: 0 0 auto;
-  width: clamp(240px, 78vw, 340px);
   min-width: 0;
-  scroll-snap-align: center;
 }
-
-/* the stagger. CSS, and margin rather than transform, because GSAP owns
-   these elements' transforms while the strip drifts. */
-.sigCard:nth-child(even) {
-  margin-block-start: clamp(1.25rem, 4vw, 3.25rem);
-}
-
-/* MOTION LAYER ON. The native overflow scroll has to go, or a thumb can
-   drag the strip out from under the transform GSAP is writing; and the
-   track has to be held to the viewport's width, or it grows to its own
-   content and scrollWidth - clientWidth (the travel) is zero. Same two
-   fixes the wall needed - but this chapter is NOT pinned, so it keeps its
-   own padding and its place in the flow. */
-.signature[data-rail] .sigRail {
-  width: 100%;
-  min-width: 0;
-  max-width: 100vw;
-  overflow: visible;
-  will-change: transform;
-}
-
-.signature[data-rail] .sigCard {
-  width: clamp(260px, 26vw, 360px);
-}
-
-/* the travel, drawn: a hairline that fills as the six go past. It is a
-   progress bar, not a control - there is nothing here to operate. */
-.sigBar {
-  width: min(200px, 42vw);
-  height: 1px;
-  margin-inline: var(--pad-x);
-  background: rgba(244, 240, 232, 0.16);
-  overflow: hidden;
-}
-
-.sigBar i {
-  display: block;
-  width: 100%;
-  height: 100%;
-  background: var(--brass);
-  transform: scaleX(0);
-  transform-origin: left center;
-}
-
-
 
 .sigLink {
   display: grid;
@@ -3295,6 +3288,7 @@
 .sigFoot {
   display: flex;
   justify-content: center;
+  margin-top: clamp(0.25rem, 1.5vh, 1rem);
 }
 
 @media (prefers-reduced-motion: reduce) {
