@@ -459,30 +459,22 @@ export function NightMotion() {
               const end = last.getBoundingClientRect().right - track.getBoundingClientRect().left
               return Math.max(0, Math.round(end + pad - track.clientWidth))
             }
-            /* THE PIN AND THE TRAVEL ARE TWO TRIGGERS, and the pin is the
-               longer one.
+            /* ONE TRIGGER. It was briefly two - a long pin and a shorter
+               travel inside it, so the scrub could settle before the
+               chapter let go - and that broke the chapter outright: two
+               ScrollTriggers on the same element, one of them pinning,
+               and the pin resolved against the other's numbers. The
+               section froze 1730px BELOW the viewport, so between the
+               hero and the rooms there was nothing but black (client:
+               "onscroll not showing category section - showing blank
+               screen"). Never two triggers on one pinned element.
 
-               With one trigger they ended together, and `scrub` lags on
-               purpose - it takes about a second to catch up - so at the
-               moment the chapter released, the rail was still ~35px short.
-               The fifth room finished arriving while the section was
-               already scrolling away, which from a chair looks exactly
-               like a rail that never reaches its last plate (client:
-               "category onscroll not showing end category card").
-
-               So the chapter now holds for the travel PLUS half a screen.
-               The scrub finishes inside that tail, and the last room then
-               stands still long enough to be read - which is the beat the
-               other four each got from the one after them. */
-            const tail = () => Math.round(window.innerHeight * 0.5)
-            ScrollTrigger.create({
-              trigger: floor,
-              start: 'top top',
-              end: () => '+=' + (dist() + tail()),
-              pin: true,
-              anticipatePin: 1,
-              invalidateOnRefresh: true,
-            })
+               The problem that split was trying to solve - the fifth room
+               still sliding in as the pin released - is a scrub LAG, so
+               it is fixed where it lives: 0.3 instead of 1. That is still
+               smoothing (a hard 1:1 scrub judders on a trackpad) but it
+               settles in a third of a second rather than a whole one, so
+               Bespoke is in place before the chapter moves on. */
             const travel = gsap.to(track, {
               x: () => -dist(),
               ease: 'none',
@@ -490,8 +482,10 @@ export function NightMotion() {
                 trigger: floor,
                 start: 'top top',
                 end: () => '+=' + dist(),
-                scrub: 0.6,
+                pin: true,
+                scrub: 0.3,
                 invalidateOnRefresh: true,
+                anticipatePin: 1,
                 onUpdate: (st) => {
                   if (bar) gsap.set(bar, { scaleX: st.progress })
                   /* the dots read the rail's progress rather than the track's
